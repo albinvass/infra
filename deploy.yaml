@@ -1,4 +1,4 @@
 - hosts: host
   roles:
     - host
-    - nodepool-ubuntu-focal
+    - guests

@@ -1,5 +1,11 @@
 all:
   hosts:
     host:
-      ansible_host: 192.168.1.196
+      ansible_host: nixos
       ansible_user: avass
+    k3s:
+      ansible_host: 192.168.1.197 # nixos-k3s
+      ansible_user: vagrant
+    nodepool-static:
+      ansible_host: 192.168.1.198 # nixos-guest-1
+      ansible_user: vagrant

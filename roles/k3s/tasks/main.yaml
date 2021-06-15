@@ -1,0 +1,50 @@
+- name: Download k3s
+  become: true
+  get_url:
+    url: https://github.com/k3s-io/k3s/releases/download/v1.21.1%2Bk3s1/k3s
+    dest: /usr/bin/k3s
+    checksum: sha256:c2cb00380694eedbc126fadccbe0c0c41ea08a268a49f480576c5e044791d2a8
+    mode: "0755"
+
+- name: Copy systemd service file
+  become: true
+  register: k3s_created
+  copy:
+    src: k3s.service
+    dest: /etc/systemd/system/k3s.service
+    mode: "0755"
+
+- name: Enable k3s
+  become: true
+  systemd:
+    name: k3s
+    state: started
+    enabled: true
+
+- name: Wait for k3s to start
+  wait_for:
+    port: 6443
+
+- name: Slurp kubeconfig
+  become: true
+  no_log: true
+  register: kubeconfig
+  slurp:
+    src: /etc/rancher/k3s/k3s.yaml
+
+- name: Ensure ./output"
+  delegate_to: localhost
+  file:
+    state: directory
+    path: "{{ playbook_dir }}/output"
+
+- name: Fixup kubeconfig
+  delegate_to: localhost
+  copy:
+    dest: "{{ playbook_dir }}/output/k3s.yaml"
+    content: >-
+      {{
+        kubeconfig.content
+        | b64decode
+        | regex_replace('127\.0\.0\.1', ansible_host)
+      }}

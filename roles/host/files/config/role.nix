@@ -36,8 +36,6 @@
     passwordAuthentication = false;
   };
 
-  services.k3s.enable = true;
-
   console.keyMap = "sv-latin1";
   time.timeZone = "Europe/Stockholm";
 
@@ -48,5 +46,4 @@
       interfaces = [ "enp2s0f0" ];
     };
   };
-
 }

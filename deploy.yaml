@@ -2,3 +2,14 @@
   roles:
     - host
     - guests
+
+- hosts: k3s
+  gather_facts: false
+  pre_tasks:
+    - name: Wait for guests to come online
+      wait_for_connection:
+        timeout: 300
+    - name: Gather facts
+      setup:
+  roles:
+    - k3s

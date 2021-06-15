@@ -3,6 +3,7 @@
 
 {
   system.stateVersion = "21.05"; # Did you read the comment?
+  nixpkgs.config.allowUnfree = true;
   imports = [
       ./hardware-configuration.nix # Include the results of the hardware scan.
       ./config/role.nix

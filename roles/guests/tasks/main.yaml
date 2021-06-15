@@ -4,8 +4,7 @@
     state: directory
 
 - name: Copy Vagrantfile
-  notify:
-    - Reload
+  register: vagrantfile
   synchronize:
     src: Vagrantfile
     dest: ~/vms
@@ -18,12 +17,18 @@
     chdir: ~/vms
 
 - name: Create vm
+  register: vm_create
   when:
     - '"state,not_created" in status.stdout
       or "state,shutoff" in status.stdout'
-  command: vagrant up
+  command: vagrant up --provider=libvirt
   args:
     chdir: ~/vms
 
-- name: Flush handlers
-  meta: flush_handlers
+- name: Reload
+  when:
+    - vm_create is skipped
+    - vagrantfile is changed
+  command: vagrant reload
+  args:
+    chdir: ~/vms

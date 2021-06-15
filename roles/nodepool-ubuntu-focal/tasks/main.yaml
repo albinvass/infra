@@ -1,0 +1,29 @@
+- name: Ensure ~/vms/nodepool-ubuntu-focal
+  file:
+    path: ~/vms/nodepool-ubuntu-focal
+    state: directory
+
+- name: Copy Vagrantfile
+  notify:
+    - Reload
+  synchronize:
+    src: Vagrantfile
+    dest: ~/vms/nodepool-ubuntu-focal
+
+- name: Get status
+  register: status
+  command: vagrant status --machine-readable
+  changed_when: false
+  args:
+    chdir: ~/vms/nodepool-ubuntu-focal
+
+- name: Create vm
+  when:
+    - '"state,not_created" in status.stdout
+      or "state,shutoff" in status.stdout'
+  command: vagrant up
+  args:
+    chdir: ~/vms/nodepool-ubuntu-focal
+
+- name: Flush handlers
+  meta: flush_handlers

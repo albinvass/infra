@@ -1,0 +1,4 @@
+- name: Reload
+  command: vagrant reload
+  args:
+    chdir: ~/vms/nodepool-ubuntu-focal

@@ -1,0 +1,4 @@
+passlib
+openshift
+kubernetes
+PyYAML

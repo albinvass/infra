@@ -32,19 +32,113 @@
   slurp:
     src: /etc/rancher/k3s/k3s.yaml
 
-- name: Ensure ./output"
-  delegate_to: localhost
+- name: Ensure ~/.nixos-k3s
   file:
     state: directory
-    path: "{{ playbook_dir }}/output"
+    path: ~/.nixos-k3s
+    mode: "0700"
 
 - name: Fixup kubeconfig
   delegate_to: localhost
   copy:
-    dest: "{{ playbook_dir }}/output/k3s.yaml"
+    dest: ~/.nixos-k3s/k3s.yaml
     content: >-
       {{
         kubeconfig.content
         | b64decode
         | regex_replace('127\.0\.0\.1', ansible_host)
       }}
+
+- name: Ensure infra namespace
+  delegate_to: localhost
+  community.kubernetes.k8s:
+    kubeconfig: ~/.nixos-k3s/k3s.yaml
+    api_version: v1
+    kind: Namespace
+    name: infra
+
+- name: Check if registry.yaml exists
+  delegate_to: localhost
+  register: registry_yaml_stat
+  stat:
+    path: ~/.nixos-k3s/registry.yaml
+
+- name: Create registry.yaml
+  when: not registry_yaml_stat.stat.exists
+  delegate_to: localhost
+  copy:
+    dest: ~/.nixos-k3s/registry.yaml
+    mode: "0600"
+    content: |
+      registry:
+        address: '0.0.0.0'
+        port: 9000
+        public-url: http://nixos-k3s:9000
+        secret: {{ lookup('password', '/dev/null length=64') }}
+        users:
+          - name: k3s
+            pass: {{ lookup('password', '/dev/null length=64') }}
+            access: read
+        storage:
+          driver: filesystem
+          root: /storage
+
+- name: Slurp registry.yaml
+  delegate_to: localhost
+  register: registry_yaml
+  slurp:
+    path: ~/.nixos-k3s/registry.yaml
+
+- name: Create registry-yaml secret
+  delegate_to: localhost
+  community.kubernetes.k8s:
+    kubeconfig: ~/.nixos-k3s/k3s.yaml
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: registry-yaml
+        namespace: infra
+      data:
+        registry.yaml: "{{ registry_yaml.content }}"
+
+- name: Clone zuul-registry
+  delegate_to: localhost
+  git:
+    repo: https://review.opendev.org/zuul/zuul-registry
+    dest: ~/.nixos-k3s/registry/zuul-registry
+    refspec: refs/changes/90/788390/2
+    version: FETCH_HEAD
+
+    #git fetch "https://review.opendev.org/zuul/zuul-registry" refs/changes/90/788390/2 && git checkout -b change-788390-2 FETCH_HEAD
+    #- name: Unarchive zuul-registry
+    #  delegate_to: localhost
+    #  unarchive:
+    #    remote_src: true
+    #    src: https://review.opendev.org/changes/zuul%2Fzuul-registry~788390/revisions/2/archive?format=tgz
+    #    dest: ~/.nixos-k3s/registry/zuul-registry
+
+- name: Build image
+  delegate_to: localhost
+  docker_image:
+    name: nixos-k3s:9000/zuul/zuul-registry:nixos-k3s-1
+    archive_path: ~/.nixos-k3s/registry/zuul-registry-image.tar
+    build:
+      path: ~/.nixos-k3s/registry/zuul-registry
+    source: build
+
+- name: Copy image to nixos-k3s
+  copy:
+    src: ~/.nixos-k3s/registry/zuul-registry-image.tar
+    dest: ~/zuul-registry-image.tar
+
+- name: Import image
+  become: true
+  command: k3s ctr image import zuul-registry-image.tar
+
+- name: Ensure zuul/zuul-registry
+  delegate_to: localhost
+  community.kubernetes.k8s:
+    kubeconfig: ~/.nixos-k3s/k3s.yaml
+    namespace: infra
+    src: "{{ playbook_dir }}/kubernetes/registry.yaml"

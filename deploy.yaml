@@ -1,15 +1,27 @@
 - hosts: host
   roles:
     - host
-    - guests
+  tasks:
+    - name: Ensure .kube dir
+      file:
+        state: directory
+        path: ~/.kube
 
-- hosts: k3s
-  gather_facts: false
-  pre_tasks:
-    - name: Wait for guests to come online
-      wait_for_connection:
-        timeout: 300
-    - name: Gather facts
-      setup:
-  roles:
-    - k3s
+    - name: Ensure cluster config
+      become: true
+      copy:
+        remote_src: true
+        src: /etc/rancher/k3s/k3s.yaml
+        dest: "{{ ansible_user_dir }}/.kube/config"
+        owner: "{{ ansible_user }}"
+
+    - name: Sync kustomization
+      notify:
+        - Apply kustomization
+      synchronize:
+        src: "{{ playbook_dir }}/k8s"
+        dest: ~/
+        delete: true
+  handlers:
+    - name: Apply kustomization
+      command: kubectl apply -k ~/k8s

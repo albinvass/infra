@@ -9,7 +9,7 @@
     };
     isNormalUser = true;
     extraGroups = [
-      "libvirtd"
+      #"libvirtd"
     ];
   };
 
@@ -27,9 +27,10 @@
     git
     vagrant
     python3
+    kubectl
   ];
 
-  virtualisation.libvirtd.enable = true;
+  #virtualisation.libvirtd.enable = true;
 
   services.openssh = {
     enable = true;
@@ -46,4 +47,6 @@
       interfaces = [ "enp2s0f0" ];
     };
   };
+
+  services.k3s.enable = true;
 }

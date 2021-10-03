@@ -16,12 +16,10 @@
         owner: "{{ ansible_user }}"
 
     - name: Sync kustomization
-      notify:
-        - Apply kustomization
       synchronize:
         src: "{{ playbook_dir }}/k8s"
         dest: ~/
         delete: true
-  handlers:
+
     - name: Apply kustomization
       command: kubectl apply -k ~/k8s

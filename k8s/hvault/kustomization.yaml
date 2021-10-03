@@ -1,0 +1,9 @@
+resources:
+  - statefulset.yaml
+  - service.yaml
+  - ingress.yaml
+
+configmapGenerator:
+  - name: vault-config
+    files:
+      - config

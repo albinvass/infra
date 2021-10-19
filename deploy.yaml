@@ -22,4 +22,21 @@
         delete: true
 
     - name: Apply kustomization
-      command: kubectl apply -k ~/k8s
+      command: >-
+        kubectl apply -k ~/k8s
+        --namespace default
+        --prune
+        --all
+        --prune-whitelist 'core/v1/ConfigMap'
+        --prune-whitelist 'core/v1/Endpoints'
+        --prune-whitelist 'core/v1/PersistentVolumeClaim'
+        --prune-whitelist 'core/v1/Pod'
+        --prune-whitelist 'core/v1/ReplicationController'
+        --prune-whitelist 'core/v1/Service'
+        --prune-whitelist 'batch/v1/Job'
+        --prune-whitelist 'batch/v1/CronJob'
+        --prune-whitelist 'apps/v1/DaemonSet'
+        --prune-whitelist 'apps/v1/Deployment'
+        --prune-whitelist 'networking.k8s.io/v1/Ingress'
+        --prune-whitelist 'apps/v1/ReplicaSet'
+        --prune-whitelist 'apps/v1/StatefulSet'

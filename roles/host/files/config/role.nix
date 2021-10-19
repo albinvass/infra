@@ -40,7 +40,7 @@
   console.keyMap = "sv-latin1";
   time.timeZone = "Europe/Stockholm";
 
-  networking.firewall.allowedTCPPorts = [ 22 6443 30000 ];
+  networking.firewall.allowedTCPPorts = [ 22 6443 30000 32400 80 ];
   networking.interfaces.bridge0.useDHCP = true;
   networking.bridges = {
     "bridge0" = {

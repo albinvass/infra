@@ -1,3 +1,4 @@
 resources:
   - deploy.yaml
   - logconfig.yaml
+  - secrets.yaml

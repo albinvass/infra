@@ -21,9 +21,29 @@
         dest: ~/
         delete: true
 
+    - name: Ensure ~/.config
+      file:
+        state: directory
+        path: ~/.config
+
+    - name: Copy kustomize plugins
+      synchronize:
+        src: "{{ playbook_dir }}/kustomize"
+        dest: ~/.config/
+        delete: true
+
     - name: Apply kustomization
-      command: >-
-        kubectl apply -k ~/k8s
+      environment:
+        VAULT_TOKEN: "{{ lookup('env', 'VAULT_TOKEN') }}"
+        VAULT_ADDR: >-
+          http://{{
+            lookup('dig',
+              lookup('env', 'VAULT_ADDR')|urlsplit('hostname')
+            )
+          }}
+      shell: >-
+        kubectl kustomize ~/k8s --enable-alpha-plugins
+        | kubectl apply -f -
         --namespace default
         --prune
         --all
@@ -31,6 +51,7 @@
         --prune-whitelist 'core/v1/Endpoints'
         --prune-whitelist 'core/v1/PersistentVolumeClaim'
         --prune-whitelist 'core/v1/Pod'
+        --prune-whitelist 'core/v1/Secret'
         --prune-whitelist 'core/v1/ReplicationController'
         --prune-whitelist 'core/v1/Service'
         --prune-whitelist 'batch/v1/Job'

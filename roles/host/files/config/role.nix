@@ -26,8 +26,13 @@
     curl
     git
     vagrant
-    python3
     kubectl
+    (python38.buildEnv.override {
+      extraLibs = with python38Packages; [
+        hvac
+        pyyaml
+      ];
+    })
   ];
 
   #virtualisation.libvirtd.enable = true;

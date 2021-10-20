@@ -1,4 +1,2 @@
-passlib
-openshift
-kubernetes
 PyYAML
+hvac

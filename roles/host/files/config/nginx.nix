@@ -17,6 +17,8 @@
     enable = true;
     recommendedProxySettings = true;
     recommendedTlsSettings = true;
+    recommendedGzipSettings = true;
+    recommendedOptimisation = true;
     virtualHosts = {
       "acmechallenge.vassast.org" = {
         serverAliases = [ "*.vassast.org" ];

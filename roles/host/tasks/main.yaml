@@ -1,19 +1,17 @@
 - name: Copy configuration.nix config to host
   become: true
-  notify:
-    - Rebuild
   copy:
     src: configuration.nix
     dest: /etc/nixos/configuration.nix
 
 - name: Copy config directory to host
   become: true
-  notify:
-    - Rebuild
   synchronize:
     src: config
     dest: /etc/nixos
     delete: yes
 
-- name: Flush handlers
-  meta: flush_handlers
+
+- name: Rebuild
+  become: true
+  command: nixos-rebuild switch

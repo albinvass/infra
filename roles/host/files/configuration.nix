@@ -7,6 +7,7 @@
   imports = [
       ./hardware-configuration.nix # Include the results of the hardware scan.
       ./config/role.nix
+      ./config/nginx.nix
   ];
 
   boot.loader.systemd-boot.enable = true;

@@ -4,6 +4,18 @@
     src: configuration.nix
     dest: /etc/nixos/configuration.nix
 
+- name: Copy flake.nix config to host
+  become: true
+  copy:
+    src: flake.nix
+    dest: /etc/nixos/flake.nix
+
+- name: Copy secrets to host
+  become: true
+  copy:
+    src: secrets
+    dest: /etc/nixos/
+
 - name: Copy config directory to host
   become: true
   synchronize:

@@ -1,6 +1,6 @@
 { config, lib, pkgs, modulesPath, ... }:
 {
-  security.acme.email = "albin.vass@gmail.com";
+  security.acme.defaults.email = "albin.vass@gmail.com";
   security.acme.acceptTerms = true;
   security.acme.certs = {
     "vassast.org" = {

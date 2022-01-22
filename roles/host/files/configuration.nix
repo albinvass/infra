@@ -1,14 +1,31 @@
-# Edit this configuration file to define what should be installed on
-{ config, pkgs, ... }:
+{ config, lib, pkgs, vinemetrics-irc, ... }:
 
 {
-  system.stateVersion = "21.05"; # Did you read the comment?
+  nix = {
+    package = pkgs.nixUnstable;
+    extraOptions = ''
+      experimental-features = nix-command flakes
+    '';
+  };
+  system.stateVersion = "21.05";
   nixpkgs.config.allowUnfree = true;
   imports = [
       ./hardware-configuration.nix # Include the results of the hardware scan.
       ./config/role.nix
       ./config/nginx.nix
   ];
+
+  age.secrets.vinescore-oauth-token.file = ./secrets/vinescore-oauth-token.age;
+  virtualisation.oci-containers.containers = {
+    vinemetrics-irc = {
+      image = "vinemetrics-irc:${lib.head (lib.strings.splitString "-" (baseNameOf vinemetrics-irc.packages.x86_64-linux.container))}";
+      imageFile = vinemetrics-irc.packages.x86_64-linux.container;
+      environmentFiles = [ config.age.secrets.vinescore-oauth-token.path ];
+      environment = {
+        VINESCORE_CHANNELS = "#vassast";
+      };
+    };
+  };
 
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;

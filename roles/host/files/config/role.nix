@@ -8,9 +8,6 @@
       };
     };
     isNormalUser = true;
-    extraGroups = [
-      #"libvirtd"
-    ];
   };
 
   security.sudo.extraRules = [{
@@ -25,7 +22,6 @@
     neovim
     curl
     git
-    vagrant
     kubectl
     (python38.buildEnv.override {
       extraLibs = with python38Packages; [
@@ -35,8 +31,6 @@
     })
   ];
 
-  #virtualisation.libvirtd.enable = true;
-
   services.openssh = {
     enable = true;
     passwordAuthentication = false;
@@ -44,14 +38,6 @@
 
   console.keyMap = "sv-latin1";
   time.timeZone = "Europe/Stockholm";
-
-  networking.firewall.allowedTCPPorts = [ 22 6443 30000 32400 80 8080 8443 8448 ];
-  networking.interfaces.bridge0.useDHCP = true;
-  networking.bridges = {
-    "bridge0" = {
-      interfaces = [ "enp2s0f0" ];
-    };
-  };
 
   services.k3s.enable = true;
 }

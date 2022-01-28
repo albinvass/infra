@@ -13,6 +13,8 @@
       ./hardware-configuration.nix # Include the results of the hardware scan.
       ./config/role.nix
       ./config/nginx.nix
+      ./config/zuul
+      ./config/zookeeper
   ];
 
   age.secrets.vinescore-oauth-token.file = ./secrets/vinescore-oauth-token.age;
@@ -38,5 +40,16 @@
   networking.useDHCP = false;
   networking.interfaces.enp2s0f0.useDHCP = true;
   networking.interfaces.wlp3s0.useDHCP = true;
+  networking.nat.enable = true;
+  networking.nat.internalInterfaces = ["ve-+"];
+  networking.nat.externalInterface = "bridge0";
+  networking.firewall.allowedTCPPorts = [ 22 6443 30000 32400 80 8080 8443 8448 ];
+  networking.interfaces.bridge0.useDHCP = true;
+  networking.bridges = {
+    "bridge0" = {
+      interfaces = [ "enp2s0f0" ];
+    };
+  };
+
 }
 

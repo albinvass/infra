@@ -68,10 +68,10 @@
         }];
         locations = {
           "/_matrix/" = {
-            proxyPass = "http://nixos:80/_matrix/";
+            proxyPass = "http://nixos:80";
           };
           "/_synapse/client/" = {
-            proxyPass = "http://nixos:80/_synapse/client/";
+            proxyPass = "http://nixos:80";
           };
         };
       };

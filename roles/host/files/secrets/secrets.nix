@@ -4,4 +4,7 @@ let
 in
 {
   "vinescore-oauth-token.age".publicKeys = [ avass nixos ];
+  "vassast-org-homeserver-yaml.age".publicKeys = [ avass nixos ];
+  "vassast-org-log-config.age".publicKeys = [ avass nixos ];
+  "vassast-org-signing-key.age".publicKeys = [ avass nixos ];
 }

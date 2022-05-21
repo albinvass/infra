@@ -36,6 +36,20 @@
     passwordAuthentication = false;
   };
 
+  services.elasticsearch = {
+    package = pkgs.elasticsearch7;
+    enable = true;
+  };
+
+  services.kibana = {
+    package = pkgs.kibana7;
+    enable = true;
+    extraConf = {
+      server.basePath = "/kibana";
+      server.rewriteBasePath = true;
+    };
+  };
+
   console.keyMap = "sv-latin1";
   time.timeZone = "Europe/Stockholm";
 

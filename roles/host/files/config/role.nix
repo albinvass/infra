@@ -54,4 +54,50 @@
   time.timeZone = "Europe/Stockholm";
 
   services.k3s.enable = true;
+  services.grafana = {
+    enable = true;
+    addr = "0.0.0.0";
+  };
+  services.prometheus = {
+    enable = true;
+    extraFlags = [
+      "--storage.tsdb.retention.size 10GB"
+    ];
+    scrapeConfigs = [
+      {
+        job_name = "node";
+        scrape_interval = "10s";
+        static_configs = [
+          {
+            targets = [ "localhost:9100" ];
+          }
+        ];
+      }
+    ];
+    exporters = {
+      node = {
+        enable = true;
+          enabledCollectors = [
+            "conntrack"
+            "cpu"
+            "diskstats"
+            "entropy"
+            "filefd"
+            "filesystem"
+            "loadavg"
+            "mdadm"
+            "meminfo"
+            "netdev"
+            "netstat"
+            "stat"
+            "time"
+            "vmstat"
+            "systemd"
+            "logind"
+            "interrupts"
+            "ksmd"
+        ];
+      };
+    };
+  };
 }

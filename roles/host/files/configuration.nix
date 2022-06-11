@@ -54,6 +54,8 @@
     8443  # synapse
     8448  # synapse
     9000  # zuul
+    9090  # prometheus
+    3000  # grafana
   ];
   networking.interfaces.bridge0.useDHCP = true;
   networking.bridges = {

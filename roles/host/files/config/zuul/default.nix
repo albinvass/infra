@@ -1,5 +1,11 @@
 { config, lib, pkgs, vinemetrics-irc, ... }:
 let
+  zuul-tenant-config = builtins.toFile "main.yaml" "
+    - tenant:
+        name: vassast
+        exclude-unprotected-branches: true
+        source: {}
+  ";
   zuul-config = builtins.toFile "zuul.conf" "
   [zookeeper]
   hosts=zookeeper-1:2281
@@ -14,7 +20,11 @@ let
   password=MY_SECRET_PASSWORD
 
   [web]
-  status_url=https://nixos:9001/status
+  status_url=https://nixos:9000/status
+  listen_address=0.0.0.0
+
+  [scheduler]
+  tenant_config=/etc/zuul/main.yaml
   ";
   zuul-certs-cfg = {
     user = "10001";  # zuul user in container
@@ -22,9 +32,14 @@ let
   };
   zuul-volumes = [
     "${zuul-config}:/etc/zuul/zuul.conf"
+    "${zuul-tenant-config}:/etc/zuul/main.yaml"
     "/var/lib/${zuul-certs-cfg.path}:/etc/zuul/certs"
   ];
-  zuul-extraOptions = ["--add-host=zookeeper-1:${config.containers.zookeeper-1.localAddress}"];
+  zuul-extraOptions = [
+    "--add-host=zookeeper-1:${config.containers.zookeeper-1.localAddress}"
+    "--add-host=mysql:${config.containers.mysql.localAddress}"
+  ];
+  zuul-version = "6.0.0";
 in {
   systemd.services."create-zuul-certs" = {
     description = "Create certs for zuul";
@@ -81,24 +96,27 @@ in {
   };
   virtualisation.oci-containers.containers = {
     zuul-web-0 = {
-      image = "zuul/zuul-web";
+      image = "zuul/zuul-web:${zuul-version}";
       volumes = zuul-volumes;
-      extraOptions = zuul-extraOptions;
+      extraOptions = ["--hostname=zuul-web-0"] ++ zuul-extraOptions;
+      ports = [
+        "9000:9000"
+      ];
     };
     zuul-scheduler-0 = {
-      image = "zuul/zuul-scheduler";
+      image = "zuul/zuul-scheduler:${zuul-version}";
       volumes = zuul-volumes;
-      extraOptions = zuul-extraOptions;
+      extraOptions = ["--hostname=zuul-scheduler-0"] ++ zuul-extraOptions;
     };
     zuul-executor-0 = {
-      image = "zuul/zuul-executor";
+      image = "zuul/zuul-executor:${zuul-version}";
       volumes = zuul-volumes;
-      extraOptions = zuul-extraOptions;
+      extraOptions = ["--hostname=zuul-executor-0"] ++ zuul-extraOptions;
     };
     zuul-merger-0 = {
-      image = "zuul/zuul-merger";
+      image = "zuul/zuul-merger:${zuul-version}";
       volumes = zuul-volumes;
-      extraOptions = zuul-extraOptions;
+      extraOptions = ["--hostname=zuul-merger-0"] ++ zuul-extraOptions;
     };
   };
 }

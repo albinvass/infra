@@ -44,7 +44,17 @@
   networking.nat.enable = true;
   networking.nat.internalInterfaces = ["ve-+"];
   networking.nat.externalInterface = "bridge0";
-  networking.firewall.allowedTCPPorts = [ 22 6443 30000 32400 80 8080 8443 8448 ];
+  networking.firewall.allowedTCPPorts = [
+    22  # ssh
+    6443
+    30000
+    32400
+    80  # nginx
+    8080
+    8443  # synapse
+    8448  # synapse
+    9000  # zuul
+  ];
   networking.interfaces.bridge0.useDHCP = true;
   networking.bridges = {
     "bridge0" = {

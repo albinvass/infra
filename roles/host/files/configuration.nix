@@ -15,6 +15,7 @@
       ./config/nginx.nix
       ./config/zuul
       ./config/zookeeper
+      ./config/mysql
   ];
 
   age.secrets.vinescore-oauth-token.file = ./secrets/vinescore-oauth-token.age;

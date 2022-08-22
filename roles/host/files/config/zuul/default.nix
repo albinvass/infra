@@ -94,7 +94,7 @@ in {
       RemainAfterExit = true;
     };
   };
-  virtualisation.oci-containers.containers = {
+  virtualisation.oci-containers.containers = {}; /*{
     zuul-web-0 = {
       image = "zuul/zuul-web:${zuul-version}";
       volumes = zuul-volumes;
@@ -118,5 +118,5 @@ in {
       volumes = zuul-volumes;
       extraOptions = ["--hostname=zuul-merger-0"] ++ zuul-extraOptions;
     };
-  };
+  };*/
 }

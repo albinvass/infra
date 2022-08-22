@@ -99,7 +99,7 @@ in rec {
       { config, pkgs, ...}:
       {
         services.zookeeper = {
-          enable = true;
+          enable = false;
           id = 0;
           dataDir = "/var/lib/zookeeper/data";
           extraConf = builtins.readFile ./zoo.cfg;

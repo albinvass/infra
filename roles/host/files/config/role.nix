@@ -38,12 +38,12 @@
 
   services.elasticsearch = {
     package = pkgs.elasticsearch7;
-    enable = true;
+    enable = false;
   };
 
   services.kibana = {
     package = pkgs.kibana7;
-    enable = true;
+    enable = false;
     extraConf = {
       server.basePath = "/kibana";
       server.rewriteBasePath = true;
@@ -59,7 +59,7 @@
     addr = "0.0.0.0";
   };
   services.prometheus = {
-    enable = true;
+    enable = false;
     extraFlags = [
       "--storage.tsdb.retention.size 10GB"
     ];
@@ -76,7 +76,7 @@
     ];
     exporters = {
       node = {
-        enable = true;
+        enable = false;
           enabledCollectors = [
             "conntrack"
             "cpu"

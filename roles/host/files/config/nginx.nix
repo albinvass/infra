@@ -9,7 +9,6 @@
       group = "nginx";
       extraDomainNames = [
         "matrix.vassast.org"
-        "plex.vassast.org"
       ];
     };
   };
@@ -32,18 +31,6 @@
         };
         locations."/" = {
           return = "301 https://$host$request_uri";
-        };
-      };
-      "plex.vassast.org" = {
-        forceSSL = true;
-        useACMEHost = "vassast.org";
-        listen = [{
-          addr = "0.0.0.0";
-          port = 8443;
-          ssl = true;
-        }];
-        locations."/" = {
-          proxyPass = "http://nixos:32400/";
         };
       };
       "matrix.vassast.org" = {
@@ -81,14 +68,14 @@
           port = 8080;
           ssl = false;
         }];
-        locations = {
-          "${config.services.kibana.extraConf.server.basePath}" = {
-            proxyPass = "http://localhost:5601";
-          };
-          "/" = {
-            proxyPass = "http://nixos:80";
-          };
-        };
+        #locations = {
+        #  "${config.services.kibana.extraConf.server.basePath}" = {
+        #    proxyPass = "http://localhost:5601";
+        #  };
+        #  "/" = {
+        #    proxyPass = "http://nixos:80";
+        #  };
+        #};
       };
     };
   };

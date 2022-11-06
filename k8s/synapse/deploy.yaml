@@ -25,6 +25,10 @@ spec:
           runAsUser: 0
       containers:
       - name: synapse
+        resources:
+          limits:
+            memory: 4Gi
+            cpu: 4
         image: matrixdotorg/synapse:v1.34.0
         env:
           - name: SYNAPSE_CONFIG_PATH

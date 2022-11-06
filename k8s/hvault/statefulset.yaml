@@ -16,6 +16,10 @@ spec:
       containers:
       - name: vault
         image: vault:1.8.2
+        resources:
+          limits:
+            memory: 1Gi
+            cpu: 100m
         args:
           - vault
           - server

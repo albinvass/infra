@@ -13,22 +13,20 @@
       ./hardware-configuration.nix # Include the results of the hardware scan.
       ./config/role.nix
       ./config/nginx.nix
-      ./config/zuul
-      ./config/zookeeper
-      ./config/mysql
-  ];
-
-  age.secrets.vinescore-oauth-token.file = ./secrets/vinescore-oauth-token.age;
-  virtualisation.oci-containers.containers = {
-    vinemetrics-irc = {
-      image = "vinemetrics-irc:${lib.head (lib.strings.splitString "-" (baseNameOf vinemetrics-irc.packages.x86_64-linux.container))}";
-      imageFile = vinemetrics-irc.packages.x86_64-linux.container;
-      environmentFiles = [ config.age.secrets.vinescore-oauth-token.path ];
-      environment = {
-        VINESCORE_CHANNELS = "#vassast";
-      };
-    };
-  };
+      #./config/zuul
+      #./config/zookeeper
+      #./config/mysql
+  ]; age.secrets.vinescore-oauth-token.file = ./secrets/vinescore-oauth-token.age;
+  #virtualisation.oci-containers.containers = {
+  #  vinemetrics-irc = {
+  #    image = "vinemetrics-irc:${lib.head (lib.strings.splitString "-" (baseNameOf vinemetrics-irc.packages.x86_64-linux.container))}";
+  #    imageFile = vinemetrics-irc.packages.x86_64-linux.container;
+  #    environmentFiles = [ config.age.secrets.vinescore-oauth-token.path ];
+  #    environment = {
+  #      VINESCORE_CHANNELS = "#vassast";
+  #    };
+  #  };
+  #};
 
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;

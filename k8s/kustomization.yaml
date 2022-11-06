@@ -1,6 +1,5 @@
 resources:
   - hvault
-  - plex
   - synapse
 transformers:
   - transformers/vaultsecrettransformer.yaml

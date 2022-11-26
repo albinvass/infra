@@ -32,13 +32,18 @@
         dest: ~/.config/
         delete: true
 
-    - name: Apply kustomization
+    - name: Build kubernetes objects
       environment:
         VAULT_TOKEN: "{{ lookup('env', 'VAULT_TOKEN') }}"
         VAULT_ADDR: "{{ lookup('env', 'VAULT_ADDR') }}"
-      shell: >-
-        kubectl kustomize ~/k8s --enable-alpha-plugins
-        | kubectl apply -f -
+      register: kustomize_build
+      command: kubectl kustomize ~/k8s --enable-alpha-plugins
+
+    - name: Apply kustomization
+      args:
+        stdin: "{{ kustomize_build.stdout }}"
+      command: >-
+        kubectl apply -f -
         --namespace default
         --prune
         --all

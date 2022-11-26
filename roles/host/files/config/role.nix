@@ -62,7 +62,7 @@
     addr = "0.0.0.0";
   };
   services.prometheus = {
-    enable = false;
+    enable = true;
     extraFlags = [
       "--storage.tsdb.retention.size 10GB"
     ];

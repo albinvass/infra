@@ -31,6 +31,7 @@
   networking.nat.externalInterface = "bridge0";
   networking.firewall.allowedTCPPorts = [
     22  # ssh
+    2222  # bastion
     6443
     30000
     32400

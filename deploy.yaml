@@ -61,3 +61,33 @@
         --prune-whitelist 'networking.k8s.io/v1/Ingress'
         --prune-whitelist 'apps/v1/ReplicaSet'
         --prune-whitelist 'apps/v1/StatefulSet'
+
+
+- hosts: vms
+  gather_facts: false
+  tasks:
+    - name: Ensure vagrant directory
+      delegate_to: host
+      run_once: true
+      file:
+        state: directory
+        path: ~/vagrant
+
+    - name: Synchronize VM configurations
+      delegate_to: host
+      connection: local
+      vars:
+        ansible_python_interpreter: "python3"
+        ansible_user: avass
+      synchronize:
+        src: "{{ playbook_dir }}/vagrant/{{ inventory_hostname }}"
+        dest: ~/vagrant/
+
+    - name: Start vm
+      delegate_to: host
+      command: vagrant up
+      args:
+        chdir: "~/vagrant/{{ inventory_hostname }}"
+
+    - name: Try to connect to vm
+      ping:

@@ -3,3 +3,10 @@ all:
     host:
       ansible_host: nixos
       ansible_user: avass
+  children:
+    vms:
+      hosts:
+        bastion:
+          ansible_host: nixos
+          ansible_ssh_port: 2222
+          ansible_user: vagrant

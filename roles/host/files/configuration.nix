@@ -31,14 +31,17 @@
   networking.nat.externalInterface = "bridge0";
   networking.firewall.allowedTCPPorts = [
     22  # ssh
-    2222  # bastion
-    6443
-    30000
-    32400
     80  # nginx
+    2222  # bastion
+    3000  # grafana
+    5601  # kibana
+    6443
     8080
     8443  # synapse
     8448  # synapse
+    9090  # prometheus
+    30000
+    32400
   ];
   networking.interfaces.bridge0.useDHCP = true;
   networking.bridges = {

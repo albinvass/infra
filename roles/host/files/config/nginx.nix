@@ -68,14 +68,11 @@
           port = 8080;
           ssl = false;
         }];
-        #locations = {
-        #  "${config.services.kibana.extraConf.server.basePath}" = {
-        #    proxyPass = "http://localhost:5601";
-        #  };
-        #  "/" = {
-        #    proxyPass = "http://nixos:80";
-        #  };
-        #};
+        locations = {
+          "${config.services.kibana.extraConf.server.basePath}" = {
+            proxyPass = "http://localhost:5601";
+          };
+        };
       };
     };
   };

@@ -46,6 +46,6 @@
       interfaces = [ "enp2s0f0" ];
     };
   };
-
+  powerManagement.enable = false;
 }
 

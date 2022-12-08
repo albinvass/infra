@@ -1,6 +1,8 @@
 
+.PHONY: deploy
 deploy:
 	ansible-playbook -vv deploy.yaml -i inventory.yaml
 
-vms:
-	ansible-playbook -vv deploy.yaml -i inventory.yaml -l vms
+.PHONY: kustomize
+kustomize:
+	ansible-playbook -vv deploy.yaml -i inventory.yaml -t kustomize

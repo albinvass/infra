@@ -9,6 +9,7 @@
       group = "nginx";
       extraDomainNames = [
         "matrix.vassast.org"
+        "assistant.vassast.org"
       ];
     };
   };
@@ -43,6 +44,19 @@
         }];
         locations."/" = {
           proxyPass = "http://nixos:80";
+        };
+      };
+      "assistant.vassast.org" = {
+        forceSSL = true;
+        useACMEHost = "vassast.org";
+        listen = [{
+          addr = "0.0.0.0";
+          port = 8443;
+          ssl = true;
+        }];
+        locations."/" = {
+          proxyPass = "http://nixos:80/";
+          proxyWebsockets = true;
         };
       };
       "vassast.org" = {

@@ -1,0 +1,10 @@
+resources:
+  - deploy.yaml
+
+configmapGenerator:
+  - name: home-assistant-config
+    files:
+      - config/configuration.yaml
+      - config/automations.yaml
+      - config/scripts.yaml
+      - config/scenes.yaml

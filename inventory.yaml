@@ -1,7 +1,7 @@
 all:
   hosts:
     host:
-      ansible_host: nixos
+      ansible_host: 192.168.1.129
       ansible_user: avass
   children:
     vms:

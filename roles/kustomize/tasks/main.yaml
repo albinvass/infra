@@ -1,0 +1,74 @@
+- name: Ensure .kube dir
+  file:
+    state: directory
+    path: ~/.kube
+
+- name: Ensure cluster config
+  become: true
+  copy:
+    remote_src: true
+    src: /etc/rancher/k3s/k3s.yaml
+    dest: "{{ ansible_user_dir }}/.kube/config"
+    owner: "{{ ansible_user }}"
+
+- name: Sync kustomization
+  synchronize:
+    src: "{{ playbook_dir }}/k8s"
+    dest: ~/
+    delete: true
+
+- name: Ensure ~/.config
+  file:
+    state: directory
+    path: ~/.config
+
+- name: Copy kustomize plugins
+  synchronize:
+    src: "{{ playbook_dir }}/kustomize"
+    dest: ~/.config/
+    delete: true
+
+- name: Build kubernetes objects
+  environment:
+    VAULT_TOKEN: "{{ lookup('env', 'VAULT_TOKEN') }}"
+    VAULT_ADDR: "{{ lookup('env', 'VAULT_ADDR') }}"
+  register: kustomize_build
+  no_log: true  # This outputs secrets
+  ignore_errors: true
+  command: kubectl kustomize ~/k8s --enable-alpha-plugins
+
+- name: Show kustomization error
+  when: kustomize_build.stderr
+  fail:
+    msg: "{{ kustomize_build.stderr }}"
+
+- name: Apply kustomization
+  register: kustomize_apply
+  ignore_errors: true
+  args:
+    stdin: "{{ kustomize_build.stdout }}"
+  command: >-
+    kubectl apply -f -
+    --namespace default
+    --prune
+    --all
+    --prune-whitelist 'core/v1/ConfigMap'
+    --prune-whitelist 'core/v1/Endpoints'
+    --prune-whitelist 'core/v1/PersistentVolumeClaim'
+    --prune-whitelist 'core/v1/Pod'
+    --prune-whitelist 'core/v1/Secret'
+    --prune-whitelist 'core/v1/ReplicationController'
+    --prune-whitelist 'core/v1/Service'
+    --prune-whitelist 'batch/v1/Job'
+    --prune-whitelist 'batch/v1/CronJob'
+    --prune-whitelist 'apps/v1/DaemonSet'
+    --prune-whitelist 'apps/v1/Deployment'
+    --prune-whitelist 'networking.k8s.io/v1/Ingress'
+    --prune-whitelist 'apps/v1/ReplicaSet'
+    --prune-whitelist 'apps/v1/StatefulSet'
+
+- name: Show kustomization error
+  when: kustomize_apply.stderr
+  fail:
+    msg: "{{ kustomize_apply.stderr }}"
+

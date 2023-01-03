@@ -24,7 +24,10 @@
   # Per-interface useDHCP will be mandatory in the future, so this generated config
   # replicates the default behaviour.
   networking.useDHCP = false;
-  networking.interfaces.enp2s0f0.useDHCP = true;
+  networking.interfaces.enp2s0f0 = {
+    useDHCP = true;
+    wakeOnLan.enable = true;
+  };
   networking.interfaces.wlp3s0.useDHCP = true;
   networking.nat.enable = true;
   networking.nat.internalInterfaces = ["ve-+"];

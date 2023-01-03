@@ -16,3 +16,13 @@ spec:
             name: hashicorp-vault
             port:
               number: 80
+  - host: nixos.local.vassast.org
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: hashicorp-vault
+            port:
+              number: 80

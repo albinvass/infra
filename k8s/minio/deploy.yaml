@@ -3,6 +3,8 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: minio
+  annotations:
+    reloader.stakater.com/auto: "true"
 spec:
   selector:
     matchLabels:
@@ -40,9 +42,15 @@ spec:
         image: quay.io/minio/minio:RELEASE.2022-12-12T19-27-27Z
         env:
           - name: MINIO_ROOT_USER
-            value: admin1234
+            valueFrom:
+              secretKeyRef:
+                name: minio-root-key
+                key: access-key
           - name: MINIO_ROOT_PASSWORD
-            value: admin1234
+            valueFrom:
+              secretKeyRef:
+                name: minio-root-key
+                key: secret-key
           - name: MINIO_VOLUMES
             value: /var/lib/minio
           - name: MINIO_SERVER_URL

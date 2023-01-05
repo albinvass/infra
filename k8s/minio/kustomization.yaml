@@ -1,2 +1,3 @@
 resources:
   - deploy.yaml
+  - secrets.yaml

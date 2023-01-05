@@ -66,6 +66,10 @@
     --prune-whitelist 'networking.k8s.io/v1/Ingress'
     --prune-whitelist 'apps/v1/ReplicaSet'
     --prune-whitelist 'apps/v1/StatefulSet'
+    --prune-whitelist 'external-secrets.io/v1beta1/SecretStore'
+    --prune-whitelist 'external-secrets.io/v1beta1/ClusterSecretStore'
+    --prune-whitelist 'external-secrets.io/v1beta1/ExternalSecret'
+    --prune-whitelist 'external-secrets.io/v1beta1/ClusterExternalSecret'
 
 - name: Show kustomization error
   when: kustomize_apply.stderr

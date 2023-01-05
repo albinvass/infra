@@ -3,5 +3,6 @@ resources:
   - synapse
   - home-assistant
   - minio
+  - secretstore.yaml
 transformers:
   - transformers/vaultsecrettransformer.yaml

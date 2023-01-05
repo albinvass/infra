@@ -1,0 +1,12 @@
+- name: Add external secrets operator helm repo
+  kubernetes.core.helm_repository:
+    name: stakater
+    repo_url: https://stakater.github.io/stakater-charts
+
+- name: Add external secrets operator helm repo
+  kubernetes.core.helm:
+    name: stakater-reloader
+    chart_ref: stakater/reloader
+    chart_version: v0.0.128
+    release_namespace: stakater-reloader
+    create_namespace: true

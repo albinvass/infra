@@ -3,6 +3,12 @@
     - role: host
       tags:
         - host
+    - role: kubernetes-external-secrets
+      tags:
+        - host
+    - role: kubernetes-stakater-reloader
+      tags:
+        - host
     - role: kustomize
       tags:
         - kustomize

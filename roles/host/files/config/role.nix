@@ -33,6 +33,7 @@
     curl
     git
     kubectl
+    kubernetes-helm
     vagrant
     (python38.buildEnv.override {
       extraLibs = with python38Packages; [

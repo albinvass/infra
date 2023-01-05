@@ -1,0 +1,111 @@
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: minio
+spec:
+  selector:
+    matchLabels:
+      app: minio
+  serviceName: "minio"
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: minio
+    spec:
+      initContainers:
+      - name: var-lib-minio-permissions
+        image: busybox
+        command: ["chown", "991:991", "-R", "/var/lib/minio"]
+        volumeMounts:
+        - name: minio-data
+          mountPath: /var/lib/minio
+        securityContext:
+          runAsUser: 0
+      containers:
+      - name: minio
+        command:
+          - minio
+        args:
+          - server
+          - --address
+          - ":9000"
+          - --console-address
+          - ":9090"
+        resources:
+          limits:
+            memory: 1Gi
+            cpu: 500m
+        image: quay.io/minio/minio:RELEASE.2022-12-12T19-27-27Z
+        env:
+          - name: MINIO_ROOT_USER
+            value: admin1234
+          - name: MINIO_ROOT_PASSWORD
+            value: admin1234
+          - name: MINIO_VOLUMES
+            value: /var/lib/minio
+          - name: MINIO_SERVER_URL
+            value: https://s3.vassast.org
+          - name: MINIO_BROWSER_REDIRECT_URL
+            value: https://minio.vassast.org
+        ports:
+        - containerPort: 9000
+          name: minio
+        - containerPort: 9090
+          name: minio-console
+        volumeMounts:
+        - name: minio-data
+          mountPath: /var/lib/minio
+  volumeClaimTemplates:
+  - metadata:
+      name: minio-data
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 50Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: minio
+  labels:
+    app: minio
+spec:
+  ports:
+  - port: 9000
+    targetPort: minio
+    name: minio
+  - port: 9090
+    targetPort: minio-console
+    name: minio-console
+  selector:
+    app: minio
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: minio
+spec:
+  rules:
+  - host: s3.vassast.org
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: minio
+            port:
+              name: minio
+  - host: minio.vassast.org
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: minio
+            port:
+              name: minio-console

@@ -10,6 +10,8 @@
       extraDomainNames = [
         "matrix.vassast.org"
         "assistant.vassast.org"
+        "s3.vassast.org"
+        "minio.vassast.org"
       ];
     };
   };
@@ -47,6 +49,32 @@
         };
       };
       "assistant.vassast.org" = {
+        forceSSL = true;
+        useACMEHost = "vassast.org";
+        listen = [{
+          addr = "0.0.0.0";
+          port = 8443;
+          ssl = true;
+        }];
+        locations."/" = {
+          proxyPass = "http://nixos:80/";
+          proxyWebsockets = true;
+        };
+      };
+      "s3.vassast.org" = {
+        forceSSL = true;
+        useACMEHost = "vassast.org";
+        listen = [{
+          addr = "0.0.0.0";
+          port = 8443;
+          ssl = true;
+        }];
+        locations."/" = {
+          proxyPass = "http://nixos:80/";
+          proxyWebsockets = true;
+        };
+      };
+      "minio.vassast.org" = {
         forceSSL = true;
         useACMEHost = "vassast.org";
         listen = [{

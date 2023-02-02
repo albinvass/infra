@@ -16,6 +16,7 @@
     };
   };
   services.nginx = {
+    clientMaxBodySize = "1000m";
     enable = true;
     recommendedProxySettings = true;
     recommendedTlsSettings = true;

@@ -27,8 +27,8 @@ spec:
       - name: synapse
         resources:
           limits:
-            memory: 4Gi
-            cpu: 4
+            memory: 1Gi
+            cpu: 100m
         image: matrixdotorg/synapse:v1.72.0
         env:
           - name: SYNAPSE_CONFIG_PATH

@@ -29,8 +29,8 @@ spec:
       - name: home-assistant
         resources:
           limits:
-            memory: 4Gi
-            cpu: 4
+            memory: 1Gi
+            cpu: 100m
         image: ghcr.io/home-assistant/home-assistant:2022.12
         env:
           - name: TZ

@@ -4,5 +4,3 @@ resources:
   - home-assistant
   - minio
   - secretstore.yaml
-transformers:
-  - transformers/vaultsecrettransformer.yaml

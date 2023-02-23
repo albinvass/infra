@@ -1,4 +1,4 @@
-{ config, lib, pkgs, vinemetrics-irc, ... }:
+{ config, lib, pkgs, ... }:
 let
   ca-cfg = {
     user = "root";

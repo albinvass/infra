@@ -1,4 +1,4 @@
-{ config, lib, pkgs, vinemetrics-irc, ... }:
+{ config, lib, pkgs, ... }:
 {
   age.secrets.vassast-org-homeserver-yaml.file = ./vassast-org-homeserver-yaml.age;
   age.secrets.vassast-org-log-config.file = ./vassast-org-log-config.age;

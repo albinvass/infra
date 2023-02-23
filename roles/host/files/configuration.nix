@@ -1,4 +1,4 @@
-{ config, lib, pkgs, vinemetrics-irc, ... }:
+{ config, lib, pkgs, ... }:
 
 {
   nix = {
@@ -53,16 +53,5 @@
     };
   };
   powerManagement.enable = false;
-
-  virtualisation.oci-containers.containers = {
-    vinemetrics-irc = {
-      image = "vinemetrics-irc:${lib.head (lib.strings.splitString "-" (baseNameOf vinemetrics-irc.packages.x86_64-linux.container))}";
-      imageFile = vinemetrics-irc.packages.x86_64-linux.container;
-      environmentFiles = [ config.age.secrets.vinescore-oauth-token.path ];
-      environment = {
-        VINESCORE_CHANNELS = "#vassast";
-      };
-    };
-  };
 }
 

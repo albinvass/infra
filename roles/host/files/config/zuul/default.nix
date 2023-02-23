@@ -1,4 +1,4 @@
-{ config, lib, pkgs, vinemetrics-irc, ... }:
+{ config, lib, pkgs, ... }:
 let
   zuul-tenant-config = builtins.toFile "main.yaml" "
     - tenant:

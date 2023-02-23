@@ -13,8 +13,9 @@
       ./hardware-configuration.nix # Include the results of the hardware scan.
       ./config/role.nix
       ./config/nginx.nix
-  ]; age.secrets.vinescore-oauth-token.file = ./secrets/vinescore-oauth-token.age;
+  ];
 
+  boot.kernelPackages = pkgs.linuxPackages_latest;
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 

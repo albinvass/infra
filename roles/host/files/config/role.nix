@@ -76,7 +76,7 @@
     ];
     exporters = {
       node = {
-        enable = false;
+        enable = true;
         enabledCollectors = [
           "conntrack"
           "cpu"
@@ -103,12 +103,12 @@
 
   services.elasticsearch = {
     package = pkgs.elasticsearch7;
-    enable = true;
+    enable = false;
   };
 
   services.kibana = {
     package = pkgs.kibana7;
-    enable = true;
+    enable = false;
     extraConf = {
       server.basePath = "/kibana";
       server.rewriteBasePath = true;

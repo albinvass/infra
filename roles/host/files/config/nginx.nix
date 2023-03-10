@@ -46,7 +46,7 @@
           ssl = true;
         }];
         locations."/" = {
-          proxyPass = "http://nixos:80";
+          proxyPass = "http://localhost:30480";
         };
       };
       "assistant.vassast.org" = {
@@ -58,7 +58,7 @@
           ssl = true;
         }];
         locations."/" = {
-          proxyPass = "http://nixos:80/";
+          proxyPass = "http://localhost:30480/";
           proxyWebsockets = true;
         };
       };
@@ -71,7 +71,7 @@
           ssl = true;
         }];
         locations."/" = {
-          proxyPass = "http://nixos:80/";
+          proxyPass = "http://localhost:30480/";
           proxyWebsockets = true;
         };
       };
@@ -84,7 +84,7 @@
           ssl = true;
         }];
         locations."/" = {
-          proxyPass = "http://nixos:80/";
+          proxyPass = "http://localhost:30480/";
           proxyWebsockets = true;
         };
       };
@@ -98,10 +98,10 @@
         }];
         locations = {
           "/_matrix/" = {
-            proxyPass = "http://nixos:80";
+            proxyPass = "http://localhost:30480";
           };
           "/_synapse/client/" = {
-            proxyPass = "http://nixos:80";
+            proxyPass = "http://localhost:30480";
           };
         };
       };
@@ -112,8 +112,8 @@
           ssl = false;
         }];
         locations = {
-          "${config.services.kibana.extraConf.server.basePath}" = {
-            proxyPass = "http://localhost:5601";
+          "/" = {
+            proxyPass = "http://localhost:30480";
           };
         };
       };
@@ -124,8 +124,8 @@
           ssl = false;
         }];
         locations = {
-          "${config.services.kibana.extraConf.server.basePath}" = {
-            proxyPass = "http://localhost:5601";
+          "/" = {
+            proxyPass = "http://localhost:30480";
           };
         };
       };

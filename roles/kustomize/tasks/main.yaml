@@ -1,22 +1,3 @@
-- name: Ensure .kube dir
-  file:
-    state: directory
-    path: ~/.kube
-
-- name: Ensure cluster config
-  become: true
-  copy:
-    remote_src: true
-    src: /etc/rancher/k3s/k3s.yaml
-    dest: "{{ ansible_user_dir }}/.kube/config"
-    owner: "{{ ansible_user }}"
-
-- name: Sync kustomization
-  synchronize:
-    src: "{{ playbook_dir }}/k8s"
-    dest: ~/
-    delete: true
-
 - name: Build kubernetes objects
   environment:
     VAULT_TOKEN: "{{ lookup('env', 'VAULT_TOKEN') }}"
@@ -41,24 +22,24 @@
     --namespace default
     --prune
     --all
-    --prune-whitelist 'core/v1/ConfigMap'
-    --prune-whitelist 'core/v1/Endpoints'
-    --prune-whitelist 'core/v1/PersistentVolumeClaim'
-    --prune-whitelist 'core/v1/Pod'
-    --prune-whitelist 'core/v1/Secret'
-    --prune-whitelist 'core/v1/ReplicationController'
-    --prune-whitelist 'core/v1/Service'
-    --prune-whitelist 'batch/v1/Job'
-    --prune-whitelist 'batch/v1/CronJob'
-    --prune-whitelist 'apps/v1/DaemonSet'
-    --prune-whitelist 'apps/v1/Deployment'
-    --prune-whitelist 'networking.k8s.io/v1/Ingress'
-    --prune-whitelist 'apps/v1/ReplicaSet'
-    --prune-whitelist 'apps/v1/StatefulSet'
-    --prune-whitelist 'external-secrets.io/v1beta1/SecretStore'
-    --prune-whitelist 'external-secrets.io/v1beta1/ClusterSecretStore'
-    --prune-whitelist 'external-secrets.io/v1beta1/ExternalSecret'
-    --prune-whitelist 'external-secrets.io/v1beta1/ClusterExternalSecret'
+    --prune-allowlist 'core/v1/ConfigMap'
+    --prune-allowlist 'core/v1/Endpoints'
+    --prune-allowlist 'core/v1/PersistentVolumeClaim'
+    --prune-allowlist 'core/v1/Pod'
+    --prune-allowlist 'core/v1/Secret'
+    --prune-allowlist 'core/v1/ReplicationController'
+    --prune-allowlist 'core/v1/Service'
+    --prune-allowlist 'batch/v1/Job'
+    --prune-allowlist 'batch/v1/CronJob'
+    --prune-allowlist 'apps/v1/DaemonSet'
+    --prune-allowlist 'apps/v1/Deployment'
+    --prune-allowlist 'networking.k8s.io/v1/Ingress'
+    --prune-allowlist 'apps/v1/ReplicaSet'
+    --prune-allowlist 'apps/v1/StatefulSet'
+    --prune-allowlist 'external-secrets.io/v1beta1/SecretStore'
+    --prune-allowlist 'external-secrets.io/v1beta1/ClusterSecretStore'
+    --prune-allowlist 'external-secrets.io/v1beta1/ExternalSecret'
+    --prune-allowlist 'external-secrets.io/v1beta1/ClusterExternalSecret'
 
 - name: Show kustomization error
   when: kustomize_apply.stderr

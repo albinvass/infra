@@ -15,44 +15,27 @@
       ./config/nginx.nix
   ];
 
-  boot.kernelPackages = pkgs.linuxPackages_latest;
+  boot.kernelPackages = pkgs.linuxPackages_5_15;
+  # Potential fix for intermittent freezing
+  # https://tekbyte.net/fixing-nvme-ssd-problems-on-linux/
+  # https://bugzilla.kernel.org/show_bug.cgi?id=195039
+  boot.kernelParams = ["nvme_core.default_ps_max_latency_us=0"];
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
   networking.hostName = "nixos"; # Define your hostname.
-
-  # The global useDHCP flag is deprecated, therefore explicitly set to false here.
-  # Per-interface useDHCP will be mandatory in the future, so this generated config
-  # replicates the default behaviour.
   networking.useDHCP = false;
   networking.interfaces.enp2s0f0 = {
     useDHCP = true;
     wakeOnLan.enable = true;
   };
-  networking.interfaces.wlp3s0.useDHCP = true;
-  networking.nat.enable = true;
-  networking.nat.internalInterfaces = ["ve-+"];
-  networking.nat.externalInterface = "bridge0";
   networking.firewall.allowedTCPPorts = [
     22  # ssh
-    80  # nginx
-    2222  # bastion
-    3000  # grafana
-    5601  # kibana
-    6443
-    8080
-    8443  # synapse
+    8080  # nginx
+    8443  # nginx
     8448  # synapse
     9090  # prometheus
-    30000
-    32400
   ];
-  networking.interfaces.bridge0.useDHCP = true;
-  networking.bridges = {
-    "bridge0" = {
-      interfaces = [ "enp2s0f0" ];
-    };
-  };
   powerManagement.enable = false;
 }
 

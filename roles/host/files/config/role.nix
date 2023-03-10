@@ -25,7 +25,7 @@
     VAGRANT_DEFAULT_PROVIDER="libvirt";
   };
 
-  virtualisation.libvirtd.enable = true;
+  virtualisation.libvirtd.enable = false;
   boot.kernelModules = ["kvm-amd"];
 
   environment.systemPackages = with pkgs; [
@@ -51,7 +51,10 @@
   console.keyMap = "sv-latin1";
   time.timeZone = "Europe/Stockholm";
 
-  services.k3s.enable = true;
+  services.k3s = {
+    enable = false;
+    #extraFlags = "--disable traefik";
+  };
 
   services.grafana = {
     enable = true;

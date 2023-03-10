@@ -17,7 +17,6 @@
     dest: /etc/nixos
     delete: yes
 
-
 - name: Rebuild
   become: true
   command: nixos-rebuild switch

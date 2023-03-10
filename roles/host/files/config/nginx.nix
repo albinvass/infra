@@ -46,7 +46,7 @@
           ssl = true;
         }];
         locations."/" = {
-          proxyPass = "http://localhost:30480";
+          proxyPass = "http://localhost:80";
         };
       };
       "assistant.vassast.org" = {
@@ -58,7 +58,7 @@
           ssl = true;
         }];
         locations."/" = {
-          proxyPass = "http://localhost:30480/";
+          proxyPass = "http://localhost:80/";
           proxyWebsockets = true;
         };
       };
@@ -71,7 +71,7 @@
           ssl = true;
         }];
         locations."/" = {
-          proxyPass = "http://localhost:30480/";
+          proxyPass = "http://localhost:80/";
           proxyWebsockets = true;
         };
       };
@@ -84,7 +84,7 @@
           ssl = true;
         }];
         locations."/" = {
-          proxyPass = "http://localhost:30480/";
+          proxyPass = "http://localhost:80/";
           proxyWebsockets = true;
         };
       };
@@ -98,10 +98,10 @@
         }];
         locations = {
           "/_matrix/" = {
-            proxyPass = "http://localhost:30480";
+            proxyPass = "http://localhost:80";
           };
           "/_synapse/client/" = {
-            proxyPass = "http://localhost:30480";
+            proxyPass = "http://localhost:80";
           };
         };
       };
@@ -113,7 +113,7 @@
         }];
         locations = {
           "/" = {
-            proxyPass = "http://localhost:30480";
+            proxyPass = "http://localhost:80";
           };
         };
       };
@@ -125,7 +125,7 @@
         }];
         locations = {
           "/" = {
-            proxyPass = "http://localhost:30480";
+            proxyPass = "http://localhost:80";
           };
         };
       };

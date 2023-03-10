@@ -52,7 +52,7 @@
   time.timeZone = "Europe/Stockholm";
 
   services.k3s = {
-    enable = false;
+    enable = true;
     #extraFlags = "--disable traefik";
   };
 

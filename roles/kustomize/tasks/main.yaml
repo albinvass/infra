@@ -1,20 +1,15 @@
-- name: Build kubernetes objects
-  environment:
-    VAULT_TOKEN: "{{ lookup('env', 'VAULT_TOKEN') }}"
-    VAULT_ADDR: "{{ lookup('env', 'VAULT_ADDR') }}"
-  register: kustomize_build
-  no_log: true  # This outputs secrets
-  ignore_errors: true
-  command: kubectl kustomize ~/k8s --enable-alpha-plugins
+- name: Sync kustomization
+  synchronize:
+    src: "{{ playbook_dir }}/k8s"
+    dest: ~/
+    delete: true
 
-- name: Show kustomization error
-  when: kustomize_build.stderr
-  fail:
-    msg: "{{ kustomize_build.stderr }}"
+- name: Build kubernetes objects
+  register: kustomize_build
+  command: kubectl kustomize ~/k8s
 
 - name: Apply kustomization
   register: kustomize_apply
-  ignore_errors: true
   args:
     stdin: "{{ kustomize_build.stdout }}"
   command: >-
@@ -40,9 +35,3 @@
     --prune-allowlist 'external-secrets.io/v1beta1/ClusterSecretStore'
     --prune-allowlist 'external-secrets.io/v1beta1/ExternalSecret'
     --prune-allowlist 'external-secrets.io/v1beta1/ClusterExternalSecret'
-
-- name: Show kustomization error
-  when: kustomize_apply.stderr
-  fail:
-    msg: "{{ kustomize_apply.stderr }}"
-

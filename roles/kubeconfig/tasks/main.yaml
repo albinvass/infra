@@ -10,9 +10,3 @@
     src: /etc/rancher/k3s/k3s.yaml
     dest: "{{ ansible_user_dir }}/.kube/config"
     owner: "{{ ansible_user }}"
-
-- name: Sync kustomization
-  synchronize:
-    src: "{{ playbook_dir }}/k8s"
-    dest: ~/
-    delete: true

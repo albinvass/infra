@@ -16,10 +16,6 @@
   ];
 
   boot.kernelPackages = pkgs.linuxPackages_5_15;
-  # Potential fix for intermittent freezing
-  # https://tekbyte.net/fixing-nvme-ssd-problems-on-linux/
-  # https://bugzilla.kernel.org/show_bug.cgi?id=195039
-  # boot.kernelParams = ["nvme_core.default_ps_max_latency_us=0"];
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 

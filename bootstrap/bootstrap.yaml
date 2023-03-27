@@ -1,0 +1,140 @@
+- hosts: all
+  become: true
+  tasks:
+    - name: Create root partition
+      parted:
+        device: /dev/sda
+        number: 1
+        part_start: 1MB
+        part_end: "-{{ swap_size }}"
+        label: msdos
+        state: present
+
+    - name: Create swap partition
+      parted:
+        number: 2
+        device: /dev/sda
+        part_start: "-{{ swap_size }}"
+        part_end: 100%
+        label: msdos
+        state: present
+
+    - name: Format root partition
+      filesystem:
+        fstype: ext4
+        dev: /dev/sda1
+        opts: -L nixos
+        resizefs: true
+
+    - name: Format swap
+      filesystem:
+        fstype: swap
+        dev: /dev/sda2
+        opts: -L swap
+
+    - name: Ensure /mnt
+      file:
+        path: /mnt
+        state: directory
+
+    - name: Ensure root partition is unmounted
+      mount:
+        path: /mnt
+        src: /dev/disk/by-label/nixos
+        fstype: ext4
+        state: unmounted
+
+    - name: Mount root partition
+      mount:
+        path: /mnt
+        src: /dev/disk/by-label/nixos
+        fstype: ext4
+        state: ephemeral
+
+    - name: Enable swap
+      command: swapon /dev/sda2
+      failed_when: false
+
+    - name: Generate initial config
+      command: nixos-generate-config --root /mnt
+
+    - name: Ensure /mnt/etc/ssh
+      file:
+        state: directory
+        path: /mnt/etc/ssh
+        mode: 0755
+        owner: root
+        group: root
+
+    - name: Copy host keys to /mnt/etc/ssh
+      copy:
+        remote_src: true
+        src: /etc/ssh/{{ item.file }}
+        dest: /mnt/etc/ssh/{{ item.file }}
+        mode: "{{ item.mode }}"
+      loop:
+        - file: ssh_host_ed25519_key
+          mode: 600
+        - file: ssh_host_ed25519_key.pub
+          mode: 644
+        - file: ssh_host_rsa_key
+          mode: 600
+        - file: ssh_host_rsa_key.pub
+          mode: 644
+
+    - name: Copy site.nix
+      copy:
+        src: "{{ playbook_dir }}/site.nix"
+        dest: /mnt/etc/nixos/site.nix
+
+    - name: Write configuration.nix
+      copy:
+        dest: /mnt/etc/nixos/configuration.nix
+        content: |
+          { config, pkgs, lib, ... }:
+          {
+            imports =
+              [ # Include the results of the hardware scan.
+                ./hardware-configuration.nix
+                ./site.nix
+              ] ++ lib.optional (builtins.pathExists ./role) ./role;
+
+            networking.hostName = "{{ inventory_hostname }}";
+            networking.nameservers = ["192.168.1.1"];
+            networking.defaultGateway.address = "192.168.1.1";
+            networking.interfaces.{{ ansible_default_ipv4.interface }}.useDHCP = true;
+            networking.interfaces.{{ ansible_default_ipv4.interface }}.ipv4.addresses = [{
+              address = "{{ ansible_default_ipv4.address }}";
+              prefixLength = {{ ansible_default_ipv4.prefix }};
+            }];
+
+            boot.loader.grub.enable = true;
+            boot.loader.grub.device = "/dev/sda";
+            boot.loader.grub.version = 2;
+            system.stateVersion = "23.05"; # Did you read the comment?
+          }
+
+    - name: Add nixos channel
+      command: nix-channel --add https://nixos.org/channels/nixos-22.11 nixos
+
+    - name: Update nixos channel
+      command: nix-channel --update
+
+    - name: Install nixos
+      command: nixos-install --no-root-password
+
+    - name: Reboot to launch nixos installation
+      reboot:
+        search_paths: /run/current-system/sw/bin
+
+    - name: Ensure .bootstrap
+      delegate_to: localhost
+      file:
+        state: directory
+        path: "{{ playbook_dir|dirname }}/.bootstrap"
+
+    - name: Copy host config to .bootstrap
+      synchronize:
+        mode: pull
+        src: /etc/nixos
+        dest: "{{ playbook_dir|dirname }}/.bootstrap/{{ inventory_hostname }}/"

@@ -1,17 +1,12 @@
-- hosts: host
+- hosts: all
+  pre_tasks:
+    - name: Import vm specific tasks
+      include_tasks: "{{ item }}"
+      with_first_found:
+        - files:
+            - "{{ playbook_dir }}/files/{{ inventory_hostname }}/tasks.yaml"
+          skip: true
   roles:
-    - role: host
-      tags:
-        - host
-    - role: kubeconfig
-      tags:
-        - host
-    - role: kubernetes-external-secrets
-      tags:
-        - host
-    - role: kubernetes-stakater-reloader
-      tags:
-        - host
-    - role: kustomize
-      tags:
-        - kustomize
+    - role: davfs2
+      when: davfs2_enabled|default(false)
+    - nixos

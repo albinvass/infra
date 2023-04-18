@@ -1,6 +1,6 @@
 
 deploy args="":
-	ansible-playbook -vv deploy.yaml -i inventory.yaml {{args}}
+	ANSIBLE_STDOUT_CALLBACK=debug ansible-playbook -vv deploy.yaml -i inventory.yaml {{args}}
 
 kustomize:
 	ansible-playbook -vv deploy.yaml -i inventory.yaml -t kustomize

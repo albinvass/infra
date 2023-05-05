@@ -10,6 +10,7 @@
   networking.nameservers = ["192.168.1.1"];
   networking.enableIPv6 = false;
   networking.defaultGateway.address = "192.168.1.1";
+  networking.interfaces.ens18.useDHCP = true;
   networking.interfaces.ens18.ipv4.addresses = [{
     address = "192.168.1.79";
     prefixLength = 24;

@@ -33,7 +33,7 @@
           exit 1
         fi
       '';
-        
+
       buildInputs = [
         colmena
         bitwarden-cli

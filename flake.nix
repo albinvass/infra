@@ -5,17 +5,22 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     disko = {
       url = "github:nix-community/disko";
-      nixpkgs.follows = "nixpkgs";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
   };
 
-  outputs = { self, nixpkgs, ... }@inputs: let
+  outputs = { self, nixpkgs, ... }@inputs:
+  let
     pkgs = import nixpkgs { system = "x86_64-linux"; };
+    hetznerBaseModules = [
+      inputs.disko.nixosModules.disko
+      ./hetzner/configuration.nix
+    ];
   in rec {
-    devShell = pkgs.mkShell {
+    devShell.x86_64-linux = pkgs.mkShell {
       LC_ALL="C.UTF-8";
-      buildInputs = with pkgs; [
-        colmena
+      buildInputs = [
+        pkgs.colmena
       ];
     };
     colmena = {
@@ -23,20 +28,21 @@
         nixpkgs = pkgs;
       };
 
-      hetzner-nixos = {
+      devbox = {name, nodes, ...}@hetzner-inputs: with hetzner-inputs; {
+        imports = hetznerBaseModules;
         deployment = {
-          targetHost = "";
+          buildOnTarget = true;
+          targetHost = "65.109.130.106";
           targetPort = 22;
           targetUser = "root";
         };
+
+        networking.hostName = name;
       };
     };
-    nixosConfigurations.hetzner-cloud = pkgs.lib.nixosSystem {
+    nixosConfigurations.hetzner-cloud = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
-      modules = [
-        inputs.disko.nixosModules.disko
-        ./hetzner/configuration.nix
-      ];
+      modules = hetznerBaseModules;
     };
   };
 }

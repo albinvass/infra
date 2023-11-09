@@ -6,5 +6,4 @@
     ripgrep
     fzf
   ];
-
 }

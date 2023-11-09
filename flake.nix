@@ -14,7 +14,7 @@
     pkgs = import nixpkgs { system = "x86_64-linux"; };
     hetznerBaseModules = [
       inputs.disko.nixosModules.disko
-      ./hetzner/configuration.nix
+      ./nixos/hetzner/configuration.nix
     ];
   in {
     devShell.x86_64-linux =  with pkgs; mkShell {
@@ -23,7 +23,7 @@
         if ! bw login --check > /dev/null 2>&1; then
           echo "Please login to bitwarden"
           export BW_SESSION=$(bw login --raw)
-        elif [ -z "$BW_SESSION" ]; then
+        elif ! bw unlock --check > /dev/null 2>&1; then
           echo "Please unlock the bitwarden vault"
           export BW_SESSION=$(bw unlock --raw)
         fi
@@ -32,12 +32,24 @@
           echo "Unable to get bitwarden session token."
           exit 1
         fi
+
+        # `nix develop --command` doens't start a new shell so it never
+        # triggers the exit trap.
+        # Therefore we only start an ssh agent if we're in an interactive shell
+        # See: https://serverfault.com/a/146747
+        if [[ $- == *i* ]]; then
+          trap "ssh-agent -k" EXIT
+          eval `ssh-agent`
+          ssh-add ~/.ssh/id_rsa
+        fi
       '';
 
       buildInputs = [
+        bashInteractive
         colmena
         bitwarden-cli
         jq
+        openssh
       ];
     };
     colmena = {
@@ -53,11 +65,22 @@
           targetPort = 22;
           targetUser = "root";
           keys = {
-            "cloudflared-credentials" = {
-              keyCommand = [
-                "bash" "-c" ''bw list items | jq '.[] | select(.name=="dash.cloudflare.com").fields[] | select(.name=="devbox tunnel").value' | tr -d \"''
-              ];
+            "cloudflared-cert.pem" = {
+              name = "cert.pem";
               destDir = "/etc/cloudflared";
+              keyCommand = [
+                "./tools/bw-get.py" "attachment" "dash.cloudflare.com" "devbox-cert.pem"
+              ];
+              user = "cloudflared";
+              group = "cloudflared";
+              permissions = "0600";
+            };
+            "cloudflared-credentials.json" = {
+              name = "credentials.json";
+              destDir = "/etc/cloudflared";
+              keyCommand = [
+                "./tools/bw-get.py" "field" "dash.cloudflare.com" "devbox tunnel"
+              ];
               user = "cloudflared";
               group = "cloudflared";
               permissions = "0600";

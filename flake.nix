@@ -40,7 +40,7 @@
         if [[ $- == *i* ]]; then
           trap "ssh-agent -k" EXIT
           eval `ssh-agent`
-          ssh-add ~/.ssh/id_rsa
+          ssh-add <(./tools/bw-get.py attachment "dev.albinvass.se" "devbox")
         fi
       '';
 

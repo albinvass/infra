@@ -47,19 +47,31 @@ def create_arg_parser():
 
 
 def get_item(name):
-    return json.loads(subprocess.check_output(shlex.split(f"bw get item '{name}'")))
+    try:
+        output = subprocess.check_output(
+            shlex.split(f"bw get item '{name}'"),
+            stderr=subprocess.STDOUT,
+            encoding="utf-8",
+        )
+    except subprocess.CalledProcessError as e:
+        print(e.output)
+        sys.exit(1)
+
+    return json.loads(output)
 
 def get_attachment(item_name, attachment_name):
     item_id = get_item(item_name)["id"]
     try:
-        attachment = subprocess.check_output(shlex.split(
-            f"bw get attachment '{attachment_name}' --itemid '{item_id}' --raw"
-        ), stderr=subprocess.DEVNULL)
+        attachment = subprocess.check_output(
+            shlex.split(f"bw get attachment '{attachment_name}' --itemid '{item_id}' --raw"),
+            stderr=subprocess.DEVNULL,
+            encoding="utf-8",
+            )
     except subprocess.CalledProcessError:
         print(f"Attachment `{attachment_name}` not found.", file=sys.stderr)
         return None
 
-    return attachment.decode("utf-8")
+    return attachment
 
 def get_field(item_name, field_name):
     fields = get_item(item_name)["fields"]
@@ -84,7 +96,7 @@ def main():
     if output:
         print(output)
     else:
-        exit(1)
+        sys.exit(1)
 
 if __name__ == "__main__":
     main()

@@ -12,26 +12,38 @@
   };
 
   outputs = { self, nixpkgs, flake-utils, ... }@inputs:
-  flake-utils.lib.eachDefaultSystem (system:
+  let 
+    hetznerBaseModules = [
+      inputs.disko.nixosModules.disko
+      ./nixos/hetzner/configuration.nix
+    ];
+  in {
+    colmena = {
+      meta = {
+        nixpkgs = import nixpkgs {system = "x86_64-linux";};
+      };
+
+      devbox = {name, nodes, ...}:
+        import ./nixos/hosts/devbox/colmena.nix {
+          inherit name nodes hetznerBaseModules;
+        };
+    };
+
+    nixosConfigurations.hetzner-cloud = nixpkgs.lib.nixosSystem {
+      system = "x86_64-linux";
+      modules = hetznerBaseModules;
+    };
+  } // flake-utils.lib.eachDefaultSystem (system:
     let
       pkgs = import nixpkgs {
         system = system;
         config.allowUnfree = true;
       };
-      hetznerBaseModules = [
-        inputs.disko.nixosModules.disko
-        ./nixos/hetzner/configuration.nix
-      ];
     in {
       devShells = {
         default =  import ./nix/devshell.nix { inherit pkgs system inputs; };
       };
 
-      colmena = import ./nix/colmena.nix { inherit pkgs; };
-      nixosConfigurations.hetzner-cloud = nixpkgs.lib.nixosSystem {
-        system = "x86_64-linux";
-        modules = hetznerBaseModules;
-      };
     }
   );
 }

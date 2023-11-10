@@ -2,7 +2,7 @@
   imports = hetznerBaseModules ++ [./default.nix];
   deployment = {
     buildOnTarget = true;
-    targetHost = "65.109.130.106";
+    targetHost = "65.108.153.140";
     targetPort = 22;
     targetUser = "root";
     keys = {

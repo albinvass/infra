@@ -4,24 +4,49 @@ import pulumi
 
 import pulumi_hcloud as hcloud
 import pulumi_cloudflare as cloudflare
+import pulumi_command
 
 pulumi_config = pulumi.Config()
 
-def setup_hetzner():
-    with open('nixos-anywhere/user-data.yaml', 'r') as f:
-        nixos_anywhere_cloud_init = f.read()
 
-    vm = hcloud.Server(
-        "nixos-1",
-        server_type="cpx21",
-        image="ubuntu-22.04",
-        location="hel1",
-        user_data=nixos_anywhere_cloud_init,
-    )
+class Hetzner():
+    def __init__(self):
+        self._setup_servers()
+
+    def _setup_servers(self):
+        self.servers = {}
+        with open('nixos-anywhere/user-data.yaml', 'r') as f:
+            nixos_anywhere_cloud_init = f.read()
+
+        self.servers["nixos-1"] = hcloud.Server(
+            "nixos-1",
+            server_type="cpx21",
+            image="ubuntu-22.04",
+            location="hel1",
+            user_data=nixos_anywhere_cloud_init,
+            ssh_keys=[hcloud.get_ssh_key(name="hetzner-ssh-key").id],
+            #opts=pulumi.ResourceOptions(ignore_changes=["user_data"])
+        )
+        pulumi_command.remote.Command(
+            "nixos-1-mount",
+            create="nixos-generate-config --no-filesystems --root /mnt",
+            connection=pulumi_command.remote.ConnectionArgs(
+                host=self.servers["nixos-1"].ipv4_address,
+                user="root",
+            ),
+        )
+        pulumi_command.local.Command(
+            "nixos-1-init",
+            create=pulumi.Output.format(
+                "nixos-anywhere-hetzner {0}",
+                self.servers["nixos-1"].ipv4_address,
+            )
+        )
+
+        pulumi.export("nixos-1", self.servers["nixos-1"].ipv4_address)
 
 
-
-class CloudFlareZones():
+class CloudFlare():
     def __init__(self):
         self.account = cloudflare.get_accounts().accounts[0]
 
@@ -106,9 +131,8 @@ class CloudFlareZones():
 
 
 def main():
-    #hetzner_resources = setup_hetzner()
-
-    CloudFlareZones()
+    hz = Hetzner()
+    cf = CloudFlare()
 
 
 if __name__ == "__main__":

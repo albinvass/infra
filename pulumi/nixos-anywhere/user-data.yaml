@@ -1,9 +1,4 @@
 #cloud-config
 runcmd:
-  - bash
-  - -c
-  - >-
-    curl
-    -L https://github.com/nix-community/nixos-images/releases/download/nixos-unstable/nixos-kexec-installer-noninteractive-x86_64-linux.tar.gz
-    | tar -xzf- -C /root /root/kexec/run
-
+  - curl -L https://github.com/nix-community/nixos-images/releases/download/nixos-unstable/nixos-kexec-installer-noninteractive-x86_64-linux.tar.gz | tar -xzf- -C /root
+  - /root/kexec/run

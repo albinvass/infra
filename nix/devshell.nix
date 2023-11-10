@@ -9,6 +9,11 @@ let
       pkgs.bitwarden-cli
     ];
   };
+  nixos-anywhere-hetzner = pkgs.writeScriptBin "nixos-anywhere-hetzner"
+    ''
+    #!/bin/env bash
+    nix run github:numtide/nixos-anywhere -- --flake $(git rev-parse --show-toplevel)#hetzner-cloud "root@$@"
+    '';
 in with pkgs; mkShell {
   LC_ALL="C.UTF-8";
   shellHook = ''
@@ -52,5 +57,6 @@ in with pkgs; mkShell {
     pulumiPackages.pulumi-language-python
     bw-get
     hcloud
+    nixos-anywhere-hetzner
   ];
 }

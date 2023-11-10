@@ -1,0 +1,3 @@
+config:
+  Hetzner:tunnel-devbox-secret:
+    secure: AAABAKaEnjFgcw4G8i/Qu+F7gwnWWbR+D6bdKyAfqgnq/mBmIv+tlY1I0ENjqGMNTMofUIy/ppLVpR5xItQwr/E+ez7QQJVIjbYPIA==

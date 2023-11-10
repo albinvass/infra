@@ -20,7 +20,10 @@
         name = "credentials.json";
         destDir = "/etc/cloudflared";
         keyCommand = [
-          "bw-get" "field" "dash.cloudflare.com" "devbox tunnel"
+          "pulumi" "stack" "output"
+          "--stack" "albinvass/Hetzner/infra"
+          "--show-secrets"
+          "tunnel-devbox-secret"
         ];
         user = "cloudflared";
         group = "cloudflared";

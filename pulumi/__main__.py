@@ -5,6 +5,7 @@ import pulumi
 import pulumi_hcloud as hcloud
 import pulumi_cloudflare as cloudflare
 
+pulumi_config = pulumi.Config()
 
 def setup_hetzner():
     with open('nixos-anywhere/user-data.yaml', 'r') as f:
@@ -27,6 +28,7 @@ class CloudFlareZones():
         self._setup_identity_providers()
         self._setup_zones()
         self._setup_access_apps()
+        self._setup_tunnels()
 
     def _setup_identity_providers(self):
         self.idps = {}
@@ -72,6 +74,34 @@ class CloudFlareZones():
                 account_id=self.account.id,
                 **app_config
             )
+
+    def _setup_tunnels(self):
+        self.tunnels = {}
+        tunnel_configs = {
+            "devbox": {
+                "config_src": "local",
+            }
+        }
+        defaults = {
+            "account_id": self.account.id,
+        }
+
+        for name, tunnel_config in tunnel_configs.items():
+            config = defaults | tunnel_config
+            tunnel_secret_name = f"tunnel-{name}-secret"
+            config["secret"] = pulumi_config.require_secret(tunnel_secret_name)
+            self.tunnels[name] = cloudflare.Tunnel(
+                name,
+                name=name,
+                **config,
+            )
+            pulumi.export(tunnel_secret_name, pulumi.Output.json_dumps({
+                "TunnelSecret": config["secret"],
+                "AccountTag": self.account.id,
+                "TunnelID": self.tunnels[name].id,
+            }))
+
+
 
 
 

@@ -12,6 +12,7 @@ let
 in with pkgs; mkShell {
   LC_ALL="C.UTF-8";
   shellHook = ''
+    bw sync
     if ! bw login --check > /dev/null 2>&1; then
       echo "Please login to bitwarden"
       export BW_SESSION=$(bw login --raw)
@@ -25,6 +26,10 @@ in with pkgs; mkShell {
       exit 1
     fi
 
+    export HCLOUD_TOKEN=$(bw-get field "accounts.hetzner.com" "dev-token")
+    export CLOUDFLARE_EMAIL=$(bw-get username "dash.cloudflare.com")
+    export CLOUDFLARE_API_KEY=$(bw-get field "dash.cloudflare.com" "global-key")
+
     # `nix develop --command` doens't start a new shell so it never
     # triggers the exit trap.
     # Therefore we only start an ssh agent if we're in an interactive shell
@@ -32,7 +37,7 @@ in with pkgs; mkShell {
     if [[ $- == *i* ]]; then
       trap "ssh-agent -k" EXIT
       eval `ssh-agent`
-      ssh-add <(bw-get attachment "dev.albinvass.se" "devbox")
+      ssh-add <(bw-get attachment "accounts.hetzner.com" "hetzner-ssh-key")
     fi
   '';
 
@@ -44,7 +49,8 @@ in with pkgs; mkShell {
     terraform
     terragrunt
     pulumi
-    inputs.pulumi-hcloud.packages."${system}".pulumi-hcloud
+    pulumiPackages.pulumi-language-python
     bw-get
+    hcloud
   ];
 }

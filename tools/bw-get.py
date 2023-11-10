@@ -15,6 +15,15 @@ def create_arg_parser():
         help="Specify the object type to retrieve."
     )
 
+    username_parser = subparsers.add_parser(
+        "username",
+        help="Retrieve information about a username."
+    )
+    username_parser.add_argument(
+        "name",
+        help="Specify the name of the item."
+    )
+
     field_parser = subparsers.add_parser(
         "field",
         help="Retrieve information about a field."
@@ -59,6 +68,11 @@ def get_item(name):
 
     return json.loads(output)
 
+
+def get_username(name):
+    return get_item(name)["login"]["username"]
+
+
 def get_attachment(item_name, attachment_name):
     item_id = get_item(item_name)["id"]
     try:
@@ -89,6 +103,8 @@ def main():
         output = get_field(args.name, args.field_name)
     elif args.object == "attachment":
         output = get_attachment(args.name, args.attachment_name)
+    elif args.object == "username":
+        output = get_username(args.name)
     else:
         parser.print_help()
         return

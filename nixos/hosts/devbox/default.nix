@@ -39,9 +39,7 @@
         credentialsFile = "/etc/cloudflared/credentials.json";
         default = "http_status:404";
         ingress = {
-          "dev.albinvass.se" = {
-            service = "http://localhost:4444";
-          };
+          "code.albinvass.se" = "http://localhost:4444";
         };
       };
     };

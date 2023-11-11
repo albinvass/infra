@@ -17,16 +17,15 @@
       inputs.disko.nixosModules.disko
       ./nixos/hetzner/configuration.nix
     ];
+    pkgs = import nixpkgs {system = "x86_64-linux";};
   in {
     colmena = {
       meta = {
-        nixpkgs = import nixpkgs {system = "x86_64-linux";};
+        nixpkgs = pkgs;
       };
 
       devbox = {name, nodes, ...}:
-        import ./nixos/hosts/devbox/colmena.nix {
-          inherit name nodes hetznerBaseModules;
-        };
+        import ./nixos/hosts/devbox/colmena.nix {inherit name nodes hetznerBaseModules;};
     };
 
     nixosConfigurations.hetzner-cloud = nixpkgs.lib.nixosSystem {
@@ -36,12 +35,12 @@
   } // flake-utils.lib.eachDefaultSystem (system:
     let
       pkgs = import nixpkgs {
-        system = system;
+        inherit system;
         config.allowUnfree = true;
       };
     in {
       devShells = {
-        default =  import ./nix/devshell.nix { inherit pkgs system inputs; };
+        default =  pkgs.callPackage ./nix/devshell.nix {};
       };
 
     }

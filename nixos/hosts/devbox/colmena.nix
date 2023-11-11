@@ -9,9 +9,7 @@
       "cloudflared-cert.pem" = {
         name = "cert.pem";
         destDir = "/etc/cloudflared";
-        keyCommand = [
-          "bw-get" "attachment" "dash.cloudflare.com" "devbox-cert.pem"
-        ];
+        keyCommand = ["bws-get" "cloudflare-tunnel-cert"];
         user = "cloudflared";
         group = "cloudflared";
         permissions = "0600";
@@ -23,7 +21,7 @@
           "pulumi" "stack" "output"
           "--stack" "albinvass/Hetzner/infra"
           "--show-secrets"
-          "tunnel-devbox-secret"
+          "devbox-tunnel-credentials"
         ];
         user = "cloudflared";
         group = "cloudflared";

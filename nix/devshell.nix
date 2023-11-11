@@ -1,13 +1,39 @@
-{pkgs, system, inputs}:
+{ pkgs }:
 let
-  bw-get = pkgs.stdenv.mkDerivation {
-    name = "bw-get";
-    dontUnpack = true;
-    installPhase = "install -Dm755 ${../tools/bw-get.py} $out/bin/bw-get";
-    buildInputs = [
+  bws = pkgs.rustPlatform.buildRustPackage rec {
+    pname = "bws";
+    version = "0.3.1";
+
+    cargoBuildFlags = ["--package=bws"];
+    #buildAndTestSubdir = "bws";
+    src = pkgs.fetchFromGitHub {
+      owner = "bitwarden";
+      repo = "sdk";
+      rev = "bws-v${version}";
+      hash = "sha256-71MbpnGBkLMa2DaXERq5af8cQ0+RILsPTm3M6mzcv2U=";
+    };
+    # See: https://artemis.sh/2023/07/08/nix-rust-project-with-git-dependencies.html
+    cargoLock = {
+      lockFile = "${src}/Cargo.lock";
+      outputHashes = {
+        "uniffi-0.24.1"= "sha256-m+8A1jkp6xXdRlWFFpz8cMEwHkmImM46SV8Ch1unzNE=";
+      };
+    };
+    nativeBuildInputs = [
+      pkgs.perl
       pkgs.python3
-      pkgs.bitwarden-cli
     ];
+
+    meta = with pkgs.lib; {
+      description = "Bitwarden Secrets Manager SDK";
+      homepage = "https://github.com/bitwarden/sdk";
+    };
+  };
+  bws-get = pkgs.stdenv.mkDerivation {
+    name = "bws-get";
+    dontUnpack = true;
+    installPhase = "install -Dm755 ${../tools/bws-get.py} $out/bin/bws-get";
+    propagatedBuildInputs = [ bws ];
   };
   nixos-anywhere-hetzner = pkgs.writeScriptBin "nixos-anywhere-hetzner"
     ''
@@ -17,23 +43,14 @@ let
 in with pkgs; mkShell {
   LC_ALL="C.UTF-8";
   shellHook = ''
-    bw sync
-    if ! bw login --check > /dev/null 2>&1; then
-      echo "Please login to bitwarden"
-      export BW_SESSION=$(bw login --raw)
-    elif ! bw unlock --check > /dev/null 2>&1; then
-      echo "Please unlock the bitwarden vault"
-      export BW_SESSION=$(bw unlock --raw)
-    fi
-
     if [ -z "$BW_SESSION" ]; then
       echo "Unable to get bitwarden session token."
       exit 1
     fi
 
-    export HCLOUD_TOKEN=$(bw-get field "accounts.hetzner.com" "dev-token")
-    export CLOUDFLARE_EMAIL=$(bw-get username "dash.cloudflare.com")
-    export CLOUDFLARE_API_KEY=$(bw-get field "dash.cloudflare.com" "global-key")
+    export HCLOUD_TOKEN=$(bws-get hcloud-dev-token)
+    export CLOUDFLARE_EMAIL=$(bws-get cloudflare-global-key | jq '.email')
+    export CLOUDFLARE_API_KEY=$(bws-get cloudflare-global-key | jq '.key')
 
     # `nix develop --command` doens't start a new shell so it never
     # triggers the exit trap.
@@ -42,7 +59,7 @@ in with pkgs; mkShell {
     if [[ $- == *i* ]]; then
       trap "ssh-agent -k" EXIT
       eval `ssh-agent`
-      ssh-add <(bw-get attachment "accounts.hetzner.com" "hetzner-ssh-key")
+      ssh-add <(bws-get hcloud-ssh-key)
     fi
   '';
 
@@ -55,8 +72,9 @@ in with pkgs; mkShell {
     terragrunt
     pulumi
     pulumiPackages.pulumi-language-python
-    bw-get
+    bws-get
     hcloud
     nixos-anywhere-hetzner
+    statix
   ];
 }

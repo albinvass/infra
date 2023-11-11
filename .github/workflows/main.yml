@@ -13,4 +13,8 @@ jobs:
       - name: Check out repository code
         uses: actions/checkout@v4
       - run: nix develop --command -- pulumi up --cwd pulumi --yes
+        env:
+          BWS_ACCESS_TOKEN: ${{ secrets.BWS_ACCESS_TOKEN }}
       - run: nix develop --command -- colmena apply
+        env:
+          BWS_ACCESS_TOKEN: ${{ secrets.BWS_ACCESS_TOKEN }}

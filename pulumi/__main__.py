@@ -1,7 +1,9 @@
 """A Python Pulumi program"""
 
-import pulumi
 
+import base64
+import json
+import pulumi
 import pulumi_hcloud as hcloud
 import pulumi_cloudflare as cloudflare
 import pulumi_command
@@ -48,6 +50,7 @@ class Hetzner():
 
 class CloudFlare():
     def __init__(self):
+        self.records = {}
         self.account = cloudflare.get_accounts().accounts[0]
 
         self._setup_identity_providers()
@@ -86,7 +89,7 @@ class CloudFlare():
         app_configs = {
             "devbox": {
                 "type": "self_hosted",
-                "domain": "dev.albinvass.se",
+                "domain": "code.albinvass.se",
                 "http_only_cookie_attribute": True,
                 "allowed_idps": [self.idps["pinlogin"].id],
                 "enable_binding_cookie": True,
@@ -102,32 +105,34 @@ class CloudFlare():
 
     def _setup_tunnels(self):
         self.tunnels = {}
-        tunnel_configs = {
-            "devbox": {
-                "config_src": "local",
-            }
-        }
-        defaults = {
-            "account_id": self.account.id,
-        }
+        devbox_tunnel_secret = pulumi_config.require_secret("tunnel-devbox-secret")
+        self.tunnels["devbox"] = cloudflare.Tunnel(
+            "devbox",
+            account_id=self.account.id,
+            name="devbox",
+            secret=devbox_tunnel_secret,
+            config_src="local",
+        )
 
-        for name, tunnel_config in tunnel_configs.items():
-            config = defaults | tunnel_config
-            tunnel_secret_name = f"tunnel-{name}-secret"
-            config["secret"] = pulumi_config.require_secret(tunnel_secret_name)
-            self.tunnels[name] = cloudflare.Tunnel(
-                name,
-                name=name,
-                **config,
-            )
-            pulumi.export(tunnel_secret_name, pulumi.Output.json_dumps({
-                "TunnelSecret": config["secret"],
-                "AccountTag": self.account.id,
-                "TunnelID": self.tunnels[name].id,
-            }))
+        def token_convert(token):
+            token["AccountTag"] = token.pop("a")
+            token["TunnelSecret"] = token.pop("s")
+            token["TunnelID"] = token.pop("t")
+            return token
 
+        token = pulumi.Output.json_loads(self.tunnels["devbox"].tunnel_token.apply(
+            lambda token: base64.b64decode(token)
+        )).apply(token_convert)
+        pulumi.export("devbox-tunnel-credentials", pulumi.Output.json_dumps(token))
 
-
+        self.records["code.albinvass.se"] = cloudflare.Record(
+            "code.albinvass.se",
+            name="code.albinvass.se",
+            type="CNAME",
+            proxied=True,
+            value=self.tunnels["devbox"].cname,
+            zone_id=self.zones["albinvass.se"].id,
+        )
 
 
 def main():

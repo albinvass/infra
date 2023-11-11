@@ -1,0 +1,15 @@
+name: GitHub Actions Demo
+run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
+on:
+  push:
+    branches:
+      - master
+jobs:
+  deploy:
+    steps:
+      - name: Install Nix
+        uses: cachix/install-nix-action@v23
+      - name: Check out repository code
+        uses: actions/checkout@v4
+      - run: nix develop --command -- pulumi up --cwd pulumi --yes
+      - run: nix develop --command -- colmena apply

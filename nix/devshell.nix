@@ -49,8 +49,8 @@ in with pkgs; mkShell {
     fi
 
     export HCLOUD_TOKEN=$(bws-get hcloud-dev-token)
-    export CLOUDFLARE_EMAIL=$(bws-get cloudflare-global-key | jq '.email')
-    export CLOUDFLARE_API_KEY=$(bws-get cloudflare-global-key | jq '.key')
+    export CLOUDFLARE_EMAIL=$(bws-get cloudflare-global-key | jq -r '.email')
+    export CLOUDFLARE_API_KEY=$(bws-get cloudflare-global-key | jq -r '.key')
 
     # `nix develop --command` doens't start a new shell so it never
     # triggers the exit trap.

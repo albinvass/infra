@@ -51,12 +51,13 @@ class Hetzner():
 class CloudFlare():
     def __init__(self):
         self.records = {}
+        self.access_apps = {}
+        self.access_groups = {}
         self.account = cloudflare.get_accounts().accounts[0]
 
         self._setup_identity_providers()
         self._setup_zones()
-        self._setup_access_apps()
-        self._setup_tunnels()
+        self._code_tunnel()
 
     def _setup_identity_providers(self):
         self.idps = {}
@@ -84,26 +85,7 @@ class CloudFlare():
             config["zone"] = name
             self.zones[name] = cloudflare.Zone(name, **config)
 
-    def _setup_access_apps(self):
-        self.access_apps = {}
-        app_configs = {
-            "devbox": {
-                "type": "self_hosted",
-                "domain": "code.albinvass.se",
-                "http_only_cookie_attribute": True,
-                "allowed_idps": [self.idps["pinlogin"].id],
-                "enable_binding_cookie": True,
-            }
-        }
-        for name, app_config in app_configs.items():
-            self.access_apps[name] = cloudflare.AccessApplication(
-                name,
-                name=name,
-                account_id=self.account.id,
-                **app_config
-            )
-
-    def _setup_tunnels(self):
+    def _code_tunnel(self):
         self.tunnels = {}
         devbox_tunnel_secret = pulumi_config.require_secret("tunnel-devbox-secret")
         self.tunnels["devbox"] = cloudflare.Tunnel(
@@ -132,6 +114,37 @@ class CloudFlare():
             proxied=True,
             value=self.tunnels["devbox"].cname,
             zone_id=self.zones["albinvass.se"].id,
+        )
+        self.access_apps["devbox"] = cloudflare.AccessApplication(
+            "devbox",
+            name="devbox",
+            account_id=self.account.id,
+            type="self_hosted",
+            domain="code.albinvass.se",
+            http_only_cookie_attribute=True,
+            allowed_idps=[self.idps["pinlogin"].id],
+            enable_binding_cookie=True,
+        )
+
+        self.access_groups["admins"] = cloudflare.AccessGroup(
+            "admins",
+            name="admins",
+            account_id=self.account.id,
+            includes=[cloudflare.AccessGroupIncludeArgs(
+                emails=["albin.vass@gmail.com"],
+            )],
+        )
+
+        cloudflare.AccessPolicy(
+            "devbox_allow_admins",
+            account_id=self.account.id,
+            application_id=self.access_apps["devbox"].id,
+            name="admins",
+            precedence=1,
+            decision="allow",
+            includes=[cloudflare.AccessPolicyIncludeArgs(
+                groups=[self.access_groups["admins"].id],
+            )],
         )
 
 

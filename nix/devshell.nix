@@ -43,11 +43,6 @@ let
 in with pkgs; mkShell {
   LC_ALL="C.UTF-8";
   shellHook = ''
-    if [ -z "$BW_SESSION" ]; then
-      echo "Unable to get bitwarden session token."
-      exit 1
-    fi
-
     export PULUMI_ACCESS_TOKEN=$(bws-get pulumi-access-token)
     export HCLOUD_TOKEN=$(bws-get hcloud-dev-token)
     export CLOUDFLARE_EMAIL=$(bws-get cloudflare-global-key | jq -r '.email')

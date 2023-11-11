@@ -48,6 +48,7 @@ in with pkgs; mkShell {
       exit 1
     fi
 
+    export PULUMI_ACCESS_TOKEN=$(bws-get pulumi-access-token)
     export HCLOUD_TOKEN=$(bws-get hcloud-dev-token)
     export CLOUDFLARE_EMAIL=$(bws-get cloudflare-global-key | jq -r '.email')
     export CLOUDFLARE_API_KEY=$(bws-get cloudflare-global-key | jq -r '.key')

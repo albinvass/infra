@@ -7,8 +7,6 @@ jobs:
   deploy:
     concurrency: deploy
     runs-on: ubuntu-latest
-    env:
-      BWS_ACCESS_TOKEN: ${{ secrets.BWS_ACCESS_TOKEN }}
     steps:
       - name: Install Nix
         uses: cachix/install-nix-action@v23
@@ -28,6 +26,8 @@ jobs:
           echo "SSH_AGENT_PID=$(nix develop --command -- start-ssh-agent)"
           >> $GITHUB_OUTPUT
         id: start_ssh_agent
+        env:
+          BWS_ACCESS_TOKEN: ${{ secrets.BWS_ACCESS_TOKEN }}
 
       - name: Provision Infrastructure
         run: >-
@@ -35,11 +35,15 @@ jobs:
             pulumi up --yes
               --cwd pulumi
               --stack infra
+        env:
+          BWS_ACCESS_TOKEN: ${{ secrets.BWS_ACCESS_TOKEN }}
 
       - name: Provision Servers
         run: >-
           nix develop --command --
             colmena apply
+        env:
+          BWS_ACCESS_TOKEN: ${{ secrets.BWS_ACCESS_TOKEN }}
 
       - name: Kill ssh agent
         run: >-
@@ -47,3 +51,4 @@ jobs:
             kill-ssh-agent
         env:
           SSH_AGENT_PID: ${{ steps.start_ssh_agent.outputs.SSH_AGENT_PID }}
+          BWS_ACCESS_TOKEN: ${{ secrets.BWS_ACCESS_TOKEN }}

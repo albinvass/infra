@@ -28,15 +28,6 @@ jobs:
       - name: Check out repository code
         uses: actions/checkout@v4
 
-
-      - name: Start ssh agent
-        run: >-
-          echo "SSH_AGENT_PID=$(nix develop --command -- start-ssh-agent)"
-          >> $GITHUB_OUTPUT
-        id: start_ssh_agent
-        env:
-          BWS_ACCESS_TOKEN: ${{ secrets.BWS_ACCESS_TOKEN }}
-
       - name: Provision Infrastructure
         run: |
           nix develop --command -- \
@@ -47,13 +38,9 @@ jobs:
           BWS_ACCESS_TOKEN: ${{ secrets.BWS_ACCESS_TOKEN }}
 
       - name: Provision Servers
-        run: nix develop --command -- colmena apply
-        env:
-          BWS_ACCESS_TOKEN: ${{ secrets.BWS_ACCESS_TOKEN }}
-
-      - name: Kill ssh agent
-        run: >-
+        run: |
+          nix develop --command -- start-ssh-agent
+          nix develop --command -- colmena apply
           nix develop --command -- kill-ssh-agent
         env:
-          SSH_AGENT_PID: ${{ steps.start_ssh_agent.outputs.SSH_AGENT_PID }}
           BWS_ACCESS_TOKEN: ${{ secrets.BWS_ACCESS_TOKEN }}

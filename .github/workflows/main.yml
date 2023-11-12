@@ -8,18 +8,26 @@ jobs:
     concurrency: deploy
     runs-on: ubuntu-latest
     steps:
-      - name: Install Nix
-        uses: cachix/install-nix-action@v23
+      - uses: nixbuild/nix-quick-install-action@v25
+        with:
+          nix_conf: |
+            substituters = https://cache.nixos.org/
+            trusted-public-keys = cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY=
+            keep-outputs = true
+
+      - name: Restore and cache Nix store
+        uses: nix-community/cache-nix-action@v4.0.2
+        with:
+          key: nix-cache
+          gc-linux: true
+          gc-max-store-size-linux: 10000000000
+          purge: true
+          purge-accessed: true
+          purge-accessed-max-age: 3600
 
       - name: Check out repository code
         uses: actions/checkout@v4
 
-      - name: Cache nix store
-        id: cache-nix-store
-        uses: actions/cache@v3
-        with:
-          path: /nix/store
-          key: nix-store
 
       - name: Start ssh agent
         run: >-

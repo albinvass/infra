@@ -29,21 +29,21 @@ jobs:
         env:
           BWS_ACCESS_TOKEN: ${{ secrets.BWS_ACCESS_TOKEN }}
 
-      - name: Provision Infrastructure
-        run: >-
-          nix develop --command --
-            pulumi up --yes
-              --cwd pulumi
-              --stack infra
-        env:
-          BWS_ACCESS_TOKEN: ${{ secrets.BWS_ACCESS_TOKEN }}
+            #- name: Provision Infrastructure
+            #  run: >-
+            #    nix develop --command --
+            #      pulumi up --yes --non-interactive
+            #        --cwd pulumi
+            #        --stack infra
+            #  env:
+            #    BWS_ACCESS_TOKEN: ${{ secrets.BWS_ACCESS_TOKEN }}
 
-      - name: Provision Servers
-        run: >-
-          nix develop --command --
-            colmena apply
-        env:
-          BWS_ACCESS_TOKEN: ${{ secrets.BWS_ACCESS_TOKEN }}
+            #- name: Provision Servers
+            #  run: >-
+            #    nix develop --command --
+            #      colmena apply
+            #  env:
+            #    BWS_ACCESS_TOKEN: ${{ secrets.BWS_ACCESS_TOKEN }}
 
       - name: Kill ssh agent
         run: >-

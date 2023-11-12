@@ -1,5 +1,13 @@
 { pkgs }:
 let
+  start-ssh-agent = pkgs.writeScriptBin "start-ssh-agent" ''
+    eval `ssh-agent` >&2
+    ssh-add <(bws-get hcloud-ssh-key)
+    echo "$SSH_AGENT_PID"
+  '';
+  kill-ssh-agent = pkgs.writeScriptBin "kill-ssh-agent" ''
+    ssh-agent -k
+  '';
   bws = pkgs.rustPlatform.buildRustPackage rec {
     pname = "bws";
     version = "0.3.1";
@@ -35,11 +43,10 @@ let
     installPhase = "install -Dm755 ${../tools/bws-get.py} $out/bin/bws-get";
     propagatedBuildInputs = [ bws ];
   };
-  nixos-anywhere-hetzner = pkgs.writeScriptBin "nixos-anywhere-hetzner"
-    ''
+  nixos-anywhere-hetzner = pkgs.writeScriptBin "nixos-anywhere-hetzner" ''
     #!/bin/env bash
     nix run github:numtide/nixos-anywhere -- --flake $(git rev-parse --show-toplevel)#hetzner-cloud "root@$@"
-    '';
+  '';
 in with pkgs; mkShell {
   LC_ALL="C.UTF-8";
   shellHook = ''
@@ -53,9 +60,8 @@ in with pkgs; mkShell {
     # Therefore we only start an ssh agent if we're in an interactive shell
     # See: https://serverfault.com/a/146747
     if [[ $- == *i* ]]; then
-      trap "ssh-agent -k" EXIT
-      eval `ssh-agent`
-      ssh-add <(bws-get hcloud-ssh-key)
+      trap kill-ssh-agent EXIT
+      export SSH_AGENT_PID=$(start-ssh-agent)
     fi
   '';
 
@@ -72,5 +78,7 @@ in with pkgs; mkShell {
     hcloud
     nixos-anywhere-hetzner
     statix
+    start-ssh-agent
+    kill-ssh-agent
   ];
 }

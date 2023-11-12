@@ -109,7 +109,23 @@ class CloudFlare():
 
         self.records["code.albinvass.se"] = cloudflare.Record(
             "code.albinvass.se",
-            name="code.albinvass.se",
+            name="code",
+            type="CNAME",
+            proxied=True,
+            value=self.tunnels["devbox"].cname,
+            zone_id=self.zones["albinvass.se"].id,
+        )
+        self.records["code.albinvass.se"] = cloudflare.Record(
+            "minio.albinvass.se",
+            name="minio",
+            type="CNAME",
+            proxied=True,
+            value=self.tunnels["devbox"].cname,
+            zone_id=self.zones["albinvass.se"].id,
+        )
+        self.records["code.albinvass.se"] = cloudflare.Record(
+            "s3.albinvass.se",
+            name="s3",
             type="CNAME",
             proxied=True,
             value=self.tunnels["devbox"].cname,

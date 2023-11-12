@@ -1,5 +1,8 @@
 { config, lib, pkgs, ... }: {
-  imports = [../../modules/development-tools];
+  imports = [
+    ../../modules/development-tools
+    ./minio
+  ];
 
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
@@ -15,6 +18,7 @@
   
   environment.systemPackages = with pkgs; [
     cloudflared
+    davfs2
   ];
 
   networking.firewall = {
@@ -30,6 +34,17 @@
     host = "0.0.0.0";
     auth = "none";
     user = "avass";
+  };
+
+  users.groups.davfs2 = {};
+  users.users.davfs2 = {
+    group = "davfs2";
+    isSystemUser = true;
+  };
+  fileSystems."/var/lib/davfs2" = {
+      device = "https://u343362.your-storagebox.de";
+      fsType = "davfs";
+      options = ["rw,file_mode=0660,dir_mode=0700" "0" "0"];
   };
 
   services.cloudflared = {

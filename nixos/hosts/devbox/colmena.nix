@@ -27,6 +27,14 @@
         group = "cloudflared";
         permissions = "0600";
       };
+      "davfs2-secret" = {
+        name = "secrets";
+        destDir = "/etc/davfs2";
+        keyCommand = ["bws-get" "davfs2"];
+        user = "root";
+        group = "root";
+        permissions = "0600";
+      };
     };
   };
 

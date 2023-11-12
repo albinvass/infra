@@ -47,8 +47,7 @@ jobs:
 
       - name: Kill ssh agent
         run: >-
-          nix develop --command --
-            kill-ssh-agent
+          nix develop --command -- kill-ssh-agent
         env:
           SSH_AGENT_PID: ${{ steps.start_ssh_agent.outputs.SSH_AGENT_PID }}
           BWS_ACCESS_TOKEN: ${{ secrets.BWS_ACCESS_TOKEN }}

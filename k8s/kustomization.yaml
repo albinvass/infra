@@ -1,6 +1,0 @@
-resources:
-  - hvault
-  - synapse
-  - home-assistant
-  - minio
-  - secretstore.yaml

@@ -3,6 +3,9 @@ let
   start-ssh-agent = pkgs.writeScriptBin "start-ssh-agent" ''
     eval `ssh-agent | sed '/^echo.*/d'`
     ssh-add <(bws-get hcloud-ssh-key)
+    env | grep SSH_ >&2
+    echo "SSH_AUTH_SOCK=$SSH_AUTH_SOCK" >&2
+    echo "SSH_AGENT_PID=$SSH_AGENT_PID" >&2
     echo "SSH_AUTH_SOCK=$SSH_AUTH_SOCK"
     echo "SSH_AGENT_PID=$SSH_AGENT_PID"
   '';

@@ -15,7 +15,7 @@
   let 
     hetznerBaseModules = [
       inputs.disko.nixosModules.disko
-      ./nixos/hetzner/configuration.nix
+      ./nixos/modules/hetzner-base/configuration.nix
     ];
     pkgs = import nixpkgs {system = "x86_64-linux";};
   in {

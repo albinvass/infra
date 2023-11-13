@@ -1,9 +1,10 @@
 { pkgs }:
 let
   start-ssh-agent = pkgs.writeScriptBin "start-ssh-agent" ''
-    eval `ssh-agent` >&2
+    eval `ssh-agent | sed '/^echo.*/d'`
     ssh-add <(bws-get hcloud-ssh-key)
-    echo "$SSH_AGENT_PID"
+    echo "SSH_AUTH_SOCK=$SSH_AUTH_SOCK"
+    echo "SSH_AGENT_PID=$SSH_AGENT_PID"
   '';
   kill-ssh-agent = pkgs.writeScriptBin "kill-ssh-agent" ''
     ssh-agent -k
@@ -61,7 +62,7 @@ in with pkgs; mkShell {
     # See: https://serverfault.com/a/146747
     if [[ $- == *i* ]]; then
       trap kill-ssh-agent EXIT
-      export SSH_AGENT_PID=$(start-ssh-agent)
+      eval `start-ssh-agent`
     fi
   '';
 

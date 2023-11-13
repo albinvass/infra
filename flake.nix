@@ -24,8 +24,16 @@
         nixpkgs = pkgs;
       };
 
-      devbox = {name, nodes, ...}:
-        import ./nixos/hosts/devbox/colmena.nix {inherit name nodes hetznerBaseModules;};
+      devbox = {name, nodes, ...}: {
+        networking.hostName = name;
+        deployment = {
+          buildOnTarget = true;
+          targetHost = "65.108.153.140";
+          targetPort = 22;
+          targetUser = "root";
+        };
+        imports = hetznerBaseModules ++ [ ./nixos/hosts/devbox ];
+      };
     };
 
     nixosConfigurations.hetzner-cloud = nixpkgs.lib.nixosSystem {

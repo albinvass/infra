@@ -3,11 +3,8 @@ let
   start-ssh-agent = pkgs.writeScriptBin "start-ssh-agent" ''
     eval `ssh-agent | sed '/^echo.*/d'`
     ssh-add <(bws-get hcloud-ssh-key)
-    env | grep SSH_ >&2
-    echo "SSH_AUTH_SOCK=$SSH_AUTH_SOCK" >&2
-    echo "SSH_AGENT_PID=$SSH_AGENT_PID" >&2
-    echo "SSH_AUTH_SOCK=$SSH_AUTH_SOCK"
-    echo "SSH_AGENT_PID=$SSH_AGENT_PID"
+    echo "export SSH_AUTH_SOCK=$SSH_AUTH_SOCK"
+    echo "export SSH_AGENT_PID=$SSH_AGENT_PID"
   '';
   kill-ssh-agent = pkgs.writeScriptBin "kill-ssh-agent" ''
     ssh-agent -k
@@ -47,9 +44,13 @@ let
     installPhase = "install -Dm755 ${../tools/bws-get.py} $out/bin/bws-get";
     propagatedBuildInputs = [ bws ];
   };
-  nixos-anywhere-hetzner = pkgs.writeScriptBin "nixos-anywhere-hetzner" ''
+  nixos-init = pkgs.writeScriptBin "nixos-init" ''
     #!/bin/env bash
-    nix run github:numtide/nixos-anywhere -- --flake $(git rev-parse --show-toplevel)#hetzner-cloud "root@$@"
+    trap kill-ssh-agent EXIT
+    eval `start-ssh-agent`
+
+    GIT_ROOT=$(git rev-parse --show-toplevel)
+    nix run github:numtide/nixos-anywhere -- --flake ''${GIT_ROOT}#''${1} "root@$(pulumi stack output --cwd ''$GIT_ROOT/pulumi --stack albinvass/Hetzner/infra "''${1}-ip")"
   '';
 in with pkgs; mkShell {
   LC_ALL="C.UTF-8";
@@ -69,6 +70,8 @@ in with pkgs; mkShell {
     fi
   '';
 
+  # Pulumi can't find libstdc++.so.6 without this
+  #LD_LIBRARY_PATH = "${stdenv.cc.cc.lib}/lib";
   buildInputs = [
     bashInteractive
     colmena
@@ -76,11 +79,10 @@ in with pkgs; mkShell {
     openssh
     terraform
     terragrunt
-    pulumi
-    pulumiPackages.pulumi-language-python
+    (pulumi.withPackages (ps: with ps; [pulumi-language-python]))
     bws-get
     hcloud
-    nixos-anywhere-hetzner
+    nixos-init
     statix
     start-ssh-agent
     kill-ssh-agent

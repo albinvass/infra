@@ -11,13 +11,7 @@
     flake-utils.url = "github:numtide/flake-utils";
   };
 
-  outputs = { self, nixpkgs, flake-utils, ... }@inputs:
-  let 
-    hetznerBaseModules = [
-      inputs.disko.nixosModules.disko
-      ./nixos/modules/hetzner-base/configuration.nix
-    ];
-  in {
+  outputs = { self, nixpkgs, flake-utils, ... }@inputs: {
     colmena = {
       meta = {
         nixpkgs = import nixpkgs {
@@ -27,14 +21,28 @@
 
       devbox = {name, nodes, ...}: {
         networking.hostName = name;
+        services = {
+          postgresql.enabled = false;
+          keycloak.enabled = false;
+        };
         deployment = {
           buildOnTarget = true;
           targetHost = "65.108.153.140";
           targetPort = 22;
           targetUser = "root";
         };
-        imports = hetznerBaseModules ++ [ ./nixos/hosts/devbox ];
+        imports = [
+          inputs.disko.nixosModules.disko
+          ./nixos/hosts/devbox
+        ];
       };
+    };
+    nixosConfigurations.nixos-1 = nixpkgs.lib.nixosSystem {
+      system="x86_64-linux";
+      modules = [
+        inputs.disko.nixosModules.disko
+        ./nixos/modules/base
+      ];
     };
 
   } // flake-utils.lib.eachDefaultSystem (system:
@@ -46,10 +54,6 @@
     in {
       devShells = {
         default =  pkgs.callPackage ./nix/devshell.nix {};
-      };
-      nixosConfigurations.hetzner-cloud = nixpkgs.lib.nixosSystem {
-        inherit system;
-        modules = hetznerBaseModules;
       };
     }
   );

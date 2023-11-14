@@ -1,7 +1,7 @@
 {config, pkgs, lib, ...}:
 let
-  listenAddress = "localhost:9000";
-  consoleAddress = "localhost:9001";
+  listenPort = "9000";
+  consolePort = "9001";
 in rec {
   deployment = {
     keys = {
@@ -16,8 +16,8 @@ in rec {
   };
 
   services.cloudflared.tunnels.devbox.ingress = {
-    "s3.albinvass.se" = "http://${listenAddress}";
-    "minio.albinvass.se" = "http://${consoleAddress}";
+    "s3.albinvass.se" = "http://localhost:${listenPort}";
+    "minio.albinvass.se" = "http://localhost:${consolePort}";
   };
 
   environment.systemPackages = with pkgs; [ minio-client ];
@@ -25,8 +25,8 @@ in rec {
     enable = true;
     region = "eu-north-1";
     rootCredentialsFile = "/etc/minio/minio-root-credentials";
-    listenAddress = listenAddress;
-    consoleAddress = consoleAddress;
+    listenAddress = ":${listenPort}";
+    consoleAddress = ":${consolePort}";
     dataDir = ["/var/lib/davfs2/minio/data"];
     configDir = "/var/lib/davfs2/minio/config";
   };

@@ -13,10 +13,11 @@ pulumi_config = pulumi.Config()
 
 class Hetzner():
     def __init__(self):
+        self.servers = {}
+        self.volumes = {}
         self._setup_servers()
 
     def _setup_servers(self):
-        self.servers = {}
         with open('nixos-anywhere/user-data.yaml', 'r') as f:
             nixos_anywhere_cloud_init = f.read()
 
@@ -29,23 +30,38 @@ class Hetzner():
             ssh_keys=[hcloud.get_ssh_key(name="hetzner-ssh-key").id],
             #opts=pulumi.ResourceOptions(ignore_changes=["user_data"])
         )
-        pulumi_command.remote.Command(
-            "nixos-1-mount",
-            create="nixos-generate-config --no-filesystems --root /mnt",
-            connection=pulumi_command.remote.ConnectionArgs(
-                host=self.servers["nixos-1"].ipv4_address,
-                user="root",
-            ),
-        )
-        pulumi_command.local.Command(
-            "nixos-1-init",
-            create=pulumi.Output.format(
-                "nixos-anywhere-hetzner {0}",
-                self.servers["nixos-1"].ipv4_address,
-            )
-        )
-
-        pulumi.export("nixos-1", self.servers["nixos-1"].ipv4_address)
+        #self.volumes["nixos-1-data"] = hcloud.Volume(
+        #    "nixos-1-data",
+        #    size=10,
+        #    server_id = self.servers["nixos-1"].id,
+        #    automount=False,
+        #    format="ext4",
+        #    delete_protection=True,
+        #)
+        pulumi.export("nixos-1-ip", self.servers["nixos-1"].ipv4_address)
+        #pulumi.export("nixos-1-data", self.volumes["nixos-1-data"].id)
+        #sleep = pulumi_command.local.Command(
+        #    "nixos-1-pre-generate-config-sleep",
+        #    create="sleep 10",
+        #    triggers=[self.servers["nixos-1"]],
+        #    opts=pulumi.ResourceOptions(
+        #        parent=self.servers["nixos-1"],
+        #        depends_on=[self.servers["nixos-1"]]
+        #    )
+        #)
+        #nixos_generate_config = pulumi_command.remote.Command(
+        #    "nixos-1-generate-config",
+        #    create="nixos-generate-config --no-filesystems --root /mnt",
+        #    connection=pulumi_command.remote.ConnectionArgs(
+        #        host=self.servers["nixos-1"].ipv4_address,
+        #        user="root",
+        #    ),
+        #    triggers=[self.servers["nixos-1"]],
+        #    opts=pulumi.ResourceOptions(
+        #        parent=self.servers["nixos-1"],
+        #        depends_on=[sleep],
+        #    )
+        #)
 
 
 class CloudFlare():
@@ -57,7 +73,7 @@ class CloudFlare():
 
         self._setup_identity_providers()
         self._setup_zones()
-        self._code_tunnel()
+        self._devbox_tunnel()
 
     def _setup_identity_providers(self):
         self.idps = {}
@@ -85,7 +101,7 @@ class CloudFlare():
             config["zone"] = name
             self.zones[name] = cloudflare.Zone(name, **config)
 
-    def _code_tunnel(self):
+    def _devbox_tunnel(self):
         self.tunnels = {}
         devbox_tunnel_secret = pulumi_config.require_secret("tunnel-devbox-secret")
         self.tunnels["devbox"] = cloudflare.Tunnel(
@@ -115,7 +131,7 @@ class CloudFlare():
             value=self.tunnels["devbox"].cname,
             zone_id=self.zones["albinvass.se"].id,
         )
-        self.records["code.albinvass.se"] = cloudflare.Record(
+        self.records["minio.albinvass.se"] = cloudflare.Record(
             "minio.albinvass.se",
             name="minio",
             type="CNAME",
@@ -123,9 +139,17 @@ class CloudFlare():
             value=self.tunnels["devbox"].cname,
             zone_id=self.zones["albinvass.se"].id,
         )
-        self.records["code.albinvass.se"] = cloudflare.Record(
+        self.records["s3.albinvass.se"] = cloudflare.Record(
             "s3.albinvass.se",
             name="s3",
+            type="CNAME",
+            proxied=True,
+            value=self.tunnels["devbox"].cname,
+            zone_id=self.zones["albinvass.se"].id,
+        )
+        self.records["keycloak.albinvass.se"] = cloudflare.Record(
+            "keycloak.albinvass.se",
+            name="keycloak",
             type="CNAME",
             proxied=True,
             value=self.tunnels["devbox"].cname,

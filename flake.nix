@@ -21,10 +21,6 @@
 
       devbox = {name, nodes, ...}: {
         networking.hostName = name;
-        services = {
-          postgresql.enabled = false;
-          keycloak.enabled = false;
-        };
         deployment = {
           buildOnTarget = true;
           targetHost = "65.108.153.140";

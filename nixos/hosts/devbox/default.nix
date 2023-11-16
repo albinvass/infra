@@ -1,9 +1,7 @@
 { modulesPath, config, lib, pkgs, options, ... }: {
   imports = [
-    (modulesPath + "/installer/scan/not-detected.nix")
-    (modulesPath + "/profiles/qemu-guest.nix")
-    ../../modules/development-tools
     ../../modules/base
+    ../../modules/development-tools
     ./minio
     ./cloudflared
     ./davfs2

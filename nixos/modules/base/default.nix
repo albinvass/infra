@@ -18,6 +18,7 @@
     pkgs.curl
     pkgs.git
     pkgs.neovim
+    pkgs.lvm2
   ];
 
   nix.settings.experimental-features = [ "nix-command" "flakes" ];

@@ -37,7 +37,7 @@ rec {
   };
   users.groups.keycloak = {};
   services.keycloak = {
-    enable = lib.mkDefault true;
+    enable = true;
     database = {
       createLocally = false;
       passwordFile = "/etc/keycloak/db_password";

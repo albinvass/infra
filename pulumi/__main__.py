@@ -30,14 +30,15 @@ class Hetzner():
             ssh_keys=[hcloud.get_ssh_key(name="hetzner-ssh-key").id],
             #opts=pulumi.ResourceOptions(ignore_changes=["user_data"])
         )
-        #self.volumes["nixos-1-data"] = hcloud.Volume(
-        #    "nixos-1-data",
-        #    size=10,
-        #    server_id = self.servers["nixos-1"].id,
-        #    automount=False,
-        #    format="ext4",
-        #    delete_protection=True,
-        #)
+        self.volumes["nixos-1-data"] = hcloud.Volume(
+            "nixos-1-data",
+            size=10,
+            server_id = self.servers["nixos-1"].id,
+            automount=False,
+            format="ext4",
+            delete_protection=True,
+            opts=pulumi.ResourceOptions(ignore_changes=["size"])
+        )
         pulumi.export("nixos-1-ip", self.servers["nixos-1"].ipv4_address)
         #pulumi.export("nixos-1-data", self.volumes["nixos-1-data"].id)
         #sleep = pulumi_command.local.Command(

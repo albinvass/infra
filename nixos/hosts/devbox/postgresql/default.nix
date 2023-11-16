@@ -1,7 +1,11 @@
 { lib, ... }: {
+  fileSystems."/var/lib/postgresql" = {
+    device = "/dev/data/postgresql";
+    fsType = "ext4";
+  };
   services.postgresql = {
-    enable = lib.mkDefault true;
-    dataDir = "/opt/data/postgresql";
+    enable = true;
+    dataDir = "/var/lib/postgresql/data";
     authentication = ''
       # Generated file; do not edit!
       # TYPE  DATABASE        USER            ADDRESS                 METHOD

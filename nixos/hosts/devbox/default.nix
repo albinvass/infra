@@ -9,5 +9,6 @@
     ./keycloak
     ./postgresql
     ./matrix-synapse
+    ./vault
   ];
 }

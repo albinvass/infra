@@ -28,16 +28,15 @@ class Hetzner():
             location="hel1",
             user_data=nixos_anywhere_cloud_init,
             ssh_keys=[hcloud.get_ssh_key(name="hetzner-ssh-key").id],
-            #opts=pulumi.ResourceOptions(ignore_changes=["user_data"])
+            opts=pulumi.ResourceOptions(ignore_changes=["user_data"])
         )
         self.volumes["nixos-1-data"] = hcloud.Volume(
             "nixos-1-data",
-            size=10,
+            size=20,
             server_id = self.servers["nixos-1"].id,
             automount=False,
             format="ext4",
             delete_protection=True,
-            opts=pulumi.ResourceOptions(ignore_changes=["size"])
         )
         pulumi.export("nixos-1-ip", self.servers["nixos-1"].ipv4_address)
         #pulumi.export("nixos-1-data", self.volumes["nixos-1-data"].id)
@@ -159,6 +158,14 @@ class CloudFlare():
         self.records["matrix.albinvass.se"] = cloudflare.Record(
             "matrix.albinvass.se",
             name="matrix",
+            type="CNAME",
+            proxied=True,
+            value=self.tunnels["devbox"].cname,
+            zone_id=self.zones["albinvass.se"].id,
+        )
+        self.records["vault.albinvass.se"] = cloudflare.Record(
+            "vault.albinvass.se",
+            name="vault",
             type="CNAME",
             proxied=True,
             value=self.tunnels["devbox"].cname,

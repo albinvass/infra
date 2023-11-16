@@ -8,5 +8,6 @@
     ./code-server
     ./keycloak
     ./postgresql
+    ./matrix-synapse
   ];
 }

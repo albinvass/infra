@@ -156,6 +156,14 @@ class CloudFlare():
             value=self.tunnels["devbox"].cname,
             zone_id=self.zones["albinvass.se"].id,
         )
+        self.records["matrix.albinvass.se"] = cloudflare.Record(
+            "matrix.albinvass.se",
+            name="matrix",
+            type="CNAME",
+            proxied=True,
+            value=self.tunnels["devbox"].cname,
+            zone_id=self.zones["albinvass.se"].id,
+        )
         self.access_apps["devbox"] = cloudflare.AccessApplication(
             "devbox",
             name="devbox",

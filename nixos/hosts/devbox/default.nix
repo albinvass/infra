@@ -10,5 +10,6 @@
     ./postgresql
     ./matrix-synapse
     ./vault
+    ./static-web-server
   ];
 }

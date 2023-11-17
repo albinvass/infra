@@ -17,8 +17,8 @@
         permissions = "0600";
       };
       "matrix-synapse-secrets" = {
-        name = "secrets";
-        destDir = "/etc/matrix-synapse";
+        name = "extraConfSecrets.yaml";
+        destDir = "/etc/matrix-synapse/keys";
         keyCommand = ["bws-get" "matrix-synapse-secrets"];
         user = "matrix-synapse";
         group = "matrix-synapse";
@@ -26,11 +26,19 @@
       };
     };
   };
+
+  environment.etc."/static-web-server/.well-known/matrix/server" = {
+    mode = "0755";
+    text = builtins.toJSON {
+      "m.server" = "matrix.albinvass.se:443";
+    };
+  };
+
   services.matrix-synapse = {
     enable = true;
     dataDir = "/var/lib/synapse/data";
     settings = {
-      server_name = "matrix.albinvass.se";
+      server_name = "albinvass.se";
       signing_key_path = "/etc/matrix-synapse/keys/matrix.albinvass.se.signing.key";
       listeners = [
         {
@@ -49,7 +57,7 @@
 
     };
     extraConfigFiles = [
-      "/etc/matrix-synapse/secrets"
+      "/etc/matrix-synapse/keys/extraConfSecrets.yaml"
     ];
   };
 }

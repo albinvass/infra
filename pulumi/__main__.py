@@ -123,6 +123,14 @@ class CloudFlare():
         )).apply(token_convert)
         pulumi.export("devbox-tunnel-credentials", pulumi.Output.json_dumps(token))
 
+        self.records["albinvass.se"] = cloudflare.Record(
+            "albinvass.se",
+            name="@",
+            type="CNAME",
+            proxied=True,
+            value=self.tunnels["devbox"].cname,
+            zone_id=self.zones["albinvass.se"].id,
+        )
         self.records["code.albinvass.se"] = cloudflare.Record(
             "code.albinvass.se",
             name="code",

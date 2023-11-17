@@ -112,7 +112,25 @@
         "disko": "disko",
         "flake-utils": "flake-utils",
         "nixpkgs": "nixpkgs",
-        "pulumi-hcloud": "pulumi-hcloud"
+        "pulumi-hcloud": "pulumi-hcloud",
+        "signoz-src": "signoz-src"
+      }
+    },
+    "signoz-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1700151562,
+        "narHash": "sha256-OxxKVJWiPjStbRlgB8QaCmAyb4gPUwNFZ7SM3ItqEQw=",
+        "owner": "SigNoz",
+        "repo": "signoz",
+        "rev": "dc23368f6e0913d6ed86dc48d75e1cc17b20683a",
+        "type": "github"
+      },
+      "original": {
+        "owner": "SigNoz",
+        "ref": "refs/tags/v0.34.0",
+        "repo": "signoz",
+        "type": "github"
       }
     },
     "systems": {

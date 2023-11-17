@@ -9,6 +9,10 @@
     };
     pulumi-hcloud.url = "github:albinvass/nix-pulumi-hcloud";
     flake-utils.url = "github:numtide/flake-utils";
+    signoz-src = {
+      flake = false;
+      url = "github:SigNoz/signoz/refs/tags/v0.34.0";
+    };
   };
 
   outputs = { self, nixpkgs, flake-utils, ... }@inputs: {
@@ -51,6 +55,6 @@
       devShells = {
         default =  pkgs.callPackage ./nix/devshell.nix {};
       };
-    }
+    } // pkgs.callPackage ./nix/signoz { inherit inputs; }
   );
 }

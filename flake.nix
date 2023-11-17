@@ -15,12 +15,17 @@
     };
   };
 
-  outputs = { self, nixpkgs, flake-utils, ... }@inputs: {
+  outputs = { self, nixpkgs, ... }@inputs: let
+    system = "x86_64-linux";
+    pkgs = import nixpkgs {
+      inherit system;
+      config.allowUnfree = true;
+    };
+    signoz = pkgs.callPackage ./nix/signoz { inherit inputs; };
+  in rec {
     colmena = {
       meta = {
-        nixpkgs = import nixpkgs {
-          system = "x86_64-linux";
-        };
+        nixpkgs = pkgs;
       };
 
       devbox = {name, nodes, ...}: {
@@ -34,27 +39,21 @@
         imports = [
           inputs.disko.nixosModules.disko
           ./nixos/hosts/devbox
+          self.nixosModules.signoz-frontend
         ];
       };
     };
+    nixosModules = signoz.nixosModules;
     nixosConfigurations.nixos-1 = nixpkgs.lib.nixosSystem {
-      system="x86_64-linux";
+      inherit system;
       modules = [
         inputs.disko.nixosModules.disko
         ./nixos/modules/base
       ];
     };
-
-  } // flake-utils.lib.eachDefaultSystem (system:
-    let
-      pkgs = import nixpkgs {
-        inherit system;
-        config.allowUnfree = true;
-      };
-    in {
-      devShells = {
-        default =  pkgs.callPackage ./nix/devshell.nix {};
-      };
-    } // pkgs.callPackage ./nix/signoz { inherit inputs; }
-  );
+    devShells.${system} = {
+      default =  pkgs.callPackage ./nix/devshell.nix {};
+    };
+    packages.${system} = signoz.packages;
+  };
 }

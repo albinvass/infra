@@ -39,29 +39,6 @@ class Hetzner():
             delete_protection=True,
         )
         pulumi.export("nixos-1-ip", self.servers["nixos-1"].ipv4_address)
-        #pulumi.export("nixos-1-data", self.volumes["nixos-1-data"].id)
-        #sleep = pulumi_command.local.Command(
-        #    "nixos-1-pre-generate-config-sleep",
-        #    create="sleep 10",
-        #    triggers=[self.servers["nixos-1"]],
-        #    opts=pulumi.ResourceOptions(
-        #        parent=self.servers["nixos-1"],
-        #        depends_on=[self.servers["nixos-1"]]
-        #    )
-        #)
-        #nixos_generate_config = pulumi_command.remote.Command(
-        #    "nixos-1-generate-config",
-        #    create="nixos-generate-config --no-filesystems --root /mnt",
-        #    connection=pulumi_command.remote.ConnectionArgs(
-        #        host=self.servers["nixos-1"].ipv4_address,
-        #        user="root",
-        #    ),
-        #    triggers=[self.servers["nixos-1"]],
-        #    opts=pulumi.ResourceOptions(
-        #        parent=self.servers["nixos-1"],
-        #        depends_on=[sleep],
-        #    )
-        #)
 
 
 class CloudFlare():

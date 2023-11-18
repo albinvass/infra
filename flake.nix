@@ -40,6 +40,7 @@
           inputs.disko.nixosModules.disko
           ./nixos/hosts/devbox
           self.nixosModules.signoz-frontend
+          self.nixosModules.signoz-query-service
         ];
       };
     };

@@ -44,7 +44,7 @@ rec {
     };
     settings = {
       hostname = "keycloak.albinvass.se";
-      http-port = 8080;
+      http-port = 10020;
       proxy = "edge";
     };
   };

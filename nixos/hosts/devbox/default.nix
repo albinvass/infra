@@ -12,6 +12,7 @@
     ./vault
     ./static-web-server
     ./signoz
+    ./nginx
   ];
   security.pam.loginLimits = [
     {

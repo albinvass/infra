@@ -73,7 +73,7 @@ class CloudFlare():
 
         self._setup_identity_providers()
         self._setup_zones()
-        self._devbox_tunnel()
+        self._devbox_tunnels()
 
     def _setup_identity_providers(self):
         self.idps = {}
@@ -101,7 +101,7 @@ class CloudFlare():
             config["zone"] = name
             self.zones[name] = cloudflare.Zone(name, **config)
 
-    def _devbox_tunnel(self):
+    def _devbox_tunnels(self):
         self.tunnels = {}
         devbox_tunnel_secret = pulumi_config.require_secret("tunnel-devbox-secret")
         self.tunnels["devbox"] = cloudflare.Tunnel(
@@ -123,62 +123,29 @@ class CloudFlare():
         )).apply(token_convert)
         pulumi.export("devbox-tunnel-credentials", pulumi.Output.json_dumps(token))
 
-        self.records["albinvass.se"] = cloudflare.Record(
-            "albinvass.se",
-            name="@",
-            type="CNAME",
-            proxied=True,
-            value=self.tunnels["devbox"].cname,
-            zone_id=self.zones["albinvass.se"].id,
+        devbox_ingress = pulumi_command.local.run(
+            command="colmena eval -E '{ nodes, ... }: nodes.devbox.config.services.cloudflared.tunnels.devbox.ingress'",
         )
-        self.records["code.albinvass.se"] = cloudflare.Record(
-            "code.albinvass.se",
-            name="code",
-            type="CNAME",
-            proxied=True,
-            value=self.tunnels["devbox"].cname,
-            zone_id=self.zones["albinvass.se"].id,
-        )
-        self.records["minio.albinvass.se"] = cloudflare.Record(
-            "minio.albinvass.se",
-            name="minio",
-            type="CNAME",
-            proxied=True,
-            value=self.tunnels["devbox"].cname,
-            zone_id=self.zones["albinvass.se"].id,
-        )
-        self.records["s3.albinvass.se"] = cloudflare.Record(
-            "s3.albinvass.se",
-            name="s3",
-            type="CNAME",
-            proxied=True,
-            value=self.tunnels["devbox"].cname,
-            zone_id=self.zones["albinvass.se"].id,
-        )
-        self.records["keycloak.albinvass.se"] = cloudflare.Record(
-            "keycloak.albinvass.se",
-            name="keycloak",
-            type="CNAME",
-            proxied=True,
-            value=self.tunnels["devbox"].cname,
-            zone_id=self.zones["albinvass.se"].id,
-        )
-        self.records["matrix.albinvass.se"] = cloudflare.Record(
-            "matrix.albinvass.se",
-            name="matrix",
-            type="CNAME",
-            proxied=True,
-            value=self.tunnels["devbox"].cname,
-            zone_id=self.zones["albinvass.se"].id,
-        )
-        self.records["vault.albinvass.se"] = cloudflare.Record(
-            "vault.albinvass.se",
-            name="vault",
-            type="CNAME",
-            proxied=True,
-            value=self.tunnels["devbox"].cname,
-            zone_id=self.zones["albinvass.se"].id,
-        )
+
+        def generate_cnames(ingress_config):
+            records = {}
+            for cname in ingress_config.keys():
+                if cname != "albinvass.se":
+                    record_name = cname[:-len(".albinvass.se")]
+                else:
+                    record_name = "@"
+                records[cname] = cloudflare.Record(
+                    cname,
+                    name=record_name,
+                    type="CNAME",
+                    proxied=True,
+                    value=self.tunnels["devbox"].cname,
+                    zone_id=self.zones["albinvass.se"].id,
+                )
+            return records
+
+        self.records.update(generate_cnames(json.loads(devbox_ingress.stdout)))
+
         self.access_apps["devbox"] = cloudflare.AccessApplication(
             "devbox",
             name="devbox",

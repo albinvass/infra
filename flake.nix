@@ -9,10 +9,6 @@
     };
     pulumi-hcloud.url = "github:albinvass/nix-pulumi-hcloud";
     flake-utils.url = "github:numtide/flake-utils";
-    signoz-src = {
-      flake = false;
-      url = "github:SigNoz/signoz/refs/tags/v0.34.0";
-    };
   };
 
   outputs = { self, nixpkgs, ... }@inputs: let
@@ -21,7 +17,6 @@
       inherit system;
       config.allowUnfree = true;
     };
-    signoz = pkgs.callPackage ./nix/signoz { inherit inputs; };
   in rec {
     colmena = {
       meta = {
@@ -39,12 +34,9 @@
         imports = [
           inputs.disko.nixosModules.disko
           ./nixos/hosts/devbox
-          self.nixosModules.signoz-frontend
-          self.nixosModules.signoz-query-service
         ];
       };
     };
-    nixosModules = signoz.nixosModules;
     nixosConfigurations.nixos-1 = nixpkgs.lib.nixosSystem {
       inherit system;
       modules = [
@@ -55,6 +47,5 @@
     devShells.${system} = {
       default =  pkgs.callPackage ./nix/devshell.nix {};
     };
-    packages.${system} = signoz.packages;
   };
 }

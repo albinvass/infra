@@ -40,7 +40,6 @@ jobs:
       - name: Provision Servers
         run: |
           eval `nix develop --command -- start-ssh-agent`
-          env | grep SSH_
           nix develop --command -- ssh-add -L
           nix develop --command -- colmena apply
           nix develop --command -- kill-ssh-agent

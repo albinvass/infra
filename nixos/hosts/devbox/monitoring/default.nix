@@ -12,9 +12,17 @@
     };
     elasticsearch = {
       enable = true;
+      extraConf = ''
+        xpack.security.enabled: true
+        xpack.security.authc.api_key.enabled: true
+      '';
     };
     kibana = {
       enable = true;
+      elasticsearch = {
+        certificateAuthorities = [];
+        ca = null;
+      };
     };
     grafana = {
       enable = true;

@@ -11,8 +11,7 @@
     ./matrix-synapse
     ./vault
     ./static-web-server
-    ./signoz
-    ./nginx
+    ./monitoring
   ];
   security.pam.loginLimits = [
     {

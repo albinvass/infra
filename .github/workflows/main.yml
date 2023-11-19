@@ -25,6 +25,12 @@ jobs:
           purge-accessed: true
           purge-accessed-max-age: 3600
 
+      - name: Cache Pulumi venv
+        uses: actions/cache@v3
+        with:
+          path: pulumi/venv
+          key: pulumi-venv
+
       - name: Check out repository code
         uses: actions/checkout@v4
 

@@ -1,4 +1,5 @@
-{ config, ... }: {
+{ config, pkgs, ... }: {
+  environment.systemPackages = [ pkgs.jdk17_headless ];
   services = {
     cloudflared.tunnels.devbox.ingress = {
       "prometheus.albinvass.se" = "http://localhost:${builtins.toString config.services.prometheus.port}";

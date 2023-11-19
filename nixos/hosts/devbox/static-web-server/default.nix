@@ -5,7 +5,7 @@
   };
   environment.etc."/static-web-server/index.html" = {
     text = let
-      sites = builtins.attrNames config.services.cloudflared.devbox.ingress;
+      sites = builtins.attrNames config.services.cloudflared.tunnels.devbox.ingress;
       links = builtins.map (f: "<li><a href ${f}>${f}</a></li>") sites;
       body = builtins.concatStringsSep "\n" links;
     in ''

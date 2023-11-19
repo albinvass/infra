@@ -6,13 +6,13 @@
   environment.etc."/static-web-server/index.html" = {
     text = let
       sites = builtins.attrNames config.services.cloudflared.tunnels.devbox.ingress;
-      links = builtins.map (f: "<li><a href ${f}>${f}</a></li>") sites;
-      body = builtins.concatStringsSep "\n" links;
+      links = builtins.map (f: ''<li><a href="https://${f}">${f}</a></li>'') sites;
+      list = builtins.concatStringsSep "\n" links;
     in ''
     <html>
     <div> Welcome! </div>
     <ul>
-    ${links}
+    ${list}
     </ul>
     <html>
     '';

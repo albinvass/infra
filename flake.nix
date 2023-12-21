@@ -28,7 +28,24 @@
           targetHost = "65.108.153.140";
           targetPort = 22;
           targetUser = "root";
+          keys = {
+            "ssh_host_ed25519_key" = {
+              destDir = "/etc/ssh";
+              keyCommand = ["get-host-key" name "ssh_host_ed25519_key"];
+              user = "root";
+              group = "root";
+              permissions = "0600";
+            };
+            "ssh_host_ed25519_key.pub" = {
+              destDir = "/etc/ssh";
+              keyCommand = ["get-host-key" name "ssh_host_ed25519_key.pub"];
+              user = "root";
+              group = "root";
+              permissions = "0644";
+            };
+          };
         };
+
         imports = [
           inputs.disko.nixosModules.disko
           inputs.sops-nix.nixosModules.sops

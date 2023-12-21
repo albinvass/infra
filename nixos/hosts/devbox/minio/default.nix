@@ -1,17 +1,15 @@
-{config, pkgs, lib, ...}:
+{config, pkgs, ...}:
 let
   listenPort = "9000";
   consolePort = "9001";
-in rec {
-  deployment = {
-    keys = {
-      "minio-root-credentials" = {
-        destDir = "/etc/minio";
-        keyCommand = ["bws-get" "minio-root-credentials"];
-        user = "minio";
-        group = "minio";
-        permissions = "0600";
-      };
+in {
+
+  sops.secrets = {
+    "minio/root-credentials" = {
+      owner = "minio";
+      group = "minio";
+      mode = "0600";
+      restartUnits = [ "minio.service" ];
     };
   };
 
@@ -24,7 +22,7 @@ in rec {
   services.minio = {
     enable = true;
     region = "eu-north-1";
-    rootCredentialsFile = "/etc/minio/minio-root-credentials";
+    rootCredentialsFile = config.sops.secrets."minio/root-credentials".path;
     listenAddress = ":${listenPort}";
     consoleAddress = ":${consolePort}";
     dataDir = ["/var/lib/davfs2/minio/data"];

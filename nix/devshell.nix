@@ -1,56 +1,23 @@
 { pkgs }:
 let
-  get-host-key = pkgs.writeScriptBin "get-host-key" /* bash */''
+  get-host-key = pkgs.writeScriptBin "get-host-key" /* bash */ ''
     #!/bin/env bash
     host="$1"
     key="$2"
-    GIT_ROOT="$(git rev-parse --show-toplevel)"
-    cd "$GIT_ROOT" || exit 1
-    sops --extract "['hosts'][\"$host\"]['hostkey'][\"$key\"]" -d secrets.yaml
+    sops --extract "['hosts'][\"$host\"]['hostkey'][\"$key\"]" -d "$GIT_ROOT/secrets.yaml"
   '';
-  start-ssh-agent = pkgs.writeScriptBin "start-ssh-agent" ''
+  start-ssh-agent = pkgs.writeScriptBin "start-ssh-agent" /* bash */ ''
+    #!/bin/env bash
     eval `ssh-agent | sed '/^echo.*/d'`
-    ssh-add <(bws-get hcloud-ssh-key)
+    GIT_ROOT="$(git rev-parse --show-toplevel)"
+    ssh-add <(sops --extract '["hetzner_ssh_key"]' -d "$GIT_ROOT/secrets.yaml")
     echo "export SSH_AUTH_SOCK=$SSH_AUTH_SOCK"
     echo "export SSH_AGENT_PID=$SSH_AGENT_PID"
   '';
-  kill-ssh-agent = pkgs.writeScriptBin "kill-ssh-agent" ''
+  kill-ssh-agent = pkgs.writeScriptBin "kill-ssh-agent" /* bash */ ''
+    #!/bin/env bash
     ssh-agent -k
   '';
-  bws = pkgs.rustPlatform.buildRustPackage rec {
-    pname = "bws";
-    version = "0.3.1";
-
-    cargoBuildFlags = ["--package=bws"];
-    src = pkgs.fetchFromGitHub {
-      owner = "bitwarden";
-      repo = "sdk";
-      rev = "bws-v${version}";
-      hash = "sha256-71MbpnGBkLMa2DaXERq5af8cQ0+RILsPTm3M6mzcv2U=";
-    };
-    # See: https://artemis.sh/2023/07/08/nix-rust-project-with-git-dependencies.html
-    cargoLock = {
-      lockFile = "${src}/Cargo.lock";
-      outputHashes = {
-        "uniffi-0.24.1"= "sha256-m+8A1jkp6xXdRlWFFpz8cMEwHkmImM46SV8Ch1unzNE=";
-      };
-    };
-    nativeBuildInputs = [
-      pkgs.perl
-      pkgs.python3
-    ];
-
-    meta = {
-      description = "Bitwarden Secrets Manager SDK";
-      homepage = "https://github.com/bitwarden/sdk";
-    };
-  };
-  bws-get = pkgs.stdenv.mkDerivation {
-    name = "bws-get";
-    dontUnpack = true;
-    installPhase = "install -Dm755 ${../tools/bws-get.py} $out/bin/bws-get";
-    propagatedBuildInputs = [ bws ];
-  };
   nixos-init = pkgs.writeScriptBin "nixos-init" /* bash */ ''
     #!/bin/env bash
     trap kill-ssh-agent EXIT
@@ -62,20 +29,19 @@ let
 in with pkgs; mkShell {
   LC_ALL="C.UTF-8";
   shellHook = ''
+    GIT_ROOT="$(git rev-parse --show-toplevel)"
     set -o allexport
-    eval $(sops --output-type dotenv --extract '["env"]' -d secrets.yaml)
+    eval $(sops --output-type dotenv --extract '["env"]' -d "$GIT_ROOT/secrets.yaml")
     set +o allexport
   '';
 
   buildInputs = [
     bashInteractive
     colmena
-    jq
     openssh
     terraform
     terragrunt
     (pulumi.withPackages (ps: with ps; [pulumi-language-python]))
-    bws-get
     hcloud
     nixos-init
     statix

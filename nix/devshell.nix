@@ -14,7 +14,6 @@ let
     version = "0.3.1";
 
     cargoBuildFlags = ["--package=bws"];
-    #buildAndTestSubdir = "bws";
     src = pkgs.fetchFromGitHub {
       owner = "bitwarden";
       repo = "sdk";
@@ -33,7 +32,7 @@ let
       pkgs.python3
     ];
 
-    meta = with pkgs.lib; {
+    meta = {
       description = "Bitwarden Secrets Manager SDK";
       homepage = "https://github.com/bitwarden/sdk";
     };
@@ -44,7 +43,7 @@ let
     installPhase = "install -Dm755 ${../tools/bws-get.py} $out/bin/bws-get";
     propagatedBuildInputs = [ bws ];
   };
-  nixos-init = pkgs.writeScriptBin "nixos-init" ''
+  nixos-init = pkgs.writeScriptBin "nixos-init" /* bash */ ''
     #!/bin/env bash
     trap kill-ssh-agent EXIT
     eval `start-ssh-agent`
@@ -55,23 +54,11 @@ let
 in with pkgs; mkShell {
   LC_ALL="C.UTF-8";
   shellHook = ''
-    export PULUMI_ACCESS_TOKEN=$(bws-get pulumi-access-token)
-    export HCLOUD_TOKEN=$(bws-get hcloud-dev-token)
-    export CLOUDFLARE_EMAIL=$(bws-get cloudflare-global-key | jq -r '.email')
-    export CLOUDFLARE_API_KEY=$(bws-get cloudflare-global-key | jq -r '.key')
-
-    # `nix develop --command` doens't start a new shell so it never
-    # triggers the exit trap.
-    # Therefore we only start an ssh agent if we're in an interactive shell
-    # See: https://serverfault.com/a/146747
-    if [[ $- == *i* ]]; then
-      trap kill-ssh-agent EXIT
-      eval `start-ssh-agent`
-    fi
+    set -o allexport
+    eval $(sops --output-type dotenv --extract '["env"]' -d secrets.yaml)
+    set +o allexport
   '';
 
-  # Pulumi can't find libstdc++.so.6 without this
-  #LD_LIBRARY_PATH = "${stdenv.cc.cc.lib}/lib";
   buildInputs = [
     bashInteractive
     colmena

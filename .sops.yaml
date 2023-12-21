@@ -1,0 +1,11 @@
+keys:
+  - &avass age19k67f8muz2n368y2n0k55wr8z0d6q9vhh22v5re5c692v3x3af9qwsnu6a
+creation_rules:
+  - path_regex: ^nixos/hosts/devbox/.*
+    key_groups:
+    - age:
+        - *avass
+        - age1xs54hz7499gcdwqdl8p069s8f2334r9p3pdyhzwqw5ju0lz774fscrj5pq
+  - key_groups:
+    - age:
+        - *avass

@@ -7,8 +7,7 @@
       url = "github:nix-community/disko";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    pulumi-hcloud.url = "github:albinvass/nix-pulumi-hcloud";
-    flake-utils.url = "github:numtide/flake-utils";
+    sops-nix.url = "github:Mic92/sops-nix";
   };
 
   outputs = { self, nixpkgs, ... }@inputs: let
@@ -17,7 +16,7 @@
       inherit system;
       config.allowUnfree = true;
     };
-  in rec {
+  in {
     colmena = {
       meta = {
         nixpkgs = pkgs;
@@ -33,6 +32,7 @@
         };
         imports = [
           inputs.disko.nixosModules.disko
+          inputs.sops-nix.nixosModules.sops
           ./nixos/hosts/devbox
         ];
       };

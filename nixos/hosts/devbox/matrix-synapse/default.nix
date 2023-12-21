@@ -1,4 +1,4 @@
-{ lib, ... }: {
+{ config, ... }: {
   services.cloudflared.tunnels.devbox.ingress = {
     "matrix.albinvass.se" = "http://localhost:8008";
   };
@@ -6,24 +6,19 @@
     device = "/dev/data/synapse";
     fsType = "ext4";
   };
-  deployment = {
-    keys = {
-      "matrix-synapse-signing-key" = {
-        name = "matrix.albinvass.se.signing.key";
-        destDir = "/etc/matrix-synapse/keys";
-        keyCommand = ["bws-get" "matrix-synapse-signing-key"];
-        user = "matrix-synapse";
-        group = "matrix-synapse";
-        permissions = "0600";
-      };
-      "matrix-synapse-secrets" = {
-        name = "extraConfSecrets.yaml";
-        destDir = "/etc/matrix-synapse/keys";
-        keyCommand = ["bws-get" "matrix-synapse-secrets"];
-        user = "matrix-synapse";
-        group = "matrix-synapse";
-        permissions = "0600";
-      };
+
+  sops.secrets = {
+    "matrix-synapse/signing-key" = {
+      owner = "matrix-synapse";
+      group = "matrix-synapse";
+      mode = "0600";
+      restartUnits = [ "matrix-synapse.service" ];
+    };
+    "matrix-synapse/extraConfSecrets.yaml" = {
+      owner = "matrix-synapse";
+      group = "matrix-synapse";
+      mode = "0600";
+      restartUnits = [ "matrix-synapse.service" ];
     };
   };
 
@@ -39,7 +34,7 @@
     dataDir = "/var/lib/synapse/data";
     settings = {
       server_name = "albinvass.se";
-      signing_key_path = "/etc/matrix-synapse/keys/matrix.albinvass.se.signing.key";
+      signing_key_path = config.sops.secrets."matrix-synapse/signing-key".path;
       listeners = [
         {
           port = 8008;
@@ -57,7 +52,7 @@
 
     };
     extraConfigFiles = [
-      "/etc/matrix-synapse/keys/extraConfSecrets.yaml"
+      config.sops.secrets."matrix-synapse/extraConfSecrets.yaml".path
     ];
   };
 }

@@ -1,5 +1,5 @@
-{ config, pkgs, lib, ... }: 
-rec {
+{ config, ... }: 
+{
   services.cloudflared.tunnels.devbox.ingress = let 
     keycloak-hostname = config.services.keycloak.settings.hostname;
     keycloak-http-port = builtins.toString config.services.keycloak.settings.http-port;
@@ -19,15 +19,12 @@ rec {
     }];
   };
 
-  deployment = {
-    keys = {
-      "db_password" = {
-        destDir = "/etc/keycloak";
-        keyCommand = ["bws-get" "postgres-keycloak"];
-        user = "keycloak";
-        group = "keycloak";
-        permissions = "0600";
-      };
+  sops.secrets = {
+    "keycloak/db_password" = {
+      owner = "keycloak";
+      group = "keycloak";
+      mode = "0600";
+      restartUnits = [ "keycloak.service" ];
     };
   };
 
@@ -40,7 +37,7 @@ rec {
     enable = true;
     database = {
       createLocally = false;
-      passwordFile = "/etc/keycloak/db_password";
+      passwordFile = config.sops.secrets."keycloak/db_password".path;
     };
     settings = {
       hostname = "keycloak.albinvass.se";

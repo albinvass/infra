@@ -25,7 +25,6 @@
       devbox = {name, nodes, ...}: {
         networking.hostName = name;
         deployment = {
-          buildOnTarget = true;
           targetHost = "65.108.153.140";
           targetPort = 22;
           targetUser = "root";

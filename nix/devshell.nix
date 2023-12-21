@@ -1,5 +1,13 @@
 { pkgs }:
 let
+  get-host-key = pkgs.writeScriptBin "get-host-key" /* bash */''
+    #!/bin/env bash
+    host="$1"
+    key="$2"
+    GIT_ROOT="$(git rev-parse --show-toplevel)"
+    cd "$GIT_ROOT" || exit 1
+    sops --extract "['hosts'][\"$host\"]['hostkey'][\"$key\"]" -d secrets.yaml
+  '';
   start-ssh-agent = pkgs.writeScriptBin "start-ssh-agent" ''
     eval `ssh-agent | sed '/^echo.*/d'`
     ssh-add <(bws-get hcloud-ssh-key)
@@ -73,5 +81,6 @@ in with pkgs; mkShell {
     statix
     start-ssh-agent
     kill-ssh-agent
+    get-host-key
   ];
 }

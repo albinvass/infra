@@ -10,7 +10,7 @@ let
     #!/bin/env bash
     eval `ssh-agent | sed '/^echo.*/d'`
     GIT_ROOT="$(git rev-parse --show-toplevel)"
-    ssh-add <(sops --extract '["hetzner_ssh_key"]' -d "$GIT_ROOT/secrets.yaml")
+    ssh-add <(sops --extract '["hetzner"]["ssh"]["id_ed25519"]' -d "$GIT_ROOT/secrets.yaml")
     echo "export SSH_AUTH_SOCK=$SSH_AUTH_SOCK"
     echo "export SSH_AGENT_PID=$SSH_AGENT_PID"
   '';

@@ -34,7 +34,8 @@ in with pkgs; mkShell {
     eval $(sops --output-type dotenv --extract '["env"]' -d "$GIT_ROOT/secrets.yaml")
     set +o allexport
   '';
-
+  # Fix for pulumi
+  LD_LIBRARY_PATH = lib.makeLibraryPath [ pkgs.stdenv.cc.cc ];
   buildInputs = [
     bashInteractive
     colmena

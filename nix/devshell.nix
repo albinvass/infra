@@ -4,6 +4,7 @@ let
     #!/bin/env bash
     host="$1"
     key="$2"
+    GIT_ROOT="$(git rev-parse --show-toplevel)"
     sops --extract "['hosts'][\"$host\"]['hostkey'][\"$key\"]" -d "$GIT_ROOT/secrets.yaml"
   '';
   start-ssh-agent = pkgs.writeScriptBin "start-ssh-agent" /* bash */ ''

@@ -1,4 +1,4 @@
-{ name, ... }: {
+{ ... }: {
   imports = [
     ../../modules/base
     ../../modules/development-tools

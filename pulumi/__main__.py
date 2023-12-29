@@ -11,6 +11,38 @@ import pulumi_command
 pulumi_config = pulumi.Config()
 
 
+class SteamServers():
+    def __init__(self, zones):
+        self.vm()
+        self.dns(zones)
+
+    def vm(self):
+        with open('nixos-anywhere/user-data.yaml', 'r') as f:
+            nixos_anywhere_cloud_init = f.read()
+
+        self.vm = hcloud.Server(
+            "steam-servers",
+            server_type="cpx21",
+            image="ubuntu-22.04",
+            location="hel1",
+            user_data=nixos_anywhere_cloud_init,
+            ssh_keys=[hcloud.get_ssh_key(name="hetzner-ssh-key").id],
+            opts=pulumi.ResourceOptions(ignore_changes=["user_data"])
+        )
+        pulumi.export("steam-servers-ip", self.vm.ipv4_address)
+
+    def dns(self, zones):
+        self.records = {}
+        self.records["play.albinvass.se"] = cloudflare.Record(
+            "play.albinvass.se",
+            name="play",
+            type="A",
+            proxied=False,
+            value=self.vm.ipv4_address,
+            zone_id=zones["albinvass.se"].id,
+        )
+
+
 class Hetzner():
     def __init__(self):
         self.servers = {}
@@ -159,6 +191,7 @@ class CloudFlare():
 def main():
     hz = Hetzner()
     cf = CloudFlare()
+    SteamServers(cf.zones)
 
 
 if __name__ == "__main__":

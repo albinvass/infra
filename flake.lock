@@ -72,7 +72,8 @@
       "inputs": {
         "disko": "disko",
         "nixpkgs": "nixpkgs",
-        "sops-nix": "sops-nix"
+        "sops-nix": "sops-nix",
+        "steam-fetcher": "steam-fetcher"
       }
     },
     "sops-nix": {
@@ -91,6 +92,26 @@
       "original": {
         "owner": "Mic92",
         "repo": "sops-nix",
+        "type": "github"
+      }
+    },
+    "steam-fetcher": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1703704267,
+        "narHash": "sha256-X44wqMWyaMsymcrgxwlnEWDplcop54e3eopfJ/p+S3s=",
+        "owner": "aidalgol",
+        "repo": "nix-steam-fetcher",
+        "rev": "aa223d3d03fd60a7b9f20831a06776ca0f1b3630",
+        "type": "github"
+      },
+      "original": {
+        "owner": "aidalgol",
+        "repo": "nix-steam-fetcher",
         "type": "github"
       }
     }

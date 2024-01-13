@@ -11,87 +11,10 @@ import pulumi_command
 pulumi_config = pulumi.Config()
 
 
-class SteamServers():
-    def __init__(self, zones):
-        self.vm()
-        self.dns(zones)
-
-    def vm(self):
-        with open('nixos-anywhere/user-data.yaml', 'r') as f:
-            nixos_anywhere_cloud_init = f.read()
-
-        self.vm = hcloud.Server(
-            "steam-servers",
-            server_type="cpx21",
-            image="ubuntu-22.04",
-            location="hel1",
-            user_data=nixos_anywhere_cloud_init,
-            ssh_keys=[hcloud.get_ssh_key(name="hetzner-ssh-key").id],
-            opts=pulumi.ResourceOptions(ignore_changes=["user_data"])
-        )
-        pulumi.export("steam-servers-ip", self.vm.ipv4_address)
-
-    def dns(self, zones):
-        self.records = {}
-        self.records["play.albinvass.se"] = cloudflare.Record(
-            "play.albinvass.se",
-            name="play",
-            type="A",
-            proxied=False,
-            value=self.vm.ipv4_address,
-            zone_id=zones["albinvass.se"].id,
-        )
-
-
-class Hetzner():
-    def __init__(self):
-        self.servers = {}
-        self.volumes = {}
-        self._setup_servers()
-
-    def _setup_servers(self):
-        with open('nixos-anywhere/user-data.yaml', 'r') as f:
-            nixos_anywhere_cloud_init = f.read()
-
-        self.servers["nixos-1"] = hcloud.Server(
-            "nixos-1",
-            server_type="cpx21",
-            image="ubuntu-22.04",
-            location="hel1",
-            user_data=nixos_anywhere_cloud_init,
-            ssh_keys=[hcloud.get_ssh_key(name="hetzner-ssh-key").id],
-            opts=pulumi.ResourceOptions(ignore_changes=["user_data"])
-        )
-        self.volumes["nixos-1-data"] = hcloud.Volume(
-            "nixos-1-data",
-            size=20,
-            server_id = self.servers["nixos-1"].id,
-            automount=False,
-            format="ext4",
-            delete_protection=True,
-        )
-        pulumi.export("nixos-1-ip", self.servers["nixos-1"].ipv4_address)
-
-
 class CloudFlare():
     def __init__(self):
-        self.records = {}
-        self.access_apps = {}
-        self.access_groups = {}
         self.account = cloudflare.get_accounts().accounts[0]
-
-        self._setup_identity_providers()
         self._setup_zones()
-        self._devbox_tunnels()
-
-    def _setup_identity_providers(self):
-        self.idps = {}
-        self.idps["pinlogin"] = cloudflare.AccessIdentityProvider(
-            "pinlogin",
-            account_id=self.account.id,
-            name="",
-            type="onetimepin",
-        )
 
     def _setup_zones(self):
         self.zones = {}
@@ -110,37 +33,94 @@ class CloudFlare():
             config["zone"] = name
             self.zones[name] = cloudflare.Zone(name, **config)
 
-    def _devbox_tunnels(self):
+
+class Node():
+    def __init__(self, name, zone):
+        self.name = name
+        self.zone = zone
+        self.loadNodeConfig()
+        self.parseTags()
+        self.vm()
+        self.volume()
+        self.hostRecord(zone)
+        self.tunnels()
+
+    def loadNodeConfig(self):
+        self.node_config = json.loads(pulumi_command.local.run(
+            command=f"colmena eval -E '{{ nodes, ... }}: nodes.{self.name}.config.deployment'",
+        ).stdout)
+
+    def parseTags(self):
+
+        defaults = {
+            "vm": {
+                "image": "ubuntu-22.04",
+                "location": "hel1",
+            },
+            "volume": {
+                "size": 0,
+                "format": "ext4",
+            }
+        }
+        config_tags = [tag for tag in self.node_config["tags"] 
+                       if tag.startswith("pulumi:")]
+        config = {
+            "vm": {},
+            "volume": {}
+        }
+
+        for tag in config_tags:
+            _, resource, attr, value = tag.split(":")
+            if attr in config[resource]:
+                raise Exception(f"pulumi:{resource}:{attr} is set multiple times.")
+            else:
+                config[resource][attr] = int(value) if value.isdigit() else value
+
+        self.config = {}
+        for key in defaults.keys():
+            self.config[key] = defaults[key] | config[key]
+
+    def vm(self):
+        with open('nixos-anywhere/user-data-arm.yaml', 'r') as f:
+            nixos_anywhere_cloud_init = f.read()
+
+        self.vm = hcloud.Server(
+            self.name,
+            **self.config["vm"],
+            user_data=nixos_anywhere_cloud_init,
+            ssh_keys=[hcloud.get_ssh_key(name="hetzner-ssh-key").id],
+            opts=pulumi.ResourceOptions(ignore_changes=["user_data"])
+        )
+        pulumi.export(f"{self.name}-ip", self.vm.ipv4_address)
+
+    def volume(self):
+        if self.config["volume"]["size"] > 0:
+            self.volume = hcloud.Volume(
+                f"{self.name}-data",
+                **self.config["volume"],
+                server_id = self.vm.id,
+                automount=False,
+                delete_protection=True,
+            )
+
+    def hostRecord(self, zone):
+        self.hostRecord = cloudflare.Record(
+            self.node_config["targetHost"],
+            name=self.node_config["targetHost"].removesuffix(f".{self.zone.zone}"),
+            type="A",
+            proxied=False,
+            value=self.vm.ipv4_address,
+            zone_id=zone.id,
+        )
+
+    def tunnels(self):
         self.tunnels = {}
-        devbox_tunnel_secret = pulumi_config.require_secret("tunnel-devbox-secret")
-        self.tunnels["devbox"] = cloudflare.Tunnel(
-            "devbox",
-            account_id=self.account.id,
-            name="devbox",
-            secret=devbox_tunnel_secret,
-            config_src="local",
-        )
 
-        def token_convert(token):
-            token["AccountTag"] = token.pop("a")
-            token["TunnelSecret"] = token.pop("s")
-            token["TunnelID"] = token.pop("t")
-            return token
-
-        token = pulumi.Output.json_loads(self.tunnels["devbox"].tunnel_token.apply(
-            lambda token: base64.b64decode(token)
-        )).apply(token_convert)
-        pulumi.export("devbox-tunnel-credentials", pulumi.Output.json_dumps(token))
-
-        devbox_ingress = pulumi_command.local.run(
-            command="colmena eval -E '{ nodes, ... }: nodes.devbox.config.services.cloudflared.tunnels.devbox.ingress'",
-        )
-
-        def generate_cnames(ingress_config):
+        def generate_cnames(tunnel, ingresses):
             records = {}
-            for cname in ingress_config.keys():
-                if cname != "albinvass.se":
-                    record_name = cname[:-len(".albinvass.se")]
+            for cname in ingresses:
+                if cname != self.zone.zone:
+                    record_name = cname.removesuffix(f".{self.zone.zone}")
                 else:
                     record_name = "@"
                 records[cname] = cloudflare.Record(
@@ -148,50 +128,52 @@ class CloudFlare():
                     name=record_name,
                     type="CNAME",
                     proxied=True,
-                    value=self.tunnels["devbox"].cname,
-                    zone_id=self.zones["albinvass.se"].id,
+                    value=self.tunnels[tunnel].cname,
+                    zone_id=self.zone.id,
                 )
             return records
 
-        self.records.update(generate_cnames(json.loads(devbox_ingress.stdout)))
+        cloudflare_tunnels = json.loads(pulumi_command.local.run(
+            command=f"colmena eval -E '{{ nodes, ... }}: attrNames nodes.{self.name}.config.services.cloudflared.tunnels'",
+        ).stdout)
 
-        self.access_apps["devbox"] = cloudflare.AccessApplication(
-            "devbox",
-            name="devbox",
-            account_id=self.account.id,
-            type="self_hosted",
-            domain="code.albinvass.se",
-            http_only_cookie_attribute=True,
-            allowed_idps=[self.idps["pinlogin"].id],
-            enable_binding_cookie=True,
-        )
+        for tunnel in cloudflare_tunnels:
+            tunnel_secret = pulumi_config.require_secret(f"tunnel-{tunnel}-secret")
+            self.tunnels[tunnel] = cloudflare.Tunnel(
+                tunnel,
+                account_id=self.zone.account_id,
+                name=tunnel,
+                secret=tunnel_secret,
+                config_src="local",
+            )
 
-        self.access_groups["admins"] = cloudflare.AccessGroup(
-            "admins",
-            name="admins",
-            account_id=self.account.id,
-            includes=[cloudflare.AccessGroupIncludeArgs(
-                emails=["albin.vass@gmail.com"],
-            )],
-        )
+            def token_convert(token):
+                token["AccountTag"] = token.pop("a")
+                token["TunnelSecret"] = token.pop("s")
+                token["TunnelID"] = token.pop("t")
+                return token
 
-        cloudflare.AccessPolicy(
-            "devbox_allow_admins",
-            account_id=self.account.id,
-            application_id=self.access_apps["devbox"].id,
-            name="admins",
-            precedence=1,
-            decision="allow",
-            includes=[cloudflare.AccessPolicyIncludeArgs(
-                groups=[self.access_groups["admins"].id],
-            )],
-        )
+            token = pulumi.Output.json_loads(self.tunnels[tunnel].tunnel_token.apply(
+                lambda token: base64.b64decode(token)
+            )).apply(token_convert)
+
+            pulumi.export(f"{tunnel}-tunnel-credentials", pulumi.Output.json_dumps(token))
+            ingresses = json.loads(pulumi_command.local.run(
+                command=f"colmena eval -E '{{ nodes, ... }}: attrNames nodes.{self.name}.config.services.cloudflared.tunnels.{tunnel}.ingress'",
+            ).stdout)
+            generate_cnames(tunnel, ingresses)
+
 
 
 def main():
-    hz = Hetzner()
     cf = CloudFlare()
-    SteamServers(cf.zones)
+
+    nodes = json.loads(pulumi_command.local.run(
+        command="colmena eval -E '{ nodes, ... }: attrNames nodes'",
+    ).stdout)
+
+    for node in nodes:
+        Node(node, cf.zones["albinvass.se"])
 
 
 if __name__ == "__main__":

@@ -3,6 +3,10 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    steam-fetcher = {
+      url = "github:aidalgol/nix-steam-fetcher";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     disko = {
       url = "github:nix-community/disko";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -20,13 +24,25 @@
     colmena = {
       meta = {
         nixpkgs = pkgs;
+        nodeNixpkgs = let
+          pkgs-arm = import nixpkgs {
+            system = "aarch64-linux";
+            config.allowUnfree = true;
+          };
+        in {
+          devbox-arm = pkgs-arm;
+        };
       };
 
-      devbox = {name, nodes, ...}: {
+      nixos-1 = {name, nodes, ...}: {
         networking.hostName = name;
         deployment = {
-          targetHost = "65.108.153.140";
+          targetHost = "nixos-1.dev.albinvass.se";
           targetUser = "root";
+          tags = [
+            "pulumi:vm:server_type:cpx21"
+            "pulumi:volume:size:20"
+          ];
           keys = {
             "ssh_host_ed25519_key" = {
               destDir = "/etc/ssh";
@@ -52,11 +68,14 @@
         ];
       };
 
-      steam-servers = {name, nodes, ...}: {
+      devbox-arm = {name, nodes, ...}: {
         networking.hostName = name;
         deployment = {
-          targetHost = "135.181.250.128";
-          targetUser = "avass";
+          targetHost = "devbox-arm.dev.albinvass.se";
+          targetUser = "root";
+          tags = [
+            "pulumi:vm:server_type:cax21"
+          ];
           keys = {
             "ssh_host_ed25519_key" = {
               destDir = "/etc/ssh";
@@ -74,6 +93,40 @@
             };
           };
         };
+
+        imports = [
+          inputs.disko.nixosModules.disko
+          inputs.sops-nix.nixosModules.sops
+          ./nixos/hosts/devbox-arm
+        ];
+      };
+
+      steam-servers = {name, nodes, ...}: {
+        networking.hostName = name;
+        deployment = {
+          targetHost = "steam-servers.dev.albinvass.se";
+          targetUser = "avass";
+          tags = [
+            "pulumi:vm:server_type:cpx21"
+          ];
+          keys = {
+            "ssh_host_ed25519_key" = {
+              destDir = "/etc/ssh";
+              keyCommand = ["get-host-key" name "ssh_host_ed25519_key"];
+              user = "root";
+              group = "root";
+              permissions = "0600";
+            };
+            "ssh_host_ed25519_key.pub" = {
+              destDir = "/etc/ssh";
+              keyCommand = ["get-host-key" name "ssh_host_ed25519_key.pub"];
+              user = "root";
+              group = "root";
+              permissions = "0644";
+            };
+          };
+        };
+
         imports = [
           inputs.disko.nixosModules.disko
           inputs.sops-nix.nixosModules.sops
@@ -83,6 +136,13 @@
     };
     nixosConfigurations.nixos-1 = nixpkgs.lib.nixosSystem {
       inherit system;
+      modules = [
+        inputs.disko.nixosModules.disko
+        ./nixos/modules/base
+      ];
+    };
+    nixosConfigurations.devbox-arm = nixpkgs.lib.nixosSystem {
+      system = "aarch64-linux";
       modules = [
         inputs.disko.nixosModules.disko
         ./nixos/modules/base

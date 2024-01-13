@@ -1,4 +1,4 @@
-{pkgs, lib, steam-fetcher, ...}:
+{config, pkgs, lib, steam-fetcher, ...}:
 {
   nixpkgs.overlays = [steam-fetcher.overlays.default];
 	users.users.valheim = {
@@ -17,7 +17,7 @@
       owner = "valheim";
       group = "valheim";
       mode = "0600";
-      restartUnits = "valheim.service";
+      restartUnits = [ "valheim.service" ];
     };
   };
 
@@ -72,6 +72,7 @@
 		wantedBy = [ "multi-user.target" ];
 		serviceConfig = let
         script = pkgs.writeScriptBin "valheim-server" /* bash */ ''
+          #!${pkgs.bash}/bin/bash
           ${valheim-server}/valheim_server.x86_64 \
             -nographics \
             -batchmode \
@@ -92,7 +93,7 @@
 			Restart = "always";
 			User = "valheim";
 			WorkingDirectory = "~";
-      EnvironmentFile = 
+      EnvironmentFile = config.sops.secrets."valheim-server/EnvironmentFile".path;
 		};
 		environment = {
 			LD_LIBRARY_PATH = "${pkgs.steamworks-sdk-redist}/lib";

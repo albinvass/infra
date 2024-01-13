@@ -1,11 +1,18 @@
 keys:
   - &avass age19k67f8muz2n368y2n0k55wr8z0d6q9vhh22v5re5c692v3x3af9qwsnu6a
+  - &steam-servers age13eg3y49af2kyvm0yxjlvsga2fs50akdja2nqf3l06pvk428gg50sjqfss6
+  - &devbox age1xs54hz7499gcdwqdl8p069s8f2334r9p3pdyhzwqw5ju0lz774fscrj5pq
 creation_rules:
   - path_regex: ^nixos/hosts/devbox/.*
     key_groups:
     - age:
         - *avass
-        - age1xs54hz7499gcdwqdl8p069s8f2334r9p3pdyhzwqw5ju0lz774fscrj5pq
+        - *devbox
+  - path_regex: ^nixos/hosts/steam-servers/.*
+    key_groups:
+    - age:
+        - *avass
+        - *steam-servers
   - key_groups:
     - age:
         - *avass

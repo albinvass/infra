@@ -1,16 +1,16 @@
 {config, pkgs, lib, steam-fetcher, ...}:
 {
   nixpkgs.overlays = [steam-fetcher.overlays.default];
-	users.users.valheim = {
-		isSystemUser = true;
-		# Valheim puts save data in the home directory.
-		home = "/var/lib/valheim";
-		createHome = true;
-		homeMode = "750";
-		group = "valheim";
-	};
+  users.users.valheim = {
+    isSystemUser = true;
+    # Valheim puts save data in the home directory.
+    home = "/var/lib/valheim";
+    createHome = true;
+    homeMode = "750";
+    group = "valheim";
+  };
 
-	users.groups.valheim = {};
+  users.groups.valheim = {};
 
   sops.secrets = {
     "valheim-server/EnvironmentFile" = {
@@ -21,7 +21,7 @@
     };
   };
 
-	systemd.services.valheim = let
+  systemd.services.valheim = let
     valheim-server = pkgs.stdenv.mkDerivation rec {
       name = "valheim";
       src = pkgs.fetchSteam {
@@ -69,8 +69,8 @@
       };
     };
   in {
-		wantedBy = [ "multi-user.target" ];
-		serviceConfig = let
+    wantedBy = [ "multi-user.target" ];
+    serviceConfig = let
         script = pkgs.writeScriptBin "valheim-server" /* bash */ ''
           #!${pkgs.bash}/bin/bash
           ${valheim-server}/valheim_server.x86_64 \
@@ -85,19 +85,19 @@
             -backups 1
         '';
       in {
-			ExecStart = [
-				"${script}/bin/valheim-server"
-			];
-			Nice = "-5";
-			PrivateTmp = true;
-			Restart = "always";
-			User = "valheim";
-			WorkingDirectory = "~";
+      ExecStart = [
+        "${script}/bin/valheim-server"
+      ];
+      Nice = "-5";
+      PrivateTmp = true;
+      Restart = "always";
+      User = "valheim";
+      WorkingDirectory = "~";
       EnvironmentFile = config.sops.secrets."valheim-server/EnvironmentFile".path;
-		};
-		environment = {
-			LD_LIBRARY_PATH = "${pkgs.steamworks-sdk-redist}/lib";
-			SteamAppId = "892970";
-		};
-	};
+    };
+    environment = {
+      LD_LIBRARY_PATH = "${pkgs.steamworks-sdk-redist}/lib";
+      SteamAppId = "892970";
+    };
+  };
 }

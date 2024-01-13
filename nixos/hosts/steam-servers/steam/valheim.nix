@@ -1,14 +1,26 @@
-{pkgs, lib, fetchSteam, ...}: let
-	# Set to {id}-{branch}-{password} for betas.
-	steam-app = "896660";
-  valheim-server = pkgs.stdenv.mkDerivation rec {
-      name = "some-server";
-      src = fetchSteam {
+{pkgs, lib, steam-fetcher, ...}:
+{
+  nixpkgs.overlays = [steam-fetcher.overlays.default];
+	users.users.valheim = {
+		isSystemUser = true;
+		# Valheim puts save data in the home directory.
+		home = "/var/lib/valheim";
+		createHome = true;
+		homeMode = "750";
+		group = "valheim";
+	};
+
+	users.groups.valheim = {};
+
+	systemd.services.valheim = let
+    valheim-server = pkgs.stdenv.mkDerivation rec {
+      name = "valheim";
+      src = pkgs.fetchSteam {
         inherit name;
         appId = "896660";
         depotId = "896661";
         manifestId = "252049227837324070";
-        hash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
+        hash = "sha256-FZNhYn8SCuwALz5LMeOYuU2Hsc6q/pTyovqCG2wdOKs=";
       };
 
       # Skip phases that don't apply to prebuilt binaries.
@@ -23,12 +35,9 @@
         runHook preInstall
 
         mkdir -p $out
-        cp -r \
-          # list of files at the top level to copy
-          $out
-
-        # You may need to fix permissions on the main executable.
+        cp -r ./* $out/
         chmod +x $out/valheim_server.x86_64
+        patchelf --set-interpreter ${pkgs.glibc}/lib/ld-linux-x86-64.so.2 $out/valheim_server.x86_64
 
         runHook postInstall
       '';
@@ -45,32 +54,15 @@
         platforms = ["x86_64-linux"];
       };
     };
-in {
-	users.users.valheim = {
-		isSystemUser = true;
-		# Valheim puts save data in the home directory.
-		home = "/var/lib/valheim";
-		createHome = true;
-		homeMode = "750";
-		group = "valheim";
-	};
-
-	users.groups.valheim = {};
-
-	systemd.services.valheim = {
+  in {
 		wantedBy = [ "multi-user.target" ];
-
-		# Install the game before launching.
-		#wants = [ "steam@${steam-app}.service" ];
-		#after = [ "steam@${steam-app}.service" ];
-
 		serviceConfig = {
 			ExecStart = lib.escapeShellArgs [
 				"${valheim-server}/valheim_server.x86_64"
 				"-nographics"
 				"-batchmode"
 				"-savedir" "/var/lib/valheim/save"
-				"-name" "play.albinvass.se"
+				"-name" "steam-servers.dev.albinvass.se"
 				"-port" "2456"
 				"-world" "Dedicated"
 				"-password" "YOUR PASSWORD HERE!!!"
@@ -85,7 +77,7 @@ in {
 		};
 		environment = {
 			# linux64 directory is required by Valheim.
-			LD_LIBRARY_PATH = "/var/lib/steam-app-${steam-app}/linux64:${pkgs.glibc}/lib:${pkgs.libz}/lib";
+			LD_LIBRARY_PATH = "${valheim-server}/:${pkgs.glibc}/lib:${pkgs.libz}/lib";
 			SteamAppId = "892970";
 		};
 	};

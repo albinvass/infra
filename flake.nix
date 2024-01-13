@@ -32,6 +32,9 @@
         in {
           devbox-arm = pkgs-arm;
         };
+        nodeSpecialArgs = {
+          steam-servers = with inputs; { inherit steam-fetcher; };
+        };
       };
 
       nixos-1 = {name, nodes, ...}: {

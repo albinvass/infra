@@ -1,4 +1,4 @@
-{pkgs, lib, ...}: let
+{pkgs, lib, fetchSteam, ...}: let
 	# Set to {id}-{branch}-{password} for betas.
 	steam-app = "232130";
 in {

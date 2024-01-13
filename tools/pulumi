@@ -1,0 +1,6 @@
+#!/bin/env bash
+# vim: set ft=bash:
+
+GIT_ROOT="$(git rev-parse --show-toplevel)"
+
+pulumi up -C "$GIT_ROOT/pulumi" --stack albinvass/infra/infra

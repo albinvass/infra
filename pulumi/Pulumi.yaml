@@ -1,4 +1,4 @@
-name: Hetzner
+name: infra
 runtime:
   name: python
   options:

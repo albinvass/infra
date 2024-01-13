@@ -68,38 +68,38 @@
         ];
       };
 
-      devbox-arm = {name, nodes, ...}: {
-        networking.hostName = name;
-        deployment = {
-          targetHost = "devbox-arm.dev.albinvass.se";
-          targetUser = "root";
-          tags = [
-            "pulumi:vm:server_type:cax21"
-          ];
-          keys = {
-            "ssh_host_ed25519_key" = {
-              destDir = "/etc/ssh";
-              keyCommand = ["get-host-key" name "ssh_host_ed25519_key"];
-              user = "root";
-              group = "root";
-              permissions = "0600";
-            };
-            "ssh_host_ed25519_key.pub" = {
-              destDir = "/etc/ssh";
-              keyCommand = ["get-host-key" name "ssh_host_ed25519_key.pub"];
-              user = "root";
-              group = "root";
-              permissions = "0644";
-            };
-          };
-        };
+      #devbox-arm = {name, nodes, ...}: {
+      #  networking.hostName = name;
+      #  deployment = {
+      #    targetHost = "devbox-arm.dev.albinvass.se";
+      #    targetUser = "root";
+      #    tags = [
+      #      "pulumi:vm:server_type:cax21"
+      #    ];
+      #    keys = {
+      #      "ssh_host_ed25519_key" = {
+      #        destDir = "/etc/ssh";
+      #        keyCommand = ["get-host-key" name "ssh_host_ed25519_key"];
+      #        user = "root";
+      #        group = "root";
+      #        permissions = "0600";
+      #      };
+      #      "ssh_host_ed25519_key.pub" = {
+      #        destDir = "/etc/ssh";
+      #        keyCommand = ["get-host-key" name "ssh_host_ed25519_key.pub"];
+      #        user = "root";
+      #        group = "root";
+      #        permissions = "0644";
+      #      };
+      #    };
+      #  };
 
-        imports = [
-          inputs.disko.nixosModules.disko
-          inputs.sops-nix.nixosModules.sops
-          ./nixos/hosts/devbox-arm
-        ];
-      };
+      #  imports = [
+      #    inputs.disko.nixosModules.disko
+      #    inputs.sops-nix.nixosModules.sops
+      #    ./nixos/hosts/devbox-arm
+      #  ];
+      #};
 
       steam-servers = {name, nodes, ...}: {
         networking.hostName = name;
@@ -134,22 +134,16 @@
         ];
       };
     };
-    nixosConfigurations.nixos-1 = nixpkgs.lib.nixosSystem {
-      inherit system;
+
+    nixosConfigurations.nixos-base-x86_64 = nixpkgs.lib.nixosSystem {
+      system = "x86_64-linux";
       modules = [
         inputs.disko.nixosModules.disko
         ./nixos/modules/base
       ];
     };
-    nixosConfigurations.devbox-arm = nixpkgs.lib.nixosSystem {
+    nixosConfigurations.nixos-base-arm64 = nixpkgs.lib.nixosSystem {
       system = "aarch64-linux";
-      modules = [
-        inputs.disko.nixosModules.disko
-        ./nixos/modules/base
-      ];
-    };
-    nixosConfigurations.steam-servers = nixpkgs.lib.nixosSystem {
-      inherit system;
       modules = [
         inputs.disko.nixosModules.disko
         ./nixos/modules/base

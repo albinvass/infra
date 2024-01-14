@@ -74,6 +74,8 @@ class Node():
             if attr in config[resource]:
                 raise Exception(f"pulumi:{resource}:{attr} is set multiple times.")
             else:
+                if attr == "server_type":
+                    self.arch = "x86_64" if attr.startswith("cpx") else "aarch64"
                 config[resource][attr] = int(value) if value.isdigit() else value
 
         self.config = {}
@@ -81,7 +83,7 @@ class Node():
             self.config[key] = defaults[key] | config[key]
 
     def vm(self):
-        with open('nixos-anywhere/user-data-arm.yaml', 'r') as f:
+        with open(f'nixos-anywhere/user-data-{self.arch}.yaml', 'r') as f:
             nixos_anywhere_cloud_init = f.read()
 
         self.vm = hcloud.Server(

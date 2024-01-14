@@ -83,13 +83,9 @@ class Node():
             self.config[key] = defaults[key] | config[key]
 
     def vm(self):
-        with open(f'nixos-anywhere/user-data-{self.arch}.yaml', 'r') as f:
-            nixos_anywhere_cloud_init = f.read()
-
         self.vm = hcloud.Server(
             self.name,
             **self.config["vm"],
-            user_data=nixos_anywhere_cloud_init,
             ssh_keys=[hcloud.get_ssh_key(name="hetzner-ssh-key").id],
             opts=pulumi.ResourceOptions(ignore_changes=["user_data"])
         )

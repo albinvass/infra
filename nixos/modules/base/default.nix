@@ -12,6 +12,8 @@
     efiSupport = true;
     efiInstallAsRemovable = true;
   };
+  boot.kernelParams = [ "console=tty" ];
+  boot.initrd.kernelModules = [ "virtio_gpu" ];
   services.openssh.enable = true;
 
   environment.systemPackages = [

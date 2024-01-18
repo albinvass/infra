@@ -41,7 +41,7 @@ jobs:
             --cwd pulumi \
             --stack infra
         env:
-          BWS_ACCESS_TOKEN: ${{ secrets.BWS_ACCESS_TOKEN }}
+          SOPS_AGE_KEY: ${{ secrets.SOPS_AGE_KEY }}
 
       - name: Provision Servers
         run: |
@@ -50,4 +50,4 @@ jobs:
           nix develop --command -- colmena apply
           nix develop --command -- kill-ssh-agent
         env:
-          BWS_ACCESS_TOKEN: ${{ secrets.BWS_ACCESS_TOKEN }}
+          SOPS_AGE_KEY: ${{ secrets.SOPS_AGE_KEY }}

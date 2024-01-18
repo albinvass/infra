@@ -78,7 +78,7 @@
             -batchmode \
             -savedir /var/lib/valheim/save \
             -name steam-servers.dev.albinvass.se \
-            -port 2456 \
+            -port "2456" \
             -world Dedicated \
             -password "''${VALHEIM_SERVER_PASSWORD}" \
             -public 1 \
@@ -101,6 +101,6 @@
     };
   };
   networking.firewall = {
-    allowedTCPPorts = [ 2456 ];
+    allowedUDPPorts = [ 2456 2457 ];
   };
 }

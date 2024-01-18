@@ -100,4 +100,7 @@
       SteamAppId = "892970";
     };
   };
+  networking.firewall = {
+    allowedTCPPorts = [ 2456 ];
+  };
 }

@@ -1,7 +1,6 @@
 { modulesPath, config, lib, pkgs, options, ... }: {
   system.stateVersion = "23.11";
   imports = [
-    ../disk-config
     (modulesPath + "/installer/scan/not-detected.nix")
     (modulesPath + "/profiles/qemu-guest.nix")
   ];

@@ -107,7 +107,7 @@
       steam-servers = {name, nodes, ...}: {
         networking.hostName = name;
         deployment = {
-          targetHost = "steam-servers.dev.albinvass.se";
+          targetHost = "${name}.dev.albinvass.se";
           targetUser = "avass";
           tags = [
             "pulumi:vm:server_type:cpx21"

@@ -137,7 +137,7 @@
       };
     };
 
-    nixosConfigurations.nixos-base-x86_64 = nixpkgs.lib.nixosSystem {
+    nixosConfigurations.devbox = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
       modules = [
         inputs.disko.nixosModules.disko
@@ -146,7 +146,7 @@
     };
     nixosConfigurations.steam-servers = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
-      extraArgs = { inherit inputs; };
+      specialArgs = { inherit inputs; };
       modules = [
         ./nixos/hosts/steam-servers
       ];

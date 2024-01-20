@@ -1,4 +1,3 @@
-
 { modulesPath, config, lib, pkgs, options, ... }: {
   system.stateVersion = "23.11";
   imports = [

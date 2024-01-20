@@ -1,7 +1,7 @@
-{ steam-fetcher, ... }: {
+{ inputs, ... }: {
   imports = [
     ./valheim.nix
     ./palworld.nix
  ];
-  nixpkgs.overlays = [ steam-fetcher.overlays.default ];
+  nixpkgs.overlays = [ inputs.steam-fetcher.overlays.default ];
 }

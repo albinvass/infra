@@ -17,6 +17,12 @@
       mode = "0600";
       restartUnits = [ "palworld.service" ];
     };
+    "palworld-server/PalWorldSettings.ini" = {
+      owner = "palworld";
+      group = "palworld";
+      mode = "0600";
+      restartUnits = [ "palworld.service" ];
+    };
   };
 
   systemd.services.palworld = let
@@ -35,7 +41,8 @@
       dontConfigure = true;
       dontFixup = true;
 
-      buildInputs = with pkgs; [];
+      buildInputs = with pkgs; [
+      ];
       nativeBuildInputs = with pkgs; [
         autoPatchelfHook
       ];
@@ -45,8 +52,9 @@
         ls -al
         mkdir -p $out
         cp -r ./* $out/
-        #chmod +x $out/valheim_server.x86_64
-        #patchelf --set-interpreter ${pkgs.glibc}/lib/ld-linux-x86-64.so.2 $out/valheim_server.x86_64
+        chmod +x $out/PalServer.sh
+        chmod +x $out/Pal/Binaries/Linux/PalServer-Linux-Test
+        patchelf --set-interpreter ${pkgs.glibc}/lib/ld-linux-x86-64.so.2 $out/Pal/Binaries/Linux/PalServer-Linux-Test
 
         runHook postInstall
       '';
@@ -68,16 +76,14 @@
     serviceConfig = let
         script = pkgs.writeScriptBin "palworld-server" /* bash */ ''
           #!${pkgs.bash}/bin/bash
-          ${palworld-server}/valheim_server.x86_64 \
-            -nographics \
-            -batchmode \
-            -savedir /var/lib/valheim/save \
-            -name steam-servers.dev.albinvass.se \
-            -port "2456" \
-            -world Dedicated \
-            -password "''${VALHEIM_SERVER_PASSWORD}" \
-            -public 1 \
-            -backups 1
+          PATH="''${PATH}:${pkgs.xdg-user-dirs}/bin"
+          export PATH
+          # Palworld is stupid and wants to write to the directory it's installed in...
+          ${pkgs.rsync}/bin/rsync -r "${palworld-server}/" /var/lib/palworld
+          chmod -R +w /var/lib/palworld
+          mkdir -p /var/lib/palworld/Pal/Saved/Config/LinuxServer
+          cp ${config.sops.secrets."palworld-server/PalWorldSettings.ini".path} /var/lib/palworld/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini
+          "/var/lib/palworld/Pal/Binaries/Linux/PalServer-Linux-Test" Pal
         '';
       in {
       ExecStart = [

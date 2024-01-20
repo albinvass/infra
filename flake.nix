@@ -110,7 +110,7 @@
           targetHost = "${name}.dev.albinvass.se";
           targetUser = "avass";
           tags = [
-            "pulumi:vm:server_type:cpx21"
+            "pulumi:vm:server_type:cx41"
             "pulumi:volume:size:100"
           ];
           keys = {

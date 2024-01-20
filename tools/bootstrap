@@ -1,0 +1,7 @@
+#!/bin/env bash
+
+
+node="$1"
+
+eval "$(start-ssh-agent)"
+nix run github:numtide/nixos-anywhere -- --flake ".#$node" "root@$node.dev.albinvass.se"

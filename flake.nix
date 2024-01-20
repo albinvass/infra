@@ -33,7 +33,7 @@
           devbox-arm = pkgs-arm;
         };
         nodeSpecialArgs = {
-          steam-servers = with inputs; { inherit steam-fetcher; };
+          steam-servers = { inherit inputs; };
         };
       };
 
@@ -107,10 +107,11 @@
       steam-servers = {name, nodes, ...}: {
         networking.hostName = name;
         deployment = {
-          targetHost = "steam-servers.dev.albinvass.se";
+          targetHost = "${name}.dev.albinvass.se";
           targetUser = "avass";
           tags = [
-            "pulumi:vm:server_type:cpx21"
+            "pulumi:vm:server_type:cx41"
+            "pulumi:volume:size:100"
           ];
           keys = {
             "ssh_host_ed25519_key" = {
@@ -131,18 +132,23 @@
         };
 
         imports = [
-          inputs.disko.nixosModules.disko
-          inputs.sops-nix.nixosModules.sops
           ./nixos/hosts/steam-servers
         ];
       };
     };
 
-    nixosConfigurations.nixos-base-x86_64 = nixpkgs.lib.nixosSystem {
+    nixosConfigurations.devbox = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
       modules = [
         inputs.disko.nixosModules.disko
         ./nixos/modules/base
+      ];
+    };
+    nixosConfigurations.steam-servers = nixpkgs.lib.nixosSystem {
+      system = "x86_64-linux";
+      specialArgs = { inherit inputs; };
+      modules = [
+        ./nixos/hosts/steam-servers
       ];
     };
     nixosConfigurations.nixos-base-arm64 = nixpkgs.lib.nixosSystem {

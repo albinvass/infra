@@ -1,6 +1,5 @@
-{config, pkgs, lib, steam-fetcher, ...}:
+{config, pkgs, lib, ...}:
 {
-  nixpkgs.overlays = [steam-fetcher.overlays.default];
   users.users.valheim = {
     isSystemUser = true;
     # Valheim puts save data in the home directory.

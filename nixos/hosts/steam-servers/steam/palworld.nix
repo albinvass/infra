@@ -90,7 +90,7 @@
         "${script}/bin/palworld-server"
       ];
       Nice = "-5";
-      MemoryMax="8G";
+      MemoryMax="12G";
       PrivateTmp = true;
       Restart = "always";
       User = "palworld";

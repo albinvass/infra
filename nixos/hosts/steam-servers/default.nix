@@ -2,6 +2,7 @@
   imports = [
     ./disks
     ./steam
+    ./monitoring
     ../../modules/base
     inputs.sops-nix.nixosModules.sops
   ];

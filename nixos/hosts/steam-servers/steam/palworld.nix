@@ -73,7 +73,7 @@
     };
   in {
     wantedBy = [ "multi-user.target" ];
-    onFailure = "discord-server-status@%n.service";
+    onFailure = [ "discord-server-status@%n.service" ];
     serviceConfig = let
         script = pkgs.writeScriptBin "palworld-server" /* bash */ ''
           #!${pkgs.bash}/bin/bash

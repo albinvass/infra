@@ -32,8 +32,8 @@
         inherit name;
         appId = "2394010";
         depotId = "2394012";
-        manifestId = "4603741190199642564";
-        hash = "sha256-NEnskCOl031yb0+jmsWkFHMZVVrRzM4BLLVZGko1Jk8=";
+        manifestId = "1354752814336157338";
+        hash = "sha256-+/ONkGo3/qR5UlYu+Wo9RnhZpiIRhET8cQpi8QipoWk=";
       };
 
       # Skip phases that don't apply to prebuilt binaries.
@@ -73,6 +73,7 @@
     };
   in {
     wantedBy = [ "multi-user.target" ];
+    onFailure = "discord-server-status@%n.service";
     serviceConfig = let
         script = pkgs.writeScriptBin "palworld-server" /* bash */ ''
           #!${pkgs.bash}/bin/bash

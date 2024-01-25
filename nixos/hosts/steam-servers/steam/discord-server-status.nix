@@ -20,7 +20,7 @@
           ${pkgs.discord-sh}/bin/discord.sh \
             --webhook-url "$WEBHOOK_URL" \
             --username "Server Status" \
-            --test "Server $service crashed"
+            --text "Server $service crashed"
         '';
       in "${script}/bin/discord-server-status %I";
     };

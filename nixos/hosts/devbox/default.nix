@@ -1,6 +1,7 @@
 { ... }: {
   imports = [
     ../../modules/base
+    ../../modules/disk-config
     ../../modules/development-tools
     ./minio
     ./cloudflared

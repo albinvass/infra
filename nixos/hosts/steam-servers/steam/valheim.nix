@@ -89,7 +89,7 @@
       ];
       Nice = "-5";
       PrivateTmp = true;
-      Restart = "always";
+      Restart = "on-failure";
       User = "valheim";
       WorkingDirectory = "~";
       EnvironmentFile = config.sops.secrets."valheim-server/EnvironmentFile".path;

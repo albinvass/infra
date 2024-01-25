@@ -73,17 +73,45 @@
     };
   in {
     wantedBy = [ "multi-user.target" ];
-    onFailure = [ "discord-server-status@%n.service" ];
+    #onFailure = [ "discord-server-status@%n.service" ];
     serviceConfig = let
+        crashScript = pkgs.writeScriptBin "palworld-server-status" /* bash */ ''
+          #!${pkgs.bash}/bin/bash
+          status="$1"
+          ${pkgs.discord-sh}/bin/discord.sh \
+            --webhook-url "$WEBHOOK_URL" \
+            --username "Server Status" \
+            --text "Palworld $status"
+        '';
         script = pkgs.writeScriptBin "palworld-server" /* bash */ ''
           #!${pkgs.bash}/bin/bash
+          set -euo pipefail
           PATH="''${PATH}:${pkgs.xdg-user-dirs}/bin"
           export PATH
+
+          function notifyStart() {
+            echo "Discord: notifyStart"
+            "${crashScript}/bin/palworld-server-status" "Starting"
+          }
+          function notifyStop() {
+            echo "Discord: notifyStop"
+            "${crashScript}/bin/palworld-server-status" "Stopped"
+          }
+          function notifyPreStart() {
+            echo "Discord: notifyPreStart"
+            "${crashScript}/bin/palworld-server-status" "Initializing"
+          }
+
+          notifyPreStart
           # Palworld is stupid and wants to write to the directory it's installed in...
           ${pkgs.rsync}/bin/rsync -r "${palworld-server}/" /var/lib/palworld
           chmod -R +w /var/lib/palworld
           mkdir -p /var/lib/palworld/Pal/Saved/Config/LinuxServer
           cp ${config.sops.secrets."palworld-server/PalWorldSettings.ini".path} /var/lib/palworld/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini
+
+          trap 'notifyStop' EXIT
+
+          notifyStart
           "/var/lib/palworld/Pal/Binaries/Linux/PalServer-Linux-Test" Pal
         '';
       in {

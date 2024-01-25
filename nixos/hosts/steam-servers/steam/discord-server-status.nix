@@ -7,7 +7,7 @@
       mode = "0600";
     };
   };
-  systemd.services.discord-server-status = {
+  systemd.services."discord-server-status@" = {
     after = [ "network.target" ];
     serviceConfig = {
       Type = "simple";
@@ -22,7 +22,7 @@
             --username "Server Status" \
             --text "Server $service crashed"
         '';
-      in "${script}/bin/discord-server-status %I";
+      in "${script}/bin/discord-server-status %i";
     };
   };
 }

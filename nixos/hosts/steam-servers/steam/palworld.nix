@@ -32,8 +32,8 @@
         inherit name;
         appId = "2394010";
         depotId = "2394012";
-        manifestId = "1354752814336157338";
-        hash = "sha256-+/ONkGo3/qR5UlYu+Wo9RnhZpiIRhET8cQpi8QipoWk=";
+        manifestId = "4190579964382773830";
+        hash = "sha256-IoI5Up+Vj6Rti9BhPH2e1o+TbpjIGmcWCc5bCV8M2Ps=";
       };
 
       # Skip phases that don't apply to prebuilt binaries.

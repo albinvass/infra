@@ -36,7 +36,7 @@ in with pkgs; mkShell {
     set +o allexport
   '';
   # Fix for pulumi
-  LD_LIBRARY_PATH = lib.makeLibraryPath [ pkgs.stdenv.cc.cc ];
+  #LD_LIBRARY_PATH = lib.makeLibraryPath [ pkgs.stdenv.cc.cc ];
   buildInputs = [
     bashInteractive
     colmena

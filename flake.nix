@@ -110,6 +110,7 @@
           targetHost = "${name}.dev.albinvass.se";
           targetUser = "avass";
           tags = [
+            "pulumi:state:enabled:false"
             "pulumi:vm:server_type:cx41"
             "pulumi:volume:size:100"
           ];

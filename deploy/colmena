@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+trap kill-ssh-agent EXIT
+eval `start-ssh-agent`
+colmena "$@"

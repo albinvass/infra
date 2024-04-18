@@ -3,6 +3,7 @@ keys:
   - &steam-servers age13eg3y49af2kyvm0yxjlvsga2fs50akdja2nqf3l06pvk428gg50sjqfss6
   - &devbox age1xs54hz7499gcdwqdl8p069s8f2334r9p3pdyhzwqw5ju0lz774fscrj5pq
   - &github-actions age1ra3d5axy6zhqvt5hlqpr0u8lcmf4dkapvh2uwvylqas6xc25zf5qlrnt7c
+  - &nixpi age1c575k873cl0pqap0kpd3s8v2tnwthsfj834dzyfvmkfgaf5gl49s7l2z5m
 creation_rules:
   - path_regex: ^nixos/hosts/devbox/.*
     key_groups:
@@ -16,6 +17,12 @@ creation_rules:
         - *avass
         - *github-actions
         - *steam-servers
+  - path_regex: ^nixos/hosts/nixpi/.*
+    key_groups:
+    - age:
+        - *avass
+        - *github-actions
+        - *nixpi
   - key_groups:
     - age:
         - *avass

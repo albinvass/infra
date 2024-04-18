@@ -3,6 +3,7 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    avass-nixos.url = "github:albinvass/nixos";
     steam-fetcher = {
       url = "github:aidalgol/nix-steam-fetcher";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -31,6 +32,7 @@
           };
         in {
           devbox-arm = pkgs-arm;
+          nixpi = pkgs-arm;
         };
         nodeSpecialArgs = {
           steam-servers = { inherit inputs; };
@@ -67,42 +69,39 @@
         imports = [
           inputs.disko.nixosModules.disko
           inputs.sops-nix.nixosModules.sops
+          inputs.avass-nixos.nixosModules.devtools
           ./nixos/hosts/devbox
         ];
       };
 
-      #devbox-arm = {name, nodes, ...}: {
-      #  networking.hostName = name;
-      #  deployment = {
-      #    targetHost = "devbox-arm.dev.albinvass.se";
-      #    targetUser = "root";
-      #    tags = [
-      #      "pulumi:vm:server_type:cax21"
-      #    ];
-      #    keys = {
-      #      "ssh_host_ed25519_key" = {
-      #        destDir = "/etc/ssh";
-      #        keyCommand = ["get-host-key" name "ssh_host_ed25519_key"];
-      #        user = "root";
-      #        group = "root";
-      #        permissions = "0600";
-      #      };
-      #      "ssh_host_ed25519_key.pub" = {
-      #        destDir = "/etc/ssh";
-      #        keyCommand = ["get-host-key" name "ssh_host_ed25519_key.pub"];
-      #        user = "root";
-      #        group = "root";
-      #        permissions = "0644";
-      #      };
-      #    };
-      #  };
+      nixpi = {name, nodes, ...}: {
+        networking.hostName = name;
+        deployment = {
+          targetHost = "nixpi";
+          targetUser = "avass";
+          keys = {
+            "ssh_host_ed25519_key" = {
+              destDir = "/etc/ssh";
+              keyCommand = ["get-host-key" name "ssh_host_ed25519_key"];
+              user = "root";
+              group = "root";
+              permissions = "0600";
+            };
+            "ssh_host_ed25519_key.pub" = {
+              destDir = "/etc/ssh";
+              keyCommand = ["get-host-key" name "ssh_host_ed25519_key.pub"];
+              user = "root";
+              group = "root";
+              permissions = "0644";
+            };
+          };
+        };
 
-      #  imports = [
-      #    inputs.disko.nixosModules.disko
-      #    inputs.sops-nix.nixosModules.sops
-      #    ./nixos/hosts/devbox-arm
-      #  ];
-      #};
+        imports = [
+          inputs.sops-nix.nixosModules.sops
+          ./nixos/hosts/nixpi
+        ];
+      };
 
       steam-servers = {name, nodes, ...}: {
         networking.hostName = name;

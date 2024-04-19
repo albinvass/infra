@@ -109,7 +109,7 @@
       steam-servers = {name, nodes, ...}: {
         networking.hostName = name;
         deployment = {
-          targetHost = "${name}.dev.albinvass.se";
+          targetHost = "${name}-ssh.albinvass.se";
           targetUser = "avass";
           tags = [
             "pulumi:state:enabled:false"

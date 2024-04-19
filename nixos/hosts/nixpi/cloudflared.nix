@@ -20,9 +20,12 @@
   services.cloudflared = {
     enable = true;
     tunnels = {
-      "nixpi" = {
+      nixpi = {
         credentialsFile = config.sops.secrets."cloudflared/credentials.json".path;
         default = "http_status:404";
+        ingress = {
+          "nixpi-ssh.albinvass.se" = "ssh://localhost:22";
+        };
       };
     };
   };

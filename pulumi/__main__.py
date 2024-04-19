@@ -129,55 +129,54 @@ class Node():
             )
 
     def tunnels(self):
-        if self.config["state"]["enabled"]:
-            self.tunnels = {}
+        self.tunnels = {}
 
-            def generate_cnames(tunnel, ingresses):
-                records = {}
-                for cname in ingresses:
-                    if cname != self.zone.zone:
-                        record_name = cname.removesuffix(f".{self.zone.zone}")
-                    else:
-                        record_name = "@"
-                    records[cname] = cloudflare.Record(
-                        cname,
-                        name=record_name,
-                        type="CNAME",
-                        proxied=True,
-                        value=self.tunnels[tunnel].cname,
-                        zone_id=self.zone.id,
-                    )
-                return records
-
-            cloudflare_tunnels = json.loads(pulumi_command.local.run(
-                command=f"colmena eval -E '{{ nodes, ... }}: attrNames nodes.{self.name}.config.services.cloudflared.tunnels'",
-            ).stdout)
-
-            for tunnel in cloudflare_tunnels:
-                tunnel_secret = pulumi_config.require_secret(f"tunnel-{tunnel}-secret")
-                self.tunnels[tunnel] = cloudflare.Tunnel(
-                    tunnel,
-                    account_id=self.zone.account_id,
-                    name=tunnel,
-                    secret=tunnel_secret,
-                    config_src="local",
+        def generate_cnames(tunnel, ingresses):
+            records = {}
+            for cname in ingresses:
+                if cname != self.zone.zone:
+                    record_name = cname.removesuffix(f".{self.zone.zone}")
+                else:
+                    record_name = "@"
+                records[cname] = cloudflare.Record(
+                    cname,
+                    name=record_name,
+                    type="CNAME",
+                    proxied=True,
+                    value=self.tunnels[tunnel].cname,
+                    zone_id=self.zone.id,
                 )
+            return records
 
-                def token_convert(token):
-                    token["AccountTag"] = token.pop("a")
-                    token["TunnelSecret"] = token.pop("s")
-                    token["TunnelID"] = token.pop("t")
-                    return token
+        cloudflare_tunnels = json.loads(pulumi_command.local.run(
+            command=f"colmena eval -E '{{ nodes, ... }}: attrNames nodes.{self.name}.config.services.cloudflared.tunnels'",
+        ).stdout)
 
-                token = pulumi.Output.json_loads(self.tunnels[tunnel].tunnel_token.apply(
-                    lambda token: base64.b64decode(token)
-                )).apply(token_convert)
+        for tunnel in cloudflare_tunnels:
+            tunnel_secret = pulumi_config.require_secret(f"tunnel-{tunnel}-secret")
+            self.tunnels[tunnel] = cloudflare.Tunnel(
+                tunnel,
+                account_id=self.zone.account_id,
+                name=tunnel,
+                secret=tunnel_secret,
+                config_src="local",
+            )
 
-                pulumi.export(f"{tunnel}-tunnel-credentials", pulumi.Output.json_dumps(token))
-                ingresses = json.loads(pulumi_command.local.run(
-                    command=f"colmena eval -E '{{ nodes, ... }}: attrNames nodes.{self.name}.config.services.cloudflared.tunnels.{tunnel}.ingress'",
-                ).stdout)
-                generate_cnames(tunnel, ingresses)
+            def token_convert(token):
+                token["AccountTag"] = token.pop("a")
+                token["TunnelSecret"] = token.pop("s")
+                token["TunnelID"] = token.pop("t")
+                return token
+
+            token = pulumi.Output.json_loads(self.tunnels[tunnel].tunnel_token.apply(
+                lambda token: base64.b64decode(token)
+            )).apply(token_convert)
+
+            pulumi.export(f"{tunnel}-tunnel-credentials", pulumi.Output.json_dumps(token))
+            ingresses = json.loads(pulumi_command.local.run(
+                command=f"colmena eval -E '{{ nodes, ... }}: attrNames nodes.{self.name}.config.services.cloudflared.tunnels.{tunnel}.ingress'",
+            ).stdout)
+            generate_cnames(tunnel, ingresses)
 
 
 

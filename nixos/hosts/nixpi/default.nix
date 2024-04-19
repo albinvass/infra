@@ -77,4 +77,8 @@
       options = [ "NOPASSWD" ];
     }];
   }];
+
+  networking.firewall = {
+    enable = true;
+  };
 }

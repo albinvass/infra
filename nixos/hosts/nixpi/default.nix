@@ -1,18 +1,19 @@
 { config, pkgs, ... }:
 {
+  imports = [
+    "${fetchTarball {
+      url = "https://github.com/NixOS/nixos-hardware/tarball/master";
+      sha256 = "sha256:03xxi728fl9rdryycajmc3gikdf9j4as7d4g4599ia20dz0pq10k";
+    }}/raspberry-pi/4"
+    ./cloudflared.nix
+  ];
+
   sops = {
     age.sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
     defaultSopsFile = ./secrets.yaml;
   };
 
   nixpkgs.config.allowUnfree = true;
-
-  imports = [
-    "${fetchTarball {
-      url = "https://github.com/NixOS/nixos-hardware/tarball/master";
-      sha256 = "sha256:0jwif5q6cx6w391n6q6cpda79xxkp2ki40rpz71jpwhfq4b9wqfw";
-    }}/raspberry-pi/4"
-  ];
 
   boot = {
     kernelPackages = pkgs.linuxKernel.packages.linux_rpi4;

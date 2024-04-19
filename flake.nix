@@ -79,6 +79,9 @@
         deployment = {
           targetHost = "nixpi";
           targetUser = "avass";
+          tags = [
+            "pulumi:state:enabled:false"
+          ];
           keys = {
             "ssh_host_ed25519_key" = {
               destDir = "/etc/ssh";

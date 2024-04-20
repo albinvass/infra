@@ -1,11 +1,8 @@
-{ config, pkgs, ... }:
+{ config, pkgs, inputs, ... }:
 {
   imports = [
-    "${fetchTarball {
-      url = "https://github.com/NixOS/nixos-hardware/tarball/master";
-      sha256 = "sha256:0jwif5q6cx6w391n6q6cpda79xxkp2ki40rpz71jpwhfq4b9wqfw";
-    }}/raspberry-pi/4"
     ./cloudflared.nix
+    inputs.nixos-hardware.nixosModules.raspberry-pi.4
   ];
 
   sops = {

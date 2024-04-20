@@ -3,6 +3,7 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixos-hardware.url = "github:NixOs/nixos-hardware/master";
     colmena-flake.url = "github:zhaofengli/colmena";
     steam-fetcher = {
       url = "github:aidalgol/nix-steam-fetcher";

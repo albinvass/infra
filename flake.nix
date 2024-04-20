@@ -82,7 +82,6 @@
           targetHost = "${name}-ssh.albinvass.se";
           targetUser = "avass";
           buildOnTarget = true;
-          sshOptions = ["-o ProxyCommand=cloudflared access ssh --hostname %h"];
           tags = [
             "enabled"
             "pulumi:state:enabled:false"

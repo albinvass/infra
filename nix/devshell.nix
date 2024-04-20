@@ -45,6 +45,9 @@ let
     set -euo pipefail
     GIT_ROOT="$(git rev-parse --show-toplevel)"
 
+    SSH_CONFIG_FILE="$GIT_ROOT/ssh/config"
+    export SSH_CONFIG_FILE
+
     set -o allexport
     eval "$(sops --output-type dotenv --extract '["env"]' -d "$GIT_ROOT/secrets.yaml")"
     set +o allexport

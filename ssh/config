@@ -1,0 +1,4 @@
+# vim: set ft=ssh_config:
+
+Host nixpi-ssh.albinvass.se
+  ProxyCommand=cloudflared access ssh --hostname %h

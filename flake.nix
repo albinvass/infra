@@ -81,7 +81,6 @@
         deployment = {
           targetHost = "${name}-ssh.albinvass.se";
           targetUser = "avass";
-          buildOnTarget = true;
           tags = [
             "enabled"
             "pulumi:state:enabled:false"

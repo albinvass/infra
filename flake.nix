@@ -47,6 +47,7 @@
           targetHost = "nixos-1.dev.albinvass.se";
           targetUser = "root";
           tags = [
+            "enabled"
             "pulumi:vm:server_type:cpx21"
             "pulumi:volume:size:20"
           ];
@@ -83,6 +84,7 @@
           buildOnTarget = true;
           sshOptions = ["-o ProxyCommand=cloudflared access ssh --hostname %h"];
           tags = [
+            "enabled"
             "pulumi:state:enabled:false"
           ];
           keys = {
@@ -115,6 +117,7 @@
           targetHost = "${name}.dev.albinvass.se";
           targetUser = "avass";
           tags = [
+            "disabled"
             "pulumi:state:enabled:false"
             "pulumi:vm:server_type:cx41"
             "pulumi:volume:size:100"

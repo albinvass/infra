@@ -43,6 +43,6 @@ jobs:
           SOPS_AGE_KEY: ${{ secrets.SOPS_AGE_KEY }}
 
       - name: Provision Servers
-        run: nix develop --command -- deploy-colmena apply
+        run: nix develop --command -- deploy-colmena apply --on @enabled
         env:
           SOPS_AGE_KEY: ${{ secrets.SOPS_AGE_KEY }}

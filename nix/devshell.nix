@@ -55,13 +55,6 @@ let
   '';
 in with pkgs; mkShell {
   LC_ALL="C.UTF-8";
-  shellHook = ''
-    GIT_ROOT="$(git rev-parse --show-toplevel)"
-    set -o allexport
-    eval $(sops --output-type dotenv --extract '["env"]' -d "$GIT_ROOT/secrets.yaml")
-    set +o allexport
-  '';
-  # Fix for pulumi
   buildInputs = [
     bashInteractive
     colmena

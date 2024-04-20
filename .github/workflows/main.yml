@@ -38,11 +38,11 @@ jobs:
         run: nix develop --command -- statix check
 
       - name: Provision Infrastructure
-        run: nix develop --command -- deploy-pulumi --yes --non-interactive
+        run: nix develop --keep SOPS_AGE_KEY --command -- deploy-pulumi --yes --non-interactive
         env:
           SOPS_AGE_KEY: ${{ secrets.SOPS_AGE_KEY }}
 
       - name: Provision Servers
-        run: nix develop --command -- deploy-colmena apply
+        run: nix develop --keep SOPS_AGE_KEY --command -- deploy-colmena apply
         env:
           SOPS_AGE_KEY: ${{ secrets.SOPS_AGE_KEY }}

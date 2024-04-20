@@ -2,6 +2,10 @@
 
 set -euo pipefail
 
+set -o allexport
+eval "$(sops --output-type dotenv --extract '["env"]' -d "$GIT_ROOT/secrets.yaml")"
+set +o allexport
+
 trap kill-ssh-agent EXIT
 eval `start-ssh-agent`
 colmena "$@"

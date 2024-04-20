@@ -1,4 +1,4 @@
-{ pkgs }:
+{ pkgs, colmena-flake }:
 let
   get-host-key = pkgs.writeScriptBin "get-host-key" /* bash */ ''
     #!/bin/env bash
@@ -57,7 +57,7 @@ in with pkgs; mkShell {
   LC_ALL="C.UTF-8";
   buildInputs = [
     bashInteractive
-    colmena
+    colmena-flake.packages.${pkgs.system}.colmena
     openssh
     terraform
     terragrunt

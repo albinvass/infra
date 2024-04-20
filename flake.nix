@@ -3,6 +3,7 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    colmena-flake.url = "github:zhaofengli/colmena";
     steam-fetcher = {
       url = "github:aidalgol/nix-steam-fetcher";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -14,7 +15,7 @@
     sops-nix.url = "github:Mic92/sops-nix";
   };
 
-  outputs = { self, nixpkgs, ... }@inputs: let
+  outputs = { self, nixpkgs, colmena-flake, ... }@inputs: let
     system = "x86_64-linux";
     pkgs = import nixpkgs {
       inherit system;
@@ -78,7 +79,7 @@
           targetHost = "${name}-ssh.albinvass.se";
           targetUser = "avass";
           buildOnTarget = true;
-          sshOptions = "ProxyCommand=cloudflared access ssh --hostname %h";
+          sshOptions = ["ProxyCommand=cloudflared access ssh --hostname %h"];
           tags = [
             "pulumi:state:enabled:false"
           ];
@@ -164,7 +165,7 @@
       };
     };
     devShells.${system} = {
-      default =  pkgs.callPackage ./nix/devshell.nix {};
+      default =  pkgs.callPackage ./nix/devshell.nix { inherit colmena-flake; };
     };
   };
 }

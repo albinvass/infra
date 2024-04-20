@@ -3,7 +3,7 @@
   imports = [
     "${fetchTarball {
       url = "https://github.com/NixOS/nixos-hardware/tarball/master";
-      sha256 = "sha256:03xxi728fl9rdryycajmc3gikdf9j4as7d4g4599ia20dz0pq10k";
+      sha256 = "sha256:0jwif5q6cx6w391n6q6cpda79xxkp2ki40rpz71jpwhfq4b9wqfw";
     }}/raspberry-pi/4"
     ./cloudflared.nix
   ];

@@ -31,8 +31,9 @@
       ensureDatabases = [ keycloakDB.name ];
       ensureUsers = [{
         name = keycloakDB.username;
-        ensurePermissions = {
-          "DATABASE keycloak" = "ALL PRIVILEGES";
+        ensureDBOwnership = true;
+        ensureClauses = {
+          login = true;
         };
       }];
     };

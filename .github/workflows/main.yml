@@ -34,6 +34,9 @@ jobs:
       - name: Check out repository code
         uses: actions/checkout@v4
 
+      - name: Lint nix
+        run: nix develop --command -- statix check
+
       - name: Provision Infrastructure
         run: nix develop --command -- deploy-pulumi --yes --non-interactive
         env:

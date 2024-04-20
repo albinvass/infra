@@ -42,8 +42,8 @@ let
   '';
   deploy-colmena = pkgs.writeScriptBin "deploy-colmena" /* bash */ ''
     #!/usr/bin/env bash
-
     set -euo pipefail
+    GIT_ROOT="$(git rev-parse --show-toplevel)"
 
     set -o allexport
     eval "$(sops --output-type dotenv --extract '["env"]' -d "$GIT_ROOT/secrets.yaml")"

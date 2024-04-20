@@ -51,5 +51,6 @@ in with pkgs; mkShell {
     kill-ssh-agent
     get-host-key
     cloudflared
+    sops
   ];
 }

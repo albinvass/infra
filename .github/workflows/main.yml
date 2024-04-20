@@ -35,11 +35,11 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Provision Infrastructure
-        run: nix develop --command ./deploy/pulumi --yes --non-interactive
+        run: nix develop --command -- deploy-pulumi --yes --non-interactive
         env:
           SOPS_AGE_KEY: ${{ secrets.SOPS_AGE_KEY }}
 
       - name: Provision Servers
-        run: nix develop --command -- ./deploy/colmena apply
+        run: nix develop --command -- deploy-colmena apply
         env:
           SOPS_AGE_KEY: ${{ secrets.SOPS_AGE_KEY }}

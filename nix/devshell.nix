@@ -27,6 +27,32 @@ let
     GIT_ROOT=$(git rev-parse --show-toplevel)
     nix run github:numtide/nixos-anywhere -- --flake ''${GIT_ROOT}#''${1} "root@$(pulumi stack output --cwd ''$GIT_ROOT/pulumi --stack albinvass/Hetzner/infra "''${1}-ip")"
   '';
+  deploy-pulumi = pkgs.writeScriptBin "deploy-pulumi" /* bash */ ''
+    #!/bin/env bash
+
+    GIT_ROOT="$(git rev-parse --show-toplevel)"
+
+    set -o allexport
+    eval "$(sops --output-type dotenv --extract '["env"]' -d "$GIT_ROOT/secrets.yaml")"
+    set +o allexport
+
+    LD_LIBRARY_PATH = lib.makeLibraryPath [ pkgs.stdenv.cc.cc ];
+    export LD_LIBRARY_PATH
+    pulumi up --cwd "$GIT_ROOT/pulumi" --stack albinvass/infra/infra "$@"
+  '';
+  deploy-colmena = pkgs.writeScriptBin "deploy-colmena" /* bash */ ''
+    #!/usr/bin/env bash
+
+    set -euo pipefail
+
+    set -o allexport
+    eval "$(sops --output-type dotenv --extract '["env"]' -d "$GIT_ROOT/secrets.yaml")"
+    set +o allexport
+
+    trap kill-ssh-agent EXIT
+    eval "$(start-ssh-agent)"
+    colmena "$@"
+  '';
 in with pkgs; mkShell {
   LC_ALL="C.UTF-8";
   shellHook = ''
@@ -36,7 +62,6 @@ in with pkgs; mkShell {
     set +o allexport
   '';
   # Fix for pulumi
-  LD_LIBRARY_PATH = lib.makeLibraryPath [ pkgs.stdenv.cc.cc ];
   buildInputs = [
     bashInteractive
     colmena
@@ -50,6 +75,8 @@ in with pkgs; mkShell {
     start-ssh-agent
     kill-ssh-agent
     get-host-key
+    deploy-pulumi
+    deploy-colmena
     cloudflared
     sops
   ];

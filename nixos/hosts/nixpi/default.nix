@@ -2,7 +2,7 @@
 {
   imports = [
     ./cloudflared.nix
-    inputs.nixos-hardware.nixosModules.raspberry-pi.4
+    inputs.nixos-hardware.nixosModules.raspberry-pi-4
   ];
 
   sops = {

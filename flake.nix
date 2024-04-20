@@ -37,6 +37,7 @@
         };
         nodeSpecialArgs = {
           steam-servers = { inherit inputs; };
+          nixpi = { inherit inputs; };
         };
       };
 

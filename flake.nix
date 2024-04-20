@@ -140,26 +140,28 @@
       };
     };
 
-    nixosConfigurations.devbox = nixpkgs.lib.nixosSystem {
-      system = "x86_64-linux";
-      modules = [
-        inputs.disko.nixosModules.disko
-        ./nixos/modules/base
-      ];
-    };
-    nixosConfigurations.steam-servers = nixpkgs.lib.nixosSystem {
-      system = "x86_64-linux";
-      specialArgs = { inherit inputs; };
-      modules = [
-        ./nixos/hosts/steam-servers
-      ];
-    };
-    nixosConfigurations.nixos-base-arm64 = nixpkgs.lib.nixosSystem {
-      system = "aarch64-linux";
-      modules = [
-        inputs.disko.nixosModules.disko
-        ./nixos/modules/base
-      ];
+    nixosConfigurations = {
+      devbox = nixpkgs.lib.nixosSystem {
+        system = "x86_64-linux";
+        modules = [
+          inputs.disko.nixosModules.disko
+          ./nixos/modules/base
+        ];
+      };
+      steam-servers = nixpkgs.lib.nixosSystem {
+        system = "x86_64-linux";
+        specialArgs = { inherit inputs; };
+        modules = [
+          ./nixos/hosts/steam-servers
+        ];
+      };
+      nixos-base-arm64 = nixpkgs.lib.nixosSystem {
+        system = "aarch64-linux";
+        modules = [
+          inputs.disko.nixosModules.disko
+          ./nixos/modules/base
+        ];
+      };
     };
     devShells.${system} = {
       default =  pkgs.callPackage ./nix/devshell.nix {};

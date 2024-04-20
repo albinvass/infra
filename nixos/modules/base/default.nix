@@ -4,14 +4,16 @@
     (modulesPath + "/installer/scan/not-detected.nix")
     (modulesPath + "/profiles/qemu-guest.nix")
   ];
-  boot.loader.grub = {
-    # no need to set devices, disko will add all devices that have a EF02 partition to the list already
-    # devices = [ ];
-    efiSupport = true;
-    efiInstallAsRemovable = true;
+  boot = {
+    loader.grub = {
+      # no need to set devices, disko will add all devices that have a EF02 partition to the list already
+      # devices = [ ];
+      efiSupport = true;
+      efiInstallAsRemovable = true;
+    };
+    kernelParams = [ "console=tty" ];
+    initrd.kernelModules = [ "virtio_gpu" ];
   };
-  boot.kernelParams = [ "console=tty" ];
-  boot.initrd.kernelModules = [ "virtio_gpu" ];
   services.openssh.enable = true;
 
   environment.systemPackages = [

@@ -77,8 +77,10 @@
       nixpi = {name, nodes, ...}: {
         networking.hostName = name;
         deployment = {
-          targetHost = "nixpi";
+          targetHost = "${name}-ssh.albinvass.se";
           targetUser = "avass";
+          buildOnTarget = true;
+          sshOptions = "ProxyCommand=cloudflared access ssh --hostname %h";
           tags = [
             "pulumi:state:enabled:false"
           ];
@@ -109,7 +111,7 @@
       steam-servers = {name, nodes, ...}: {
         networking.hostName = name;
         deployment = {
-          targetHost = "${name}-ssh.albinvass.se";
+          targetHost = "${name}.dev.albinvass.se";
           targetUser = "avass";
           tags = [
             "pulumi:state:enabled:false"

@@ -3,7 +3,6 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    avass-nixos.url = "github:albinvass/nixos";
     steam-fetcher = {
       url = "github:aidalgol/nix-steam-fetcher";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -69,7 +68,6 @@
         imports = [
           inputs.disko.nixosModules.disko
           inputs.sops-nix.nixosModules.sops
-          inputs.avass-nixos.nixosModules.devtools
           ./nixos/hosts/devbox
         ];
       };

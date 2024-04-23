@@ -2,6 +2,10 @@
   description = "Nix deployments";
 
   inputs = {
+    splitfree = {
+      url = "github:albinvass/splitfree";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     nixos-hardware.url = "github:NixOs/nixos-hardware/master";
     colmena-flake.url = "github:zhaofengli/colmena";

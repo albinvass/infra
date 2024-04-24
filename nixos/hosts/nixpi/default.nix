@@ -49,7 +49,19 @@
 
   environment.systemPackages = with pkgs; [ vim inputs.splitfree.packages.${pkgs.system}.splitfree-backend ];
 
-  services.openssh.enable = true;
+  services = {
+    openssh.enable = true;
+    postgresql = {
+      ensureDatabases = [ "splitfree" ];
+      ensureUsers = [{
+        name = "splitfree";
+        ensureDBOwnership = true;
+        ensureClauses = {
+          login = true;
+        };
+      }];
+    };
+  };
 
   users = {
     mutableUsers = false;

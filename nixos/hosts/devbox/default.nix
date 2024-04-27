@@ -5,12 +5,10 @@
     ../../modules/development-tools
     ./minio
     ./cloudflared
-    ./davfs2
-    ./code-server
     ./keycloak
+    ./davfs2
     ./postgresql
     ./matrix-synapse
-    ./vault
     ./static-web-server
     ./monitoring
   ];

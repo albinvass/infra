@@ -48,6 +48,11 @@
             compress = true;
           }];
         }
+        {
+          port = 9002;
+          type = "metrics";
+          bind_addresses = ["127.0.0.1"];
+        }
       ];
       database.name = "sqlite3";
 

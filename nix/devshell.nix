@@ -36,7 +36,7 @@ let
     eval "$(sops --output-type dotenv --extract '["env"]' -d "$GIT_ROOT/secrets.yaml")"
     set +o allexport
 
-    LD_LIBRARY_PATH = lib.makeLibraryPath [ pkgs.stdenv.cc.cc ];
+    LD_LIBRARY_PATH="${pkgs.lib.makeLibraryPath [ pkgs.stdenv.cc.cc ]}";
     export LD_LIBRARY_PATH
     pulumi up --cwd "$GIT_ROOT/pulumi" --stack albinvass/infra/infra "$@"
   '';

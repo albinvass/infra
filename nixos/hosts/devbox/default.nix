@@ -5,6 +5,7 @@
     ../../modules/development-tools
     ./minio
     ./cloudflared
+    ./concourse
     ./keycloak
     ./davfs2
     ./postgresql

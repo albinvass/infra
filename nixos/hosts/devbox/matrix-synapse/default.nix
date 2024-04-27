@@ -34,6 +34,7 @@
     dataDir = "/var/lib/synapse/data";
     settings = {
       server_name = "albinvass.se";
+      enable_metrics = true;
       signing_key_path = config.sops.secrets."matrix-synapse/signing-key".path;
       listeners = [
         {

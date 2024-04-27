@@ -13,12 +13,6 @@
       ];
       scrapeConfigs =[
         {
-            job_name = "steam-servers";
-            static_configs = [{
-              targets = [ "steam-servers.dev.albinvass.se:9002" ];
-            }];
-        }
-        {
             job_name = "matrix-synapse";
             static_configs = [{
               targets = [ "localhost:9002" ];

@@ -52,6 +52,7 @@
           port = 9002;
           type = "metrics";
           bind_addresses = ["127.0.0.1"];
+          resources = [];
         }
       ];
       database.name = "sqlite3";

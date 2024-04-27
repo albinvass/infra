@@ -18,6 +18,10 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     sops-nix.url = "github:Mic92/sops-nix";
+    matrix-synapse = {
+      url = "github:element-hq/synapse";
+      flake = false;
+    };
   };
 
   outputs = { self, nixpkgs, colmena-flake, ... }@inputs: let
@@ -42,6 +46,7 @@
         nodeSpecialArgs = {
           steam-servers = { inherit inputs; };
           nixpi = { inherit inputs; };
+          nixos-1 = { inherit inputs; };
         };
       };
 

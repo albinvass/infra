@@ -90,6 +90,22 @@
         "type": "github"
       }
     },
+    "matrix-synapse": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1714155045,
+        "narHash": "sha256-r3fCcB26cKsuqefDYnffNDAWVZ6jXGayVuQVqCUKpDo=",
+        "owner": "element-hq",
+        "repo": "synapse",
+        "rev": "0fd6b269d32340c367a67ee34b963c32da080697",
+        "type": "github"
+      },
+      "original": {
+        "owner": "element-hq",
+        "repo": "synapse",
+        "type": "github"
+      }
+    },
     "nixos-hardware": {
       "locked": {
         "lastModified": 1713864415,
@@ -192,6 +208,7 @@
       "inputs": {
         "colmena-flake": "colmena-flake",
         "disko": "disko",
+        "matrix-synapse": "matrix-synapse",
         "nixos-hardware": "nixos-hardware",
         "nixpkgs": "nixpkgs_2",
         "sops-nix": "sops-nix",

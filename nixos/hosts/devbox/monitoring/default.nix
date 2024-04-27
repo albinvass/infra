@@ -1,4 +1,4 @@
-{ config, pkgs, ... }: {
+{ config, pkgs, inputs, ... }: {
   environment.systemPackages = [ pkgs.jdk17_headless ];
   services = {
     cloudflared.tunnels.devbox.ingress = {
@@ -8,6 +8,9 @@
     prometheus = {
       enable = true;
       stateDir = "prometheus";
+      ruleFiles = [
+        "${inputs.matrix-synapse}/contrib/prometheus/synapse-v2.rules"
+      ];
       scrapeConfigs =[
         {
             job_name = "steam-servers";
@@ -25,6 +28,15 @@
     };
     grafana = {
       enable = true;
+      provision = {
+        dashboards.settings = {
+          apiVersion = 1;
+          providers = [{
+              name = "default";
+              options.path = "${inputs.matrix-synapse}/contrib/grafana";
+          }];
+        };
+      };
       settings = {
         server = {
           root_url = "https://grafana.albinvass.se";

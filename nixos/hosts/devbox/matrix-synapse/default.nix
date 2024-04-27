@@ -51,6 +51,7 @@
         {
           port = 9002;
           type = "metrics";
+          tls = false;
           bind_addresses = ["127.0.0.1"];
           resources = [];
         }

@@ -29,24 +29,6 @@
     };
   };
 
-  sops.secrets = {
-    "network/wireless.env" = {
-      owner = "root";
-      group = "root";
-      mode = "0600";
-      restartUnits = [ "wpa_supplicant-wlan0.service" ];
-    };
-  };
-
-  networking = {
-    wireless = {
-      enable = true;
-      networks."Bertil & Putte 5Ghz".psk = "@PSK_HOME@";
-      interfaces = [ "wlan0" ];
-      environmentFile = config.sops.secrets."network/wireless.env".path;
-    };
-  };
-
   environment.systemPackages = with pkgs; [ vim inputs.splitfree.packages.${pkgs.system}.splitfree-backend ];
 
   services = {

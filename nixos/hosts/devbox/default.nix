@@ -11,7 +11,6 @@
     ./matrix-synapse
     ./static-web-server
     ./monitoring
-    ./homepage
   ];
 
   sops = {

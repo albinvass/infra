@@ -4,8 +4,10 @@ on:
     branches:
       - master
 jobs:
-  lint:
+  pre:
     runs-on: ubuntu-latest
+    outputs:
+      nodes: ${{ steps.nodes.outputs.nodes }}
     steps:
     - uses: actions/checkout@v4
     - uses: cachix/install-nix-action@v26
@@ -21,8 +23,12 @@ jobs:
     - name: Lint nix
       run: devenv shell statix check
 
+    - name: Output nodes
+      id: nodes
+      run: echo "nodes=$(devenv shell get-enabled-nodes)" >> "$GITHUB_OUTPUT"
+
   pulumi:
-    needs: [ lint ]
+    needs: [ pre ]
     concurrency: deploy
     runs-on: ubuntu-latest
     steps:
@@ -49,12 +55,10 @@ jobs:
         SOPS_AGE_KEY: ${{ secrets.SOPS_AGE_KEY }}
 
   colmena:
-    needs: [ pulumi ]
+    needs: [ pulumi, pre ]
     strategy:
       matrix:
-        host:
-          - nixpi
-          - nixos-1
+        host: ${{ fromJson(needs.pre.outputs.nodes) }}
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4

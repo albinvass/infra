@@ -13,6 +13,15 @@
   ];
 
   scripts = {
+    get-enabled-nodes = {
+      exec = ''
+        colmena eval -E '{ nodes, ... }:
+          map (node: node.name)
+              (filter (node: node.enabled)
+                      (map (node: {name=node; enabled=elem "enabled" nodes.''${node}.config.deployment.tags;})
+                           (attrNames nodes)))'
+      '';
+    };
     get-host-key = {
       description = "Get host key from secrets.yaml";
       exec = /* bash */ ''

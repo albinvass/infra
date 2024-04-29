@@ -29,7 +29,7 @@ jobs:
 
   pulumi:
     needs: [ pre ]
-    concurrency: deploy
+    concurrency: pulumi
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
@@ -56,6 +56,7 @@ jobs:
 
   colmena:
     needs: [ pulumi, pre ]
+    concurrency: colmena-${{ matrix.host }}
     strategy:
       matrix:
         host: ${{ fromJson(needs.pre.outputs.nodes) }}

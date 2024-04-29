@@ -4,45 +4,71 @@ on:
     branches:
       - master
 jobs:
-  deploy:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: cachix/install-nix-action@v26
+    - uses: cachix/cachix-action@v14
+      with:
+        name: devenv
+    - name: Install devenv.sh
+      run: nix profile install nixpkgs#devenv
+
+    - name: Check out repository code
+      uses: actions/checkout@v4
+
+    - name: Lint nix
+      run: devenv shell statix check
+
+  pulumi:
+    needs: [ lint ]
     concurrency: deploy
     runs-on: ubuntu-latest
     steps:
-      - uses: nixbuild/nix-quick-install-action@v25
-        with:
-          nix_conf: |
-            substituters = https://cache.nixos.org/
-            trusted-public-keys = cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY=
-            keep-outputs = true
+    - uses: actions/checkout@v4
+    - uses: cachix/install-nix-action@v26
+    - uses: cachix/cachix-action@v14
+      with:
+        name: devenv
+    - name: Install devenv.sh
+      run: nix profile install nixpkgs#devenv
 
-      - name: Restore and cache Nix store
-        uses: nix-community/cache-nix-action@v4.0.2
-        with:
-          key: nix-cache
-          gc-linux: true
-          gc-max-store-size-linux: 10000000000
-          purge: true
-          purge-accessed: true
-          purge-accessed-max-age: 3600
+    - name: Cache Pulumi venv
+      uses: actions/cache@v3
+      with:
+        path: pulumi/venv
+        key: pulumi-venv
 
-      - name: Cache Pulumi venv
-        uses: actions/cache@v3
-        with:
-          path: pulumi/venv
-          key: pulumi-venv
+    - name: Check out repository code
+      uses: actions/checkout@v4
 
-      - name: Check out repository code
-        uses: actions/checkout@v4
+    - name: Provision infrastructure with pulumi
+      run: devenv shell deploy-pulumi -- --yes --non-interactive
+      env:
+        SOPS_AGE_KEY: ${{ secrets.SOPS_AGE_KEY }}
 
-      - name: Lint nix
-        run: nix develop --command -- statix check
+  colmena:
+    needs: [ pulumi ]
+    strategy:
+      matrix:
+        host:
+          - nixpi
+          - nixos-1
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: cachix/install-nix-action@v26
+    - uses: cachix/cachix-action@v14
+      with:
+        name: devenv
+    - name: Install devenv.sh
+      run: nix profile install nixpkgs#devenv
 
-      - name: Provision Infrastructure
-        run: nix develop --command -- deploy-pulumi --yes --non-interactive
-        env:
-          SOPS_AGE_KEY: ${{ secrets.SOPS_AGE_KEY }}
+    - name: Check out repository code
+      uses: actions/checkout@v4
 
-      - name: Provision Servers
-        run: nix develop --command -- deploy-colmena apply --build-on-target --on @enabled
-        env:
-          SOPS_AGE_KEY: ${{ secrets.SOPS_AGE_KEY }}
+    - name: Deploy ${{ matrix.host }}
+      run: devenv shell deploy-colmena -- apply --build-on-target --on ${{ matrix.host }}
+      env:
+        SOPS_AGE_KEY: ${{ secrets.SOPS_AGE_KEY }}

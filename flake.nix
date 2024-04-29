@@ -8,7 +8,6 @@
     };
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     nixos-hardware.url = "github:NixOs/nixos-hardware/master";
-    colmena-flake.url = "github:zhaofengli/colmena";
     steam-fetcher = {
       url = "github:aidalgol/nix-steam-fetcher";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -24,7 +23,7 @@
     };
   };
 
-  outputs = { self, nixpkgs, colmena-flake, ... }@inputs: let
+  outputs = { self, nixpkgs, ... }@inputs: let
     system = "x86_64-linux";
     pkgs = import nixpkgs {
       inherit system;
@@ -175,9 +174,6 @@
           ./nixos/modules/base
         ];
       };
-    };
-    devShells.${system} = {
-      default =  pkgs.callPackage ./nix/devshell.nix { inherit colmena-flake; };
     };
   };
 }

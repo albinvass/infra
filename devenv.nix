@@ -1,6 +1,9 @@
 { pkgs, inputs, ... }:
 
 {
+  devcontainer = {
+    enable = true;
+  };
   packages = with pkgs; [
     actionlint
     cloudflared

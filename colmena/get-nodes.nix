@@ -1,0 +1,10 @@
+{ nodes, ... }:
+(
+  builtins.filter
+    (node: node.enabled)
+    (map
+      (node: with (nodes.${node}.config); {
+        name=node; deployment=deployment; enabled=builtins.elem "enabled" deployment.tags;
+      })
+      (builtins.attrNames nodes))
+)

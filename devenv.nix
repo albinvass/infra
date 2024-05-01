@@ -16,13 +16,14 @@
   ];
 
   scripts = {
+    get-enabled-node-configs = {
+      exec = /* bash */ ''
+        colmena --impure eval -E '{ ... }@inputs: (import ./colmena/expressions.nix inputs).enabledNodeConfigs'
+      '';
+    };
     get-enabled-nodes = {
       exec = ''
-        colmena eval -E '{ nodes, ... }:
-          map (node: node.name)
-              (filter (node: node.enabled)
-                      (map (node: {name=node; enabled=elem "enabled" nodes.''${node}.config.deployment.tags;})
-                           (attrNames nodes)))'
+        colmena --impure eval -E '{ ... }@inputs: (import ./colmena/expressions.nix inputs).enabledNodes'
       '';
     };
     get-host-key = {

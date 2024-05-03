@@ -27,7 +27,7 @@
           "nixpi-ssh.albinvass.se" = "ssh://localhost:22";
         };
         ingress = {
-          "storage.albinvass.se" = "http://synologynas:5000";
+          "storage.albinvass.se" = "http://storage:5000";
         };
       };
     };

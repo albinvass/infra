@@ -56,8 +56,15 @@
           targetUser = "root";
           tags = [
             "enabled"
-            "pulumi:vm:server_type:cpx21"
-            "pulumi:volume:size:20"
+            ''pulumi:{
+              "Server": {
+                "Enabled": true,
+                "ServerType": "cpx21"
+              },
+              "Volume": {
+                "Size": 20
+              }
+            }''
           ];
           keys = {
             "ssh_host_ed25519_key" = {
@@ -91,7 +98,6 @@
           targetUser = "avass";
           tags = [
             "enabled"
-            "pulumi:state:enabled:false"
           ];
           keys = {
             "ssh_host_ed25519_key" = {
@@ -124,9 +130,15 @@
           targetUser = "avass";
           tags = [
             "disabled"
-            "pulumi:state:enabled:false"
-            "pulumi:vm:server_type:cx41"
-            "pulumi:volume:size:100"
+            ''pulumi:{
+              "Server": {
+                "Enabled": false,
+                "ServerType": "cx41"
+              },
+              "Volume": {
+                "Size": 100
+              }
+            }''
           ];
           keys = {
             "ssh_host_ed25519_key" = {

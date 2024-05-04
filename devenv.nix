@@ -10,25 +10,38 @@
     openssh
     statix
     sops
-    (pulumi.withPackages (ps: with ps; [pulumi-language-python]))
+    jq
+    (pulumi.withPackages (ps: with ps; [pulumi-language-python pulumi-language-go]))
 
     inputs.colmena.packages.${pkgs.system}.colmena
   ];
 
   scripts = {
+    colmena-expression = {
+      exec = /* bash */ ''
+        #!/usr/bin/env bash
+        set -euo pipefail
+        GIT_ROOT="$(git rev-parse --show-toplevel)"
+        expression="$1"
+        colmena --impure eval -E "{ ... }@inputs: (import $GIT_ROOT/colmena/expressions.nix inputs).$expression" | jq
+      '';
+    };
+    get-enabled-node-configs = {
+      exec = /* bash */ ''
+        #!/usr/bin/env bash
+        colmena-expression enabledNodeConfigs
+      '';
+    };
     get-enabled-nodes = {
-      exec = ''
-        colmena eval -E '{ nodes, ... }:
-          map (node: node.name)
-              (filter (node: node.enabled)
-                      (map (node: {name=node; enabled=elem "enabled" nodes.''${node}.config.deployment.tags;})
-                           (attrNames nodes)))'
+      exec = /* bash */ ''
+        #!/usr/bin/env bash
+        colmena-expression enabledNodes
       '';
     };
     get-host-key = {
       description = "Get host key from secrets.yaml";
       exec = /* bash */ ''
-        #!/bin/env bash
+        #!/usr/bin/env bash
         host="$1"
         key="$2"
         GIT_ROOT="$(git rev-parse --show-toplevel)"
@@ -39,7 +52,7 @@
     deploy-pulumi = {
       description = "Deploy pulumi conifguration.";
       exec = /* bash */ ''
-        #!/bin/env bash
+        #!/usr/bin/env bash
         GIT_ROOT="$(git rev-parse --show-toplevel)"
         set -o allexport
         eval "$(sops --output-type dotenv --extract '["env"]' -d "$GIT_ROOT/secrets.yaml")"
@@ -47,7 +60,7 @@
 
         LD_LIBRARY_PATH="${pkgs.lib.makeLibraryPath [ pkgs.stdenv.cc.cc ]}";
         export LD_LIBRARY_PATH
-        pulumi up --cwd "$GIT_ROOT/pulumi" --stack albinvass/infra/infra "$@"
+        pulumi up --cwd "$GIT_ROOT/pulumi" --stack albinvass/infra/prod "$@"
       '';
     };
 

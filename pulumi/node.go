@@ -78,7 +78,10 @@ func (n *Node) Provision(ctx *pulumi.Context, zone *cloudflare.Zone) error {
 	}
 
 	if n.Volume.Size > 0 {
-		n.provisionVolume(ctx, server)
+		err = n.provisionVolume(ctx, server)
+        if err != nil {
+            return err
+        }
 	}
 
 	if server != nil {

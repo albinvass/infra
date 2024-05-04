@@ -54,7 +54,6 @@ func main() {
 			return err
 		}
 		for _, node := range nodes {
-			ctx.Log.Debug(fmt.Sprintf("provisioning: %s", node.Name), nil)
 			err := node.Provision(ctx, cf.Zones["albinvass.se"])
 			if err != nil {
 				return fmt.Errorf("failed to provision node %s: %v", node.Name, err)

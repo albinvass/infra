@@ -24,6 +24,9 @@ jobs:
     - name: Lint nix
       run: devenv shell statix check
 
+    - name: Lint go
+      run: devenv shell bash -- -c "cd pulumi && golangci-lint run"
+
     - name: Output nodes
       id: nodes
       run: echo "nodes=$(devenv shell get-enabled-nodes)" >> "$GITHUB_OUTPUT"

@@ -44,12 +44,6 @@ jobs:
     - name: Install devenv.sh
       run: nix profile install nixpkgs#devenv
 
-    - name: Cache Pulumi venv
-      uses: actions/cache@v3
-      with:
-        path: pulumi/venv
-        key: pulumi-venv
-
     - name: Check out repository code
       uses: actions/checkout@v4
 

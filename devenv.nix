@@ -12,7 +12,7 @@ rec {
     golangci-lint
     sops
     jq
-    pulumi-bin
+    (pulumi.withPackages (ps: [ps.pulumi-language-go]))
 
     inputs.colmena.packages.${pkgs.system}.colmena
   ];

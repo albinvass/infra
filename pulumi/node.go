@@ -46,6 +46,12 @@ type TunnelToken struct {
 	TunnelID     string
 }
 
+type RawTunnelToken struct {
+	A   string
+	S string
+	T     string
+}
+
 type Node struct {
 	Name    string
 	Server  ServerConfig
@@ -170,21 +176,26 @@ func (n *Node) provisionTunnels(ctx *pulumi.Context, zone *cloudflare.Zone) erro
 			return fmt.Errorf("failed to create tunnel: %v", err)
 		}
 
-        tunnelToken := tunnel.TunnelToken.ApplyT(func(token string) TunnelToken {
+		tunnelToken := tunnel.TunnelToken.ApplyT(func(token string) TunnelToken {
 			data, err := base64.StdEncoding.DecodeString(token)
 			if err != nil {
 				panic(err)
 			}
 
-			tunnelToken := TunnelToken{}
-			err = json.Unmarshal(data, &tunnelToken)
+			rawTunnelToken := RawTunnelToken{}
+			err = json.Unmarshal(data, &rawTunnelToken)
 			if err != nil {
 				panic(err)
 			}
-			return tunnelToken
+
+			return TunnelToken{
+                AccountTag: rawTunnelToken.A,
+                TunnelSecret: rawTunnelToken.S,
+                TunnelID: rawTunnelToken.T,
+            }
 		})
 
-        ctx.Export(fmt.Sprintf("%s-tunnel-credentials", tunnelName), pulumi.JSONMarshal(tunnelToken))
+		ctx.Export(fmt.Sprintf("%s-tunnel-credentials", tunnelName), pulumi.JSONMarshal(tunnelToken))
 
 		zone.Zone.ApplyT(func(zoneName string) error {
 			for ingressName := range tunnelConfig.Ingress {

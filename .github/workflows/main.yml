@@ -47,6 +47,9 @@ jobs:
     - name: Check out repository code
       uses: actions/checkout@v4
 
+    - name: Install pulumi plugins
+      run: devenv shell bash -- -c "cd pulumi && pulumi plugin install"
+
     - name: Provision infrastructure with pulumi
       run: devenv shell deploy-pulumi -- --yes --non-interactive
       env:

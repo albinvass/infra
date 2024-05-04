@@ -47,9 +47,9 @@ type TunnelToken struct {
 }
 
 type RawTunnelToken struct {
-	A   string
+	A string
 	S string
-	T     string
+	T string
 }
 
 type Node struct {
@@ -189,10 +189,10 @@ func (n *Node) provisionTunnels(ctx *pulumi.Context, zone *cloudflare.Zone) erro
 			}
 
 			return TunnelToken{
-                AccountTag: rawTunnelToken.A,
-                TunnelSecret: rawTunnelToken.S,
-                TunnelID: rawTunnelToken.T,
-            }
+				AccountTag:   rawTunnelToken.A,
+				TunnelSecret: rawTunnelToken.S,
+				TunnelID:     rawTunnelToken.T,
+			}
 		})
 
 		ctx.Export(fmt.Sprintf("%s-tunnel-credentials", tunnelName), pulumi.JSONMarshal(tunnelToken))

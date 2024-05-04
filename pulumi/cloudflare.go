@@ -44,7 +44,7 @@ func CloudflareInit(ctx *pulumi.Context) (*Cloudflare, error) {
 	zones := make(map[string]*cloudflare.Zone, len(allZoneArgs))
 
 	for name, zoneArgs := range allZoneArgs {
-        args := zoneArgs
+		args := zoneArgs
 		args.Zone = pulumi.String(name)
 		zone, err := cloudflare.NewZone(ctx, name, &args)
 		if err != nil {

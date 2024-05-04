@@ -1,13 +1,13 @@
 { nodes, lib, ... }:
 rec {
   nodeConfigs =
-      (map
-        (node: with (nodes.${node}.config); {
-          name=node; deployment=deployment; enabled=builtins.elem "enabled" deployment.tags;
+      map
+        (node: with nodes.${node}.config; {
+          name=node; inherit deployment; enabled=builtins.elem "enabled" deployment.tags;
         })
-        (builtins.attrNames nodes));
+        (builtins.attrNames nodes);
   cloudNode =
-    (node:
+    node:
       builtins.elem
         "pulumi"
         (builtins.map
@@ -17,9 +17,9 @@ rec {
               tag
              then "pulumi"
              else tag))
-          node.deployment.tags));
+          node.deployment.tags);
   getPulumiConfig =
-    (node:
+    node:
       if cloudNode node
       then
         builtins.fromJSON
@@ -30,7 +30,7 @@ rec {
               (tag: lib.strings.hasPrefix "pulumi:" tag)
               node.deployment.tags)
             0))
-      else {Server={Enabled=false;};});
+      else {Server={Enabled=false;};};
   pulumiConfigs =
     builtins.map
       (node: {
@@ -38,10 +38,8 @@ rec {
           Tunnels=nodes.${node.name}.config.services.cloudflared.tunnels;
         } // getPulumiConfig node)
       nodeConfigs;
-  enabledNodeConfigs = (
-    builtins.filter
+  enabledNodeConfigs = builtins.filter
       (node: node.enabled)
-      nodeConfigs
-  );
+      nodeConfigs;
   enabledNodes = map (node: node.name) enabledNodeConfigs;
 }

@@ -9,6 +9,7 @@
     cloudflared
     openssh
     statix
+    golangci-lint
     sops
     jq
     (pulumi.withPackages (ps: with ps; [pulumi-language-python pulumi-language-go]))

@@ -1,6 +1,6 @@
-{ pkgs, inputs, ... }:
+{ pkgs, lib, inputs, ... }:
 
-{
+rec {
   devcontainer = {
     enable = true;
   };
@@ -11,6 +11,9 @@
     statix
     golangci-lint
     sops
+    git
+    gcc
+    go
     jq
     (pulumi.withPackages (ps: with ps; [pulumi-language-python pulumi-language-go]))
 
@@ -54,6 +57,8 @@
       description = "Deploy pulumi conifguration.";
       exec = /* bash */ ''
         #!/usr/bin/env bash
+        PATH="${lib.strings.makeSearchPath "bin" packages}:$PATH"
+        export PATH
         GIT_ROOT="$(git rev-parse --show-toplevel)"
         set -o allexport
         eval "$(sops --output-type dotenv --extract '["env"]' -d "$GIT_ROOT/secrets.yaml")"

@@ -50,9 +50,6 @@ jobs:
     - name: Delete /usr/local/bin/pulumi-language-go
       run: sudo rm -f /usr/local/bin/pulumi-language-go
 
-    - name: Install pulumi plugins
-      run: devenv shell bash -- -c "cd pulumi && pulumi plugin install"
-
     - name: Provision infrastructure with pulumi
       run: devenv shell deploy-pulumi -- --yes --non-interactive
       env:

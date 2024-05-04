@@ -58,7 +58,7 @@ rec {
         GIT_ROOT="$(git rev-parse --show-toplevel)"
         PATH="${lib.makeSearchPath "bin" [pkgs.pulumiPackages.pulumi-language-go]}:$PATH"
         export PATH
-        command -v pulumi-language-go
+        echo $PATH
         set -o allexport
         eval "$(sops --output-type dotenv --extract '["env"]' -d "$GIT_ROOT/secrets.yaml")"
         set +o allexport

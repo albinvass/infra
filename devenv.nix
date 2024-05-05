@@ -61,6 +61,7 @@ in {
           nix
           go
           git
+          gcc
         ])}"
         export PATH
 

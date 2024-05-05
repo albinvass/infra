@@ -1,8 +1,5 @@
 { pkgs, inputs, ... }:
-{
-  devcontainer = {
-    enable = true;
-  };
+let
   packages = with pkgs; [
     actionlint
     cloudflared
@@ -16,6 +13,11 @@
 
     inputs.colmena.packages.${pkgs.system}.colmena
   ];
+in {
+  devcontainer = {
+    enable = true;
+  };
+  packages = packages;
 
   scripts = {
     colmena-expression = {
@@ -55,13 +57,11 @@
       exec = /* bash */ ''
         #!/usr/bin/env bash
         GIT_ROOT="$(git rev-parse --show-toplevel)"
-        PATH="${with pkgs; lib.makeSearchPath "bin" [
-          pulumiPackages.pulumi-language-go
+        PATH="${with pkgs; lib.makeSearchPath "bin" (packages ++ [
           nix
           go
           git
-          inputs.colmena.packages.${pkgs.system}.colmena
-        ]}"
+        ])}"
         export PATH
 
         set -o allexport

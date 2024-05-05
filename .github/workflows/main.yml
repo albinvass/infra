@@ -56,7 +56,7 @@ jobs:
         SOPS_AGE_KEY: ${{ secrets.SOPS_AGE_KEY }}
 
   colmena:
-    needs: [ pre, pulumi ]
+    needs: [ pre ]
     concurrency: colmena-${{ matrix.host }}
     strategy:
       matrix:

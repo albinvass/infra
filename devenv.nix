@@ -1,5 +1,8 @@
 { pkgs, inputs, ... }:
-let
+{
+  devcontainer = {
+    enable = true;
+  };
   packages = with pkgs; [
     actionlint
     cloudflared
@@ -13,11 +16,6 @@ let
 
     inputs.colmena.packages.${pkgs.system}.colmena
   ];
-in {
-  devcontainer = {
-    enable = true;
-  };
-  inherit packages;
 
   scripts = {
     colmena-expression = {
@@ -57,13 +55,6 @@ in {
       exec = /* bash */ ''
         #!/usr/bin/env bash
         GIT_ROOT="$(git rev-parse --show-toplevel)"
-        PATH="${with pkgs; lib.makeSearchPath "bin" (packages ++ [
-          nix
-          go
-          git
-          gcc
-        ])}"
-        export PATH
 
         set -o allexport
         eval "$(sops --output-type dotenv --extract '["env"]' -d "$GIT_ROOT/secrets.yaml")"

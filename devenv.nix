@@ -17,7 +17,7 @@ in {
   devcontainer = {
     enable = true;
   };
-  packages = packages;
+  inherit packages;
 
   scripts = {
     colmena-expression = {

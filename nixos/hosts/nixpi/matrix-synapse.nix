@@ -13,10 +13,6 @@
     };
   };
 
-  environment.systemPackages = with pkgs; [
-    cifs-utils
-  ];
-
   fileSystems."/var/lib/matrix-synapse" = {
     device = "//storage/matrix-synapse";
     fsType = "cifs";

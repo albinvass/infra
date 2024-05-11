@@ -122,46 +122,6 @@
           ./nixos/hosts/nixpi
         ];
       };
-
-      steam-servers = {name, nodes, ...}: {
-        networking.hostName = name;
-        deployment = {
-          targetHost = "${name}.dev.albinvass.se";
-          targetUser = "avass";
-          tags = [
-            "disabled"
-            ''pulumi:{
-              "Server": {
-                "Enabled": false,
-                "ServerType": "cx41"
-              },
-              "Volume": {
-                "Size": 100
-              }
-            }''
-          ];
-          keys = {
-            "ssh_host_ed25519_key" = {
-              destDir = "/etc/ssh";
-              keyCommand = ["get-host-key" name "ssh_host_ed25519_key"];
-              user = "root";
-              group = "root";
-              permissions = "0600";
-            };
-            "ssh_host_ed25519_key.pub" = {
-              destDir = "/etc/ssh";
-              keyCommand = ["get-host-key" name "ssh_host_ed25519_key.pub"];
-              user = "root";
-              group = "root";
-              permissions = "0644";
-            };
-          };
-        };
-
-        imports = [
-          ./nixos/hosts/steam-servers
-        ];
-      };
     };
 
     nixosConfigurations = {
@@ -170,13 +130,6 @@
         modules = [
           inputs.disko.nixosModules.disko
           ./nixos/modules/base
-        ];
-      };
-      steam-servers = nixpkgs.lib.nixosSystem {
-        system = "x86_64-linux";
-        specialArgs = { inherit inputs; };
-        modules = [
-          ./nixos/hosts/steam-servers
         ];
       };
       nixos-base-arm64 = nixpkgs.lib.nixosSystem {

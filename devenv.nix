@@ -73,7 +73,7 @@
           GIT_ROOT="$(git rev-parse --show-toplevel)"
           cd "$GIT_ROOT"
 
-          decrypt-ca-certificate
+          #decrypt-ca-certificate
 
           CERTS_ROOT="$GIT_ROOT/certs"
           CA_ROOT="$CERTS_ROOT/ca"

@@ -42,6 +42,13 @@
           localIP = "storage.";
           localPort = 5000;
         }
+        {
+          name = "zuul.albinvass.se";
+          type = "tcp";
+          remotePort = 8084;
+          localIP = "127.0.0.1";
+          localPort = 9000;
+        }
       ];
     };
   };

@@ -1,0 +1,10 @@
+- job:
+    name: albinvass/infra:hello-world
+    run: playbooks/hello.yaml
+
+- project:
+    check: &jobs
+      jobs:
+        - albinvass/infra:hello-world
+    gate: *jobs
+    post: *jobs

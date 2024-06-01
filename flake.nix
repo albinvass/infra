@@ -2,6 +2,7 @@
   description = "Nix deployments";
 
   inputs = {
+    attic.url = "github:zhaofengli/attic";
     splitfree = {
       url = "github:albinvass/splitfree";
       inputs.nixpkgs.follows = "nixpkgs";

@@ -1,8 +1,6 @@
 { inputs, ... }:
 {
-  imports = [
-    inputs.disko.nixosModules.disko
-  ];
+  imports = [ inputs.disko.nixosModules.disko ];
   disko.devices = {
     disk = {
       os = {
@@ -66,9 +64,7 @@
               type = "filesystem";
               format = "ext4";
               mountpoint = "/";
-              mountOptions = [
-                "defaults"
-              ];
+              mountOptions = [ "defaults" ];
             };
           };
         };
@@ -82,9 +78,7 @@
               type = "filesystem";
               format = "ext4";
               mountpoint = "/var/lib";
-              mountOptions = [
-                "defaults"
-              ];
+              mountOptions = [ "defaults" ];
             };
           };
         };
@@ -92,5 +86,3 @@
     };
   };
 }
-
-

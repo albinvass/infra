@@ -1,4 +1,4 @@
-{ config, ... }: 
+{ config, ... }:
 {
   sops.secrets = {
     "keycloak/db_password" = {
@@ -14,29 +14,35 @@
       group = "keycloak";
       isSystemUser = true;
     };
-    groups.keycloak = {};
+    groups.keycloak = { };
   };
 
   services = {
-    cloudflared.tunnels.devbox.ingress = let 
-      keycloak-hostname = config.services.keycloak.settings.hostname;
-      keycloak-http-port = builtins.toString config.services.keycloak.settings.http-port;
-    in {
-      "${keycloak-hostname}" = "http://localhost:${keycloak-http-port}";
-    };
+    cloudflared.tunnels.devbox.ingress =
+      let
+        keycloak-hostname = config.services.keycloak.settings.hostname;
+        keycloak-http-port = builtins.toString config.services.keycloak.settings.http-port;
+      in
+      {
+        "${keycloak-hostname}" = "http://localhost:${keycloak-http-port}";
+      };
 
-    postgresql = let
-      keycloakDB = config.services.keycloak.database;
-    in {
-      ensureDatabases = [ keycloakDB.name ];
-      ensureUsers = [{
-        name = keycloakDB.username;
-        ensureDBOwnership = true;
-        ensureClauses = {
-          login = true;
-        };
-      }];
-    };
+    postgresql =
+      let
+        keycloakDB = config.services.keycloak.database;
+      in
+      {
+        ensureDatabases = [ keycloakDB.name ];
+        ensureUsers = [
+          {
+            name = keycloakDB.username;
+            ensureDBOwnership = true;
+            ensureClauses = {
+              login = true;
+            };
+          }
+        ];
+      };
 
     keycloak = {
       enable = true;

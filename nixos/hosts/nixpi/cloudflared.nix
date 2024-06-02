@@ -1,4 +1,5 @@
-{ config, pkgs, ... }: {
+{ config, pkgs, ... }:
+{
   sops.secrets = {
     "cloudflared/credentials.json" = {
       owner = "cloudflared";
@@ -13,9 +14,7 @@
     };
   };
 
-  environment.systemPackages = with pkgs; [
-    cloudflared
-  ];
+  environment.systemPackages = with pkgs; [ cloudflared ];
 
   services.cloudflared = {
     enable = true;

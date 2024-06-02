@@ -13,16 +13,19 @@
       Type = "simple";
       EnvironmentFile = config.sops.secrets."discord-server-status/EnvironmentFile".path;
       ExecStart =
-      let
-        script = pkgs.writeScriptBin "discord-server-status" /* bash */ ''
-          #!${pkgs.bash}/bin/bash
-          service="$1"
-          ${pkgs.discord-sh}/bin/discord.sh \
-            --webhook-url "$WEBHOOK_URL" \
-            --username "Server Status" \
-            --text "Server $service crashed"
-        '';
-      in "${script}/bin/discord-server-status %i";
+        let
+          script =
+            pkgs.writeScriptBin "discord-server-status" # bash
+              ''
+                #!${pkgs.bash}/bin/bash
+                service="$1"
+                ${pkgs.discord-sh}/bin/discord.sh \
+                  --webhook-url "$WEBHOOK_URL" \
+                  --username "Server Status" \
+                  --text "Server $service crashed"
+              '';
+        in
+        "${script}/bin/discord-server-status %i";
     };
   };
 }

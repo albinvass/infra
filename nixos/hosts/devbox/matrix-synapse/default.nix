@@ -1,4 +1,5 @@
-{ config, ... }: {
+{ config, ... }:
+{
   services.cloudflared.tunnels.devbox.ingress = {
     "matrix.albinvass.se" = "http://localhost:8008";
   };
@@ -24,9 +25,7 @@
 
   environment.etc."/static-web-server/.well-known/matrix/server" = {
     mode = "0755";
-    text = builtins.toJSON {
-      "m.server" = "matrix.albinvass.se:443";
-    };
+    text = builtins.toJSON { "m.server" = "matrix.albinvass.se:443"; };
   };
 
   services.matrix-synapse = {
@@ -39,30 +38,30 @@
       listeners = [
         {
           port = 8008;
-          bind_addresses = ["127.0.0.1"];
+          bind_addresses = [ "127.0.0.1" ];
           type = "http";
           tls = false;
           x_forwarded = true;
-          resources = [{
-            names = [ "client" "federation" ];
-            compress = true;
-          }];
+          resources = [
+            {
+              names = [
+                "client"
+                "federation"
+              ];
+              compress = true;
+            }
+          ];
         }
         {
           port = 9002;
           type = "metrics";
           tls = false;
-          bind_addresses = ["127.0.0.1"];
-          resources = [];
+          bind_addresses = [ "127.0.0.1" ];
+          resources = [ ];
         }
       ];
       database.name = "sqlite3";
-
     };
-    extraConfigFiles = [
-      config.sops.secrets."matrix-synapse/extraConfSecrets.yaml".path
-    ];
+    extraConfigFiles = [ config.sops.secrets."matrix-synapse/extraConfSecrets.yaml".path ];
   };
 }
-
-

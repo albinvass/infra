@@ -1,5 +1,4 @@
-_:
-{
+_: {
   disko.devices = {
     disk = {
       disk1 = {
@@ -46,9 +45,7 @@ _:
               type = "filesystem";
               format = "ext4";
               mountpoint = "/";
-              mountOptions = [
-                "defaults"
-              ];
+              mountOptions = [ "defaults" ];
             };
           };
         };
@@ -56,4 +53,3 @@ _:
     };
   };
 }
-

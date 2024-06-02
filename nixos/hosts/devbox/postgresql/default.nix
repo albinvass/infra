@@ -1,4 +1,5 @@
-{ lib, ... }: {
+{ lib, ... }:
+{
   fileSystems."/var/lib/postgresql" = {
     device = "/dev/data/postgresql";
     fsType = "ext4";
@@ -15,4 +16,3 @@
     '';
   };
 }
-

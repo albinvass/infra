@@ -1,4 +1,9 @@
-{ config, pkgs, inputs, ... }:
+{
+  config,
+  pkgs,
+  inputs,
+  ...
+}:
 {
   imports = [
     ./cloudflared.nix
@@ -16,7 +21,11 @@
 
   boot = {
     kernelPackages = pkgs.linuxKernel.packages.linux_rpi4;
-    initrd.availableKernelModules = [ "xhci_pci" "usbhid" "usb_storage" ];
+    initrd.availableKernelModules = [
+      "xhci_pci"
+      "usbhid"
+      "usb_storage"
+    ];
     loader = {
       grub.enable = false;
       generic-extlinux-compatible.enable = true;
@@ -31,19 +40,24 @@
     };
   };
 
-  environment.systemPackages = with pkgs; [ vim inputs.splitfree.packages.${pkgs.system}.splitfree-backend ];
+  environment.systemPackages = with pkgs; [
+    vim
+    inputs.splitfree.packages.${pkgs.system}.splitfree-backend
+  ];
 
   services = {
     openssh.enable = true;
     postgresql = {
       ensureDatabases = [ "splitfree" ];
-      ensureUsers = [{
-        name = "splitfree";
-        ensureDBOwnership = true;
-        ensureClauses = {
-          login = true;
-        };
-      }];
+      ensureUsers = [
+        {
+          name = "splitfree";
+          ensureDBOwnership = true;
+          ensureClauses = {
+            login = true;
+          };
+        }
+      ];
     };
   };
 
@@ -63,13 +77,17 @@
 
   hardware.enableRedistributableFirmware = true;
   system.stateVersion = "23.11";
-  security.sudo.extraRules = [{
-    users = [ "avass" ];
-    commands = [{
-      command = "ALL";
-      options = [ "NOPASSWD" ];
-    }];
-  }];
+  security.sudo.extraRules = [
+    {
+      users = [ "avass" ];
+      commands = [
+        {
+          command = "ALL";
+          options = [ "NOPASSWD" ];
+        }
+      ];
+    }
+  ];
 
   networking.firewall = {
     enable = true;

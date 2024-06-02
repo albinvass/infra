@@ -1,4 +1,9 @@
-{config, pkgs, lib, ...}:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 {
   users.users.valheim = {
     isSystemUser = true;
@@ -9,7 +14,7 @@
     group = "valheim";
   };
 
-  users.groups.valheim = {};
+  users.groups.valheim = { };
 
   sops.secrets = {
     "valheim-server/EnvironmentFile" = {
@@ -20,86 +25,89 @@
     };
   };
 
-  systemd.services.valheim = let
-    valheim-server = pkgs.stdenv.mkDerivation rec {
-      name = "valheim";
-      src = pkgs.fetchSteam {
-        inherit name;
-        appId = "896660";
-        depotId = "896661";
-        manifestId = "252049227837324070";
-        hash = "sha256-FZNhYn8SCuwALz5LMeOYuU2Hsc6q/pTyovqCG2wdOKs=";
-      };
+  systemd.services.valheim =
+    let
+      valheim-server = pkgs.stdenv.mkDerivation rec {
+        name = "valheim";
+        src = pkgs.fetchSteam {
+          inherit name;
+          appId = "896660";
+          depotId = "896661";
+          manifestId = "252049227837324070";
+          hash = "sha256-FZNhYn8SCuwALz5LMeOYuU2Hsc6q/pTyovqCG2wdOKs=";
+        };
 
-      # Skip phases that don't apply to prebuilt binaries.
-      dontBuild = true;
-      dontConfigure = true;
-      dontFixup = true;
+        # Skip phases that don't apply to prebuilt binaries.
+        dontBuild = true;
+        dontConfigure = true;
+        dontFixup = true;
 
-      buildInputs = with pkgs; [
-        libz
-      ];
-      nativeBuildInputs = with pkgs; [
-        autoPatchelfHook
-      ];
-      installPhase = ''
-        runHook preInstall
+        buildInputs = with pkgs; [ libz ];
+        nativeBuildInputs = with pkgs; [ autoPatchelfHook ];
+        installPhase = ''
+          runHook preInstall
 
-        mkdir -p $out
-        cp -r ./* $out/
-        chmod +x $out/valheim_server.x86_64
-        patchelf --set-interpreter ${pkgs.glibc}/lib/ld-linux-x86-64.so.2 $out/valheim_server.x86_64
-        patchelf --add-needed ${pkgs.libz}/lib/libz.so $out/valheim_server_Data/MonoBleedingEdge/x86_64/libmonobdwgc-2.0.so
-        patchelf --add-needed ${pkgs.libz}/lib/libz.so $out/valheim_server_Data/MonoBleedingEdge/x86_64/libMonoPosixHelper.so
+          mkdir -p $out
+          cp -r ./* $out/
+          chmod +x $out/valheim_server.x86_64
+          patchelf --set-interpreter ${pkgs.glibc}/lib/ld-linux-x86-64.so.2 $out/valheim_server.x86_64
+          patchelf --add-needed ${pkgs.libz}/lib/libz.so $out/valheim_server_Data/MonoBleedingEdge/x86_64/libmonobdwgc-2.0.so
+          patchelf --add-needed ${pkgs.libz}/lib/libz.so $out/valheim_server_Data/MonoBleedingEdge/x86_64/libMonoPosixHelper.so
 
-        runHook postInstall
-      '';
-
-      meta = with lib; {
-        description = "Valheim dedicated server";
-        homepage = "https://steamdb.info/app/896660/";
-        changelog = "https://store.steampowered.com/news/app/896660?updates=true";
-        sourceProvenance = with sourceTypes; [
-          binaryNativeCode # Steam games are always going to contain some native binary component.
-          binaryBytecode # e.g. Unity games using C#
-        ];
-        license = licenses.unfree;
-        platforms = ["x86_64-linux"];
-      };
-    };
-  in {
-    wantedBy = [ "multi-user.target" ];
-    serviceConfig = let
-        script = pkgs.writeScriptBin "valheim-server" /* bash */ ''
-          #!${pkgs.bash}/bin/bash
-          ${valheim-server}/valheim_server.x86_64 \
-            -nographics \
-            -batchmode \
-            -savedir /var/lib/valheim/save \
-            -name steam-servers.dev.albinvass.se \
-            -port "2456" \
-            -world Dedicated \
-            -password "''${VALHEIM_SERVER_PASSWORD}" \
-            -public 1 \
-            -backups 1
+          runHook postInstall
         '';
-      in {
-      ExecStart = [
-        "${script}/bin/valheim-server"
-      ];
-      Nice = "-5";
-      PrivateTmp = true;
-      Restart = "on-failure";
-      User = "valheim";
-      WorkingDirectory = "~";
-      EnvironmentFile = config.sops.secrets."valheim-server/EnvironmentFile".path;
+
+        meta = with lib; {
+          description = "Valheim dedicated server";
+          homepage = "https://steamdb.info/app/896660/";
+          changelog = "https://store.steampowered.com/news/app/896660?updates=true";
+          sourceProvenance = with sourceTypes; [
+            binaryNativeCode # Steam games are always going to contain some native binary component.
+            binaryBytecode # e.g. Unity games using C#
+          ];
+          license = licenses.unfree;
+          platforms = [ "x86_64-linux" ];
+        };
+      };
+    in
+    {
+      wantedBy = [ "multi-user.target" ];
+      serviceConfig =
+        let
+          script =
+            pkgs.writeScriptBin "valheim-server" # bash
+              ''
+                #!${pkgs.bash}/bin/bash
+                ${valheim-server}/valheim_server.x86_64 \
+                  -nographics \
+                  -batchmode \
+                  -savedir /var/lib/valheim/save \
+                  -name steam-servers.dev.albinvass.se \
+                  -port "2456" \
+                  -world Dedicated \
+                  -password "''${VALHEIM_SERVER_PASSWORD}" \
+                  -public 1 \
+                  -backups 1
+              '';
+        in
+        {
+          ExecStart = [ "${script}/bin/valheim-server" ];
+          Nice = "-5";
+          PrivateTmp = true;
+          Restart = "on-failure";
+          User = "valheim";
+          WorkingDirectory = "~";
+          EnvironmentFile = config.sops.secrets."valheim-server/EnvironmentFile".path;
+        };
+      environment = {
+        LD_LIBRARY_PATH = "${pkgs.steamworks-sdk-redist}/lib";
+        SteamAppId = "892970";
+      };
     };
-    environment = {
-      LD_LIBRARY_PATH = "${pkgs.steamworks-sdk-redist}/lib";
-      SteamAppId = "892970";
-    };
-  };
   networking.firewall = {
-    allowedUDPPorts = [ 2456 2457 ];
+    allowedUDPPorts = [
+      2456
+      2457
+    ];
   };
 }

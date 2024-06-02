@@ -1,8 +1,9 @@
-{config, pkgs, ...}:
+{ config, pkgs, ... }:
 let
   listenPort = "9000";
   consolePort = "9001";
-in {
+in
+{
 
   sops.secrets = {
     "minio/root-credentials" = {
@@ -25,7 +26,7 @@ in {
     rootCredentialsFile = config.sops.secrets."minio/root-credentials".path;
     listenAddress = ":${listenPort}";
     consoleAddress = ":${consolePort}";
-    dataDir = ["/var/lib/davfs2/minio/data"];
+    dataDir = [ "/var/lib/davfs2/minio/data" ];
     configDir = "/var/lib/davfs2/minio/config";
   };
 }

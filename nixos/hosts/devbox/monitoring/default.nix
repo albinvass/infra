@@ -1,4 +1,10 @@
-{ config, pkgs, inputs, ... }: {
+{
+  config,
+  pkgs,
+  inputs,
+  ...
+}:
+{
   environment.systemPackages = [ pkgs.jdk17_headless ];
   services = {
     cloudflared.tunnels.devbox.ingress = {
@@ -8,15 +14,11 @@
     prometheus = {
       enable = true;
       stateDir = "prometheus";
-      ruleFiles = [
-        "${inputs.matrix-synapse}/contrib/prometheus/synapse-v2.rules"
-      ];
-      scrapeConfigs =[
+      ruleFiles = [ "${inputs.matrix-synapse}/contrib/prometheus/synapse-v2.rules" ];
+      scrapeConfigs = [
         {
-            job_name = "matrix-synapse";
-            static_configs = [{
-              targets = [ "localhost:9002" ];
-            }];
+          job_name = "matrix-synapse";
+          static_configs = [ { targets = [ "localhost:9002" ]; } ];
         }
       ];
     };
@@ -25,10 +27,12 @@
       provision = {
         dashboards.settings = {
           apiVersion = 1;
-          providers = [{
+          providers = [
+            {
               name = "default";
               options.path = "${inputs.matrix-synapse}/contrib/grafana";
-          }];
+            }
+          ];
         };
       };
       settings = {

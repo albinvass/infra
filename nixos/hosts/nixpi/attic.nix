@@ -1,8 +1,6 @@
-{ config, inputs, ...}:
+{ config, inputs, ... }:
 {
-  imports = [
-    inputs.attic.nixosModules.atticd
-  ];
+  imports = [ inputs.attic.nixosModules.atticd ];
   sops.secrets = {
     "attic/credentialsFile" = {
       owner = config.services.atticd.user;

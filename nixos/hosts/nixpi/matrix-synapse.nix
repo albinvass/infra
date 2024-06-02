@@ -1,10 +1,11 @@
-{ config, pkgs, ... }: {
+{ config, pkgs, ... }:
+{
   users = {
     users.matrix-synapse = {
       group = "matrix-synapse";
       isSystemUser = true;
     };
-    groups.matrix-synapse = {};
+    groups.matrix-synapse = { };
   };
   sops.secrets = {
     "matrix-synapse/cifs" = {
@@ -13,15 +14,15 @@
     };
   };
 
-  environment.systemPackages = with pkgs; [
-    cifs-utils
-  ];
+  environment.systemPackages = with pkgs; [ cifs-utils ];
 
   fileSystems."/var/lib/matrix-synapse" = {
     device = "//storage/matrix-synapse";
     fsType = "cifs";
-    options = let
-      automount_opts = "x-systemd.automount,noauto,x-systemd.idle-timeout=60,x-systemd.device-timeout=5s,x-systemd.mount-timeout=5s";
-    in ["${automount_opts},credentials=${config.sops.secrets."matrix-synapse/cifs".path}"];
+    options =
+      let
+        automount_opts = "x-systemd.automount,noauto,x-systemd.idle-timeout=60,x-systemd.device-timeout=5s,x-systemd.mount-timeout=5s";
+      in
+      [ "${automount_opts},credentials=${config.sops.secrets."matrix-synapse/cifs".path}" ];
   };
 }

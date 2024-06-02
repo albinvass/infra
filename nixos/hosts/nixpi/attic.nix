@@ -22,7 +22,7 @@
     enable = true;
     credentialsFile = config.sops.secrets."attic/credentialsFile".path;
     settings = {
-      listen = "localhost:8080";
+      listen = "127.0.0.1:8080";
       chunking = {
         nar-size-threshold = 64 * 1024; # 64 KiB
         min-size = 16 * 1024; # 16 KiB

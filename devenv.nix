@@ -5,6 +5,7 @@
   };
   packages = with pkgs; [
     actionlint
+    xc
     cloudflared
     openssh
     statix

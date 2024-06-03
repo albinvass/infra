@@ -79,9 +79,9 @@ func (n *Node) Provision(ctx *pulumi.Context, zone *cloudflare.Zone) error {
 
 	if n.Volume.Size > 0 {
 		err = n.provisionVolume(ctx, server)
-        if err != nil {
-            return err
-        }
+		if err != nil {
+			return err
+		}
 	}
 
 	if server != nil {
@@ -104,11 +104,15 @@ func (n *Node) provisionServer(ctx *pulumi.Context) (*hcloud.Server, error) {
 		ServerType: pulumi.String(n.Server.ServerType),
 		Image:      pulumi.String(n.Server.Image),
 		Location:   pulumi.String(n.Server.Location),
+		SshKeys: pulumi.StringArray{
+			pulumi.String("vass@albin-xps159520"),
+		},
 	}
 	server, err := hcloud.NewServer(
 		ctx,
 		n.Name,
 		&serverArgs,
+		pulumi.IgnoreChanges([]string{"sshKeys"}),
 	)
 	if err != nil {
 		return nil, fmt.Errorf("<%s> failed to provision server: %v", n.Name, err)

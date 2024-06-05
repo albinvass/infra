@@ -3,6 +3,7 @@
   imports = [
     ../../modules/base
     ./disk-config
+    ./crowdsec.nix
   ];
 
   sops = {

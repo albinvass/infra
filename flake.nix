@@ -3,6 +3,10 @@
 
   inputs = {
     attic.url = "github:zhaofengli/attic";
+    crowdsec = {
+      url = "git+https://codeberg.org/kampka/nix-flake-crowdsec.git";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     splitfree = {
       url = "github:albinvass/splitfree";
       inputs.nixpkgs.follows = "nixpkgs";

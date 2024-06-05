@@ -17,7 +17,7 @@
     yaml = (pkgs.formats.yaml {}).generate;
     acquisitions_file = yaml "acquisitions.yaml" {
       source = "journalctl";
-      journalctl_filter = ["_SYSTEMD_UNIT=sshd.service"];
+      journalctl_filter = ["_SYSTEMD_UNIT=sshd.service" "_SYSTEMD_UNIT=nginx.service"];
       labels.type = "syslog";
     };
   in {

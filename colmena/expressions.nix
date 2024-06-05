@@ -33,6 +33,7 @@ rec {
     {
       Name = node.deployment.targetHost;
       Tunnels = nodes.${node.name}.config.services.cloudflared.tunnels;
+      VirtualHosts = builtins.attrNames nodes.${node.name}.config.services.nginx.virtualHosts;
     }
     // getPulumiConfig node
   ) nodeConfigs;

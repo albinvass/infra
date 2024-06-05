@@ -8,7 +8,7 @@
   imports = [
     ./cloudflared.nix
     ./matrix-synapse.nix
-    ./attic.nix
+    # ./attic.nix
     inputs.nixos-hardware.nixosModules.raspberry-pi-4
   ];
 
@@ -42,7 +42,7 @@
 
   environment.systemPackages = with pkgs; [
     vim
-    inputs.splitfree.packages.${pkgs.system}.splitfree-backend
+    podman
   ];
 
   services = {
@@ -92,4 +92,5 @@
   networking.firewall = {
     enable = true;
   };
+  virtualisation.containers.enable = true;
 }

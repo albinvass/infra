@@ -53,10 +53,11 @@ type RawTunnelToken struct {
 }
 
 type Node struct {
-	Name    string
-	Server  ServerConfig
-	Volume  VolumeConfig
-	Tunnels map[string]Tunnel
+	Name         string
+	Server       ServerConfig
+	Volume       VolumeConfig
+	Tunnels      map[string]Tunnel
+	VirtualHosts []string
 }
 
 var NodeDefaults = Node{
@@ -92,6 +93,12 @@ func (n *Node) Provision(ctx *pulumi.Context, zone *cloudflare.Zone) error {
 
 	if n.Tunnels != nil {
 		if err := n.provisionTunnels(ctx, zone); err != nil {
+			return err
+		}
+	}
+
+	if n.VirtualHosts != nil {
+		if err := n.provisionFromCerts(ctx, server, zone); err != nil {
 			return err
 		}
 	}
@@ -227,6 +234,37 @@ func (n *Node) provisionTunnels(ctx *pulumi.Context, zone *cloudflare.Zone) erro
 				if err != nil {
 					return err
 				}
+			}
+			return nil
+		})
+	}
+	return nil
+}
+
+func (n *Node) provisionFromCerts(ctx *pulumi.Context, server *hcloud.Server, zone *cloudflare.Zone) error {
+	for _, certRecord := range n.VirtualHosts {
+		zone.Zone.ApplyT(func(zoneName string) error {
+			recordName := ""
+			if certRecord != zoneName {
+				recordName = strings.TrimPrefix(certRecord, fmt.Sprintf(".%s", zoneName))
+			} else {
+				recordName = "@"
+			}
+			ctx.Log.Info(recordName, nil)
+			recordArgs := &cloudflare.RecordArgs{
+				Name:    pulumi.String(recordName),
+				Type:    pulumi.String("A"),
+				Proxied: pulumi.Bool(false),
+				Value:   server.Ipv4Address,
+				ZoneId:  zone.ID(),
+			}
+			_, err := cloudflare.NewRecord(
+				ctx,
+				certRecord,
+				recordArgs,
+			)
+			if err != nil {
+				return fmt.Errorf("failed to create record: %v", err)
 			}
 			return nil
 		})

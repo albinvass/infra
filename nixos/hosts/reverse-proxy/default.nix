@@ -4,6 +4,7 @@
     ../../modules/base
     ./disk-config
     ./crowdsec.nix
+    ./haproxy.nix
   ];
 
   sops = {

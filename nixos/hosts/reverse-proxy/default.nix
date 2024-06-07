@@ -5,6 +5,7 @@
     ./disk-config
     ./crowdsec.nix
     ./nginx.nix
+    ./frp.nix
   ];
 
   sops = {

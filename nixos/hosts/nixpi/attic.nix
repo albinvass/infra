@@ -3,8 +3,8 @@
   imports = [ inputs.attic.nixosModules.atticd ];
   sops.secrets = {
     "attic/credentialsFile" = {
-      owner = config.services.atticd.user;
-      inherit (config.services.atticd) group;
+      # owner = config.services.atticd.user;
+      # inherit (config.services.atticd) group;
     };
   };
 

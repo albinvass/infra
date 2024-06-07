@@ -242,15 +242,14 @@ func (n *Node) provisionTunnels(ctx *pulumi.Context, zone *cloudflare.Zone) erro
 }
 
 func (n *Node) provisionFromCerts(ctx *pulumi.Context, server *hcloud.Server, zone *cloudflare.Zone) error {
-	for _, certRecord := range n.VirtualHosts {
-		zone.Zone.ApplyT(func(zoneName string) error {
+	zone.Zone.ApplyT(func(zoneName string) error {
+		for _, certRecord := range n.VirtualHosts {
 			recordName := ""
 			if certRecord != zoneName {
 				recordName = strings.TrimPrefix(certRecord, fmt.Sprintf(".%s", zoneName))
 			} else {
 				recordName = "@"
 			}
-			ctx.Log.Info(recordName, nil)
 			recordArgs := &cloudflare.RecordArgs{
 				Name:    pulumi.String(recordName),
 				Type:    pulumi.String("A"),
@@ -266,8 +265,8 @@ func (n *Node) provisionFromCerts(ctx *pulumi.Context, server *hcloud.Server, zo
 			if err != nil {
 				return fmt.Errorf("failed to create record: %v", err)
 			}
-			return nil
-		})
-	}
+		}
+		return nil
+	})
 	return nil
 }

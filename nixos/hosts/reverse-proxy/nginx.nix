@@ -12,6 +12,10 @@
         forceSSL = true;
         enableACME = true;
       };
+      "storage.albinvass.se" = {
+        forceSSL = true;
+        enableACME = true;
+      };
     };
   };
 }

@@ -40,7 +40,7 @@
           type = "tcp";
           remotePort = 8083;
           localIP = "storage.";
-          localPort = 8080;
+          localPort = 5000;
         }
       ];
     };

@@ -1,5 +1,9 @@
-{ ... }: {
-  networking.firewall.allowedTCPPorts = [ 443 80 ];
+{ ... }:
+{
+  networking.firewall.allowedTCPPorts = [
+    443
+    80
+  ];
 
   security.acme = {
     acceptTerms = true;

@@ -1,20 +1,21 @@
 { config, ... }:
 let
   frpPort = 7000;
-in {
+in
+{
   sops.secrets = {
-    "frp/tls/certFile" = {};
-    "frp/tls/keyFile" = {};
-    "frp/tls/trustedCaFile" = {};
+    "frp/tls/certFile" = { };
+    "frp/tls/keyFile" = { };
+    "frp/tls/trustedCaFile" = { };
   };
 
   networking.firewall.allowedTCPPorts = [ frpPort ];
   systemd.services.frp.serviceConfig = {
-    LoadCredential=[
+    LoadCredential = [
       "certFile:${config.sops.secrets."frp/tls/certFile".path}"
       "keyFile:${config.sops.secrets."frp/tls/keyFile".path}"
       "trustedCaFile:${config.sops.secrets."frp/tls/trustedCaFile".path}"
-      ];
+    ];
   };
   services.frp = {
     enable = true;

@@ -1,21 +1,18 @@
-{
-  config,
-  ...
-}:
+{ config, ... }:
 
 {
   sops.secrets = {
-    "frp/tls/certFile" = {};
-    "frp/tls/keyFile" = {};
-    "frp/tls/trustedCaFile" = {};
+    "frp/tls/certFile" = { };
+    "frp/tls/keyFile" = { };
+    "frp/tls/trustedCaFile" = { };
   };
 
   systemd.services.frp.serviceConfig = {
-    LoadCredential=[
+    LoadCredential = [
       "certFile:${config.sops.secrets."frp/tls/certFile".path}"
       "keyFile:${config.sops.secrets."frp/tls/keyFile".path}"
       "trustedCaFile:${config.sops.secrets."frp/tls/trustedCaFile".path}"
-      ];
+    ];
   };
   services.frp = {
     enable = true;
@@ -30,13 +27,15 @@
           trustedCaFile = "{{ .Envs.CREDENTIALS_DIRECTORY }}/trustedCaFile";
         };
       };
-      proxies = [{
-        name = "http";
-        type = "tcp";
-        remotePort = 8082;
-        localIP = "127.0.0.1";
-        localPort = 8080;
-      }];
+      proxies = [
+        {
+          name = "http";
+          type = "tcp";
+          remotePort = 8082;
+          localIP = "127.0.0.1";
+          localPort = 8080;
+        }
+      ];
     };
   };
 }

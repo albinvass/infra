@@ -1,10 +1,16 @@
-{ config, pkgs, inputs, ... }: {
+{
+  config,
+  pkgs,
+  inputs,
+  ...
+}:
+{
   imports = [
     inputs.crowdsec.nixosModules.crowdsec
-      inputs.crowdsec.nixosModules.crowdsec-firewall-bouncer
+    inputs.crowdsec.nixosModules.crowdsec-firewall-bouncer
   ];
 
-  nixpkgs.overlays = [inputs.crowdsec.overlays.default];
+  nixpkgs.overlays = [ inputs.crowdsec.overlays.default ];
 
   sops.secrets = {
     "crowdsec/enrollKeyFile" = {
@@ -13,24 +19,29 @@
     };
   };
 
-  services.crowdsec = let
-    yaml = (pkgs.formats.yaml {}).generate;
-    acquisitions_file = yaml "acquisitions.yaml" {
-      source = "journalctl";
-      journalctl_filter = ["_SYSTEMD_UNIT=sshd.service" "_SYSTEMD_UNIT=nginx.service"];
-      labels.type = "syslog";
-    };
-  in {
-    enable = true;
-    enrollKeyFile = config.sops.secrets."crowdsec/enrollKeyFile".path;
-    allowLocalJournalAccess = true;
-    settings = {
-      crowdsec_service.acquisition_path = acquisitions_file;
-      api.server = {
-        listen_uri = "127.0.0.1:8080";
+  services.crowdsec =
+    let
+      yaml = (pkgs.formats.yaml { }).generate;
+      acquisitions_file = yaml "acquisitions.yaml" {
+        source = "journalctl";
+        journalctl_filter = [
+          "_SYSTEMD_UNIT=sshd.service"
+          "_SYSTEMD_UNIT=nginx.service"
+        ];
+        labels.type = "syslog";
+      };
+    in
+    {
+      enable = true;
+      enrollKeyFile = config.sops.secrets."crowdsec/enrollKeyFile".path;
+      allowLocalJournalAccess = true;
+      settings = {
+        crowdsec_service.acquisition_path = acquisitions_file;
+        api.server = {
+          listen_uri = "127.0.0.1:8080";
+        };
       };
     };
-  };
 
   services.crowdsec-firewall-bouncer = {
     enable = true;

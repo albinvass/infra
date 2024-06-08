@@ -20,90 +20,93 @@
 
   scripts = {
     generate-ca-certificate = {
-      exec = /* bash */ ''
-        #!/usr/bin/env bash
+      exec = # bash
+        ''
+          #!/usr/bin/env bash
 
-        set -euo pipefail
-        GIT_ROOT="$(git rev-parse --show-toplevel)"
-        CA_ROOT="$GIT_ROOT/certs/ca"
-        mkdir -p $CA_ROOT
-        cd $CA_ROOT
+          set -euo pipefail
+          GIT_ROOT="$(git rev-parse --show-toplevel)"
+          CA_ROOT="$GIT_ROOT/certs/ca"
+          mkdir -p $CA_ROOT
+          cd $CA_ROOT
 
-        openssl req \
-          -newkey rsa:4096 \
-          -x509 \
-          -sha256 \
-          -nodes \
-          -subj "/CN=root" \
-          -keyout ca.key \
-          -out ca.crt \
-          -days 3650
-      '';
+          openssl req \
+            -newkey rsa:4096 \
+            -x509 \
+            -sha256 \
+            -nodes \
+            -subj "/CN=root" \
+            -keyout ca.key \
+            -out ca.crt \
+            -days 3650
+        '';
     };
 
     decrypt-ca-certificate = {
-      exec = /* bash */ ''
-        #!/usr/bin/env bash
+      exec = # bash
+        ''
+          #!/usr/bin/env bash
 
-        set -euo pipefail
-        GIT_ROOT="$(git rev-parse --show-toplevel)"
-        cd "$GIT_ROOT"
+          set -euo pipefail
+          GIT_ROOT="$(git rev-parse --show-toplevel)"
+          cd "$GIT_ROOT"
 
-        CERTS_ROOT="$GIT_ROOT/certs"
-        CA_ROOT="$CERTS_ROOT/ca"
+          CERTS_ROOT="$GIT_ROOT/certs"
+          CA_ROOT="$CERTS_ROOT/ca"
 
-        mkdir -p "$CA_ROOT"
-        sops \
-          --extract "['ca']['cert']" \
-          -d "$GIT_ROOT/secrets.yaml" > "$CA_ROOT/ca.crt"
-        sops \
-          --extract "['ca']['key']" \
-          -d "$GIT_ROOT/secrets.yaml" > "$CA_ROOT/ca.key"
-      '';
+          mkdir -p "$CA_ROOT"
+          sops \
+            --extract "['ca']['cert']" \
+            -d "$GIT_ROOT/secrets.yaml" > "$CA_ROOT/ca.crt"
+          sops \
+            --extract "['ca']['key']" \
+            -d "$GIT_ROOT/secrets.yaml" > "$CA_ROOT/ca.key"
+        '';
     };
 
     generate-host-certificate = {
-      exec = /* bash */ ''
-        #!/usr/bin/env bash
+      exec = # bash
+        ''
+          #!/usr/bin/env bash
 
-        set -euo pipefail
-        GIT_ROOT="$(git rev-parse --show-toplevel)"
-        cd "$GIT_ROOT"
+          set -euo pipefail
+          GIT_ROOT="$(git rev-parse --show-toplevel)"
+          cd "$GIT_ROOT"
 
-        decrypt-ca-certificate
+          decrypt-ca-certificate
 
-        CERTS_ROOT="$GIT_ROOT/certs"
-        CA_ROOT="$CERTS_ROOT/ca"
-        mkdir -p $CERTS_ROOT
-        cd $CERTS_ROOT
+          CERTS_ROOT="$GIT_ROOT/certs"
+          CA_ROOT="$CERTS_ROOT/ca"
+          mkdir -p $CERTS_ROOT
+          cd $CERTS_ROOT
 
-        host="$1"; shift
-        HOST_DIR="$CERTS_ROOT/$host"
-        mkdir -p "$HOST_DIR"
+          host="$1"; shift
+          HOST_DIR="$CERTS_ROOT/$host"
+          mkdir -p "$HOST_DIR"
 
-                #  -addext "certificatePolicies = 1.2.3.4" \
-        echo "Creating private key and signing request"
-        openssl req \
-          -new \
-          -newkey rsa:4096 \
-          -subj "/C=SE/CN=$host" \
-          -addext "subjectAltName = DNS:$host" \
-          -keyout "$HOST_DIR/host.key" \
-          -nodes \
-          -out "$HOST_DIR/host.csr"
+                  #  -addext "certificatePolicies = 1.2.3.4" \
+          echo "Creating private key and signing request"
+          openssl req \
+            -new \
+            -newkey rsa:4096 \
+            -subj "/C=SE/CN=$host" \
+            -addext "subjectAltName = DNS:$host" \
+            -keyout "$HOST_DIR/host.key" \
+            -nodes \
+            -out "$HOST_DIR/host.csr"
 
-        echo "Creating certificate"
-        openssl x509 \
-          -req \
-          -CA "$CA_ROOT/ca.crt" \
-          -CAkey "$CA_ROOT/ca.key" \
-          -copy_extensions copy \
-          -set_serial "0x$(openssl rand -hex 8)" \
-          -in "$HOST_DIR/host.csr" \
-          -out "$HOST_DIR/host.crt" \
-          -days 367 \
-          -sha256
-      '';
+          echo "Creating certificate"
+          openssl x509 \
+            -req \
+            -CA "$CA_ROOT/ca.crt" \
+            -CAkey "$CA_ROOT/ca.key" \
+            -copy_extensions copy \
+            -set_serial "0x$(openssl rand -hex 8)" \
+            -in "$HOST_DIR/host.csr" \
+            -out "$HOST_DIR/host.crt" \
+            -days 367 \
+            -sha256
+        '';
     };
     colmena-expression = {
       exec = # bash

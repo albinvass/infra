@@ -12,6 +12,9 @@
 
   nixpkgs.overlays = [ inputs.crowdsec.overlays.default ];
 
+  environment.systemPackages = [
+    pkgs.ipset
+  ];
   sops.secrets = {
     "crowdsec/enrollKeyFile" = {
       owner = config.systemd.services.crowdsec.serviceConfig.User;

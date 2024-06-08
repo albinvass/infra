@@ -1,4 +1,4 @@
-{ ... }:
+{ nodes, lib, ... }:
 {
   networking.firewall.allowedTCPPorts = [
     443
@@ -11,20 +11,23 @@
   };
   services.nginx = {
     enable = true;
-    virtualHosts = {
-      "test.albinvass.se" = {
+    virtualHosts = let
+      hostDefaults = {
         forceSSL = true;
         enableACME = true;
-        locations = {
-          "/" = {
-            proxyPass = "http://127.0.0.1:8082";
+      };
+      frpProxies = lib.attrsets.mergeAttrsList (map (node: with nodes.${node}.config.services.frp;
+        if builtins.hasAttr "proxies" settings
+        then builtins.listToAttrs(map (proxy: { name = "${proxy.name}"; value = hostDefaults // {
+          locations = {
+            "/" = {
+              proxyPass = "http://127.0.0.1:${builtins.toString proxy.remotePort}";
+            };
           };
-        };
-      };
-      "storage.albinvass.se" = {
-        forceSSL = true;
-        enableACME = true;
-      };
-    };
+        };}) settings.proxies)
+        else {}
+      ) (builtins.attrNames nodes));
+
+    in frpProxies;
   };
 }

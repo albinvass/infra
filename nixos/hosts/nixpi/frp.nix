@@ -29,10 +29,17 @@
       };
       proxies = [
         {
-          name = "http";
+          name = "attic.albinvass.se";
           type = "tcp";
           remotePort = 8082;
           localIP = "127.0.0.1";
+          localPort = 8080;
+        }
+        {
+          name = "storage.albinvass.se";
+          type = "tcp";
+          remotePort = 8083;
+          localIP = "storage.";
           localPort = 8080;
         }
       ];

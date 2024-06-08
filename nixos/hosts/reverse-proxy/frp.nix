@@ -23,7 +23,7 @@ in
     settings = {
       bindPort = frpPort;
       proxyBindAddr = "127.0.0.1";
-      transport = {
+     transport = {
         tls = {
           force = true;
           certFile = "{{ .Envs.CREDENTIALS_DIRECTORY }}/certFile";

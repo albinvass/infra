@@ -8,16 +8,6 @@
     };
   };
 
-  services.cloudflared = {
-    tunnels = {
-      nixpi = {
-        ingress = {
-          "attic.albinvass.se" = "http://localhost:8080";
-        };
-      };
-    };
-  };
-
   services.atticd = {
     enable = true;
     credentialsFile = config.sops.secrets."attic/credentialsFile".path;

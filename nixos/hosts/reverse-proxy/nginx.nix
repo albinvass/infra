@@ -17,6 +17,13 @@
           forceSSL = true;
           enableACME = true;
         };
+        serverConfigs = {
+          "storage.albinvass.se" = {
+            extraConfig = ''
+              client_max_body_size 5000M;
+            '';
+          };
+        };
         frpProxies = lib.attrsets.mergeAttrsList (
           map (
             node:
@@ -39,6 +46,6 @@
           ) (builtins.attrNames nodes)
         );
       in
-      frpProxies;
+      frpProxies // serverConfigs;
   };
 }

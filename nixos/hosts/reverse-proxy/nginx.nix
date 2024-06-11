@@ -23,6 +23,11 @@
               client_max_body_size 5000M;
             '';
           };
+          "attic.albinvass.se" = {
+            extraConfig = ''
+              client_max_body_size 5000M;
+            '';
+          };
         };
         frpProxies = lib.attrsets.mergeAttrsList (
           map (
@@ -38,7 +43,9 @@
                         proxyPass = "http://127.0.0.1:${builtins.toString proxy.remotePort}";
                       };
                     };
-                  };
+                  } // (if builtins.hasAttr (proxy.name) serverConfigs then
+                        serverConfigs.${proxy.name}
+                       else {});
                 }) settings.proxies
               )
             else
@@ -46,6 +53,6 @@
           ) (builtins.attrNames nodes)
         );
       in
-      frpProxies // serverConfigs;
+      frpProxies;
   };
 }

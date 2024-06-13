@@ -1,6 +1,9 @@
+- job:
+    name: hello-world
+    run: playbooks/hello-world.yaml
 - project:
     check: &jobs
       jobs:
-        - noop
+        - hello-world
     gate: *jobs
     post: *jobs

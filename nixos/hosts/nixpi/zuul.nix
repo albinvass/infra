@@ -35,6 +35,9 @@
     "zuul/connections/github/private-key" = {
       owner = "zuul";
     };
+    "zuul/nodepool/ssh_id_ed25519" = {
+      owner = "zuul";
+    };
     "zookeeper/certs/client.pem" = {
       owner = "zuul";
     };
@@ -175,7 +178,7 @@
           component = "executor";
           extraVolumes = [
             "${volumeBasePath}/zuul-executor-${builtins.toString index}:/var/lib/zuul/builds"
-            "${zuulTenantConf}:/etc/zuul/main.yaml"
+            "${config.sops.secrets."zuul/nodepool/ssh_id_ed25519".path}:/etc/zuul/nodepool"
           ];
         in mkZuulComponent {
           inherit component index extraVolumes;

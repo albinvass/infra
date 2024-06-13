@@ -1,10 +1,6 @@
-- job:
-    name: albinvass/infra:hello-world
-    run: playbooks/hello.yaml
-
 - project:
     check: &jobs
       jobs:
-        - albinvass/infra:hello-world
+        - noop
     gate: *jobs
     post: *jobs

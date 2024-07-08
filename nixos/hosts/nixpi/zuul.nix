@@ -150,7 +150,7 @@
       }: let
           name = "zuul-${component}-${builtins.toString index}";
         in {
-          name = name;
+          inherit name;
           value = {
             inherit ports;
             hostname = "${name}.${config.networking.hostName}.albinvass.se";
@@ -197,20 +197,20 @@
 
       mkZuulSystem = { schedulers ? 0, executors ? 0, webs ? 0 }: let
           zuulSchedulers = builtins.listToAttrs (builtins.map
-            (idx: mkZuulScheduler idx)
+            mkZuulScheduler
             (lib.lists.range 1 schedulers));
           zuulExecutors = builtins.listToAttrs (builtins.map
-            (idx: mkZuulExecutor idx)
+            mkZuulExecutor
             (lib.lists.range 1 schedulers));
           zuulWebs = builtins.listToAttrs (builtins.map
-            (idx: mkZuulWeb idx)
+            mkZuulWeb
             (lib.lists.range 1 schedulers));
         in zuulSchedulers // zuulExecutors // zuulWebs;
-     in (mkZuulSystem {
+     in mkZuulSystem {
           schedulers = zuulSchedulerCount;
           executors = zuulExecutorCount;
           webs = zuulWebCount;
-        });
+        };
   in zuulSystem // {
     "zookeeper-0" = {
       hostname = "zookeeper-0";

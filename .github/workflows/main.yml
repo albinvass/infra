@@ -29,7 +29,12 @@ jobs:
 
     - name: Output nodes
       id: nodes
-      run: echo "nodes=$(devenv shell get-enabled-nodes)" >> "$GITHUB_OUTPUT"
+      run: echo "nodes=$(devenv shell get-enabled-nodes)" 2>/dev/null | tr -d'\n' >> "$GITHUB_OUTPUT"
+
+    - run:   echo "$OUTPUTS"
+      shell: bash
+      env:
+       OUTPUTS: ${{ toJSON(steps."Output nodes".outputs) }}
 
   pulumi:
     needs: [ pre ]

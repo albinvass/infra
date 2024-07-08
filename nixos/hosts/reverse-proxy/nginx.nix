@@ -43,7 +43,7 @@
                         proxyPass = "http://127.0.0.1:${builtins.toString proxy.remotePort}";
                       };
                     };
-                  } // (if builtins.hasAttr (proxy.name) serverConfigs then
+                  } // (if builtins.hasAttr proxy.name serverConfigs then
                         serverConfigs.${proxy.name}
                        else {});
                 }) settings.proxies

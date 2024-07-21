@@ -21,11 +21,35 @@
       mode = "0600";
       restartUnits = [ "matrix-synapse.service" ];
     };
+    "matrix-synapse/restic/passwordFile" = {
+      owner = "matrix-synapse";
+      group = "matrix-synapse";
+      mode = "0600";
+    };
+    "matrix-synapse/restic/repositoryFile" = {
+      owner = "matrix-synapse";
+      group = "matrix-synapse";
+      mode = "0600";
+    };
+    "matrix-synapse/restic/environmentFile" = {
+      owner = "matrix-synapse";
+      group = "matrix-synapse";
+      mode = "0600";
+    };
   };
 
   environment.etc."/static-web-server/.well-known/matrix/server" = {
     mode = "0755";
     text = builtins.toJSON { "m.server" = "matrix.albinvass.se:443"; };
+  };
+
+  services.restic.backups.matrix-synapse = {
+    passwordFile = config.sops.secrets."matrix-synapse/restic/passwordFile".path;
+    repositoryFile = config.sops.secrets."matrix-synapse/restic/repositoryFile".path;
+    environmentFile = config.sops.secrets."matrix-synapse/restic/environmentFile".path;
+    paths = [ config.services.matrix-synapse.dataDir ];
+    backupPrepareCommand = "systemctl stop matrix-synapse";
+    backupCleanupCommand = "systemctl start matrix-synapse";
   };
 
   services.matrix-synapse = {

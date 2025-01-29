@@ -49,6 +49,13 @@
           localIP = "127.0.0.1";
           localPort = 9000;
         }
+        {
+          name = "mastodon.albinvass.se";
+          type = "tcp";
+          remotePort = 8085;
+          localIP = "127.0.0.1";
+          localPort = config.services.mastodon.webPort;
+        }
       ];
     };
   };

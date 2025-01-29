@@ -9,6 +9,7 @@
     ./cloudflared.nix
     ./matrix-synapse.nix
     ./attic.nix
+    ./mastodon.nix
     ./frp.nix
     ./zuul.nix
     inputs.nixos-hardware.nixosModules.raspberry-pi-4

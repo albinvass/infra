@@ -8,9 +8,7 @@
   imports = [
     ./cloudflared.nix
     ./matrix-synapse.nix
-    ./attic.nix
     ./frp.nix
-    ./zuul.nix
     inputs.nixos-hardware.nixosModules.raspberry-pi-4
   ];
 

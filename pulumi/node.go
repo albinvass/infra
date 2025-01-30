@@ -89,16 +89,16 @@ func (n *Node) Provision(ctx *pulumi.Context, zone *cloudflare.Zone) error {
 		if err := n.provisionHostRecord(ctx, server, zone); err != nil {
 			return err
 		}
+
+		if n.VirtualHosts != nil {
+			if err := n.provisionFromCerts(ctx, server, zone); err != nil {
+				return err
+			}
+		}
 	}
 
 	if n.Tunnels != nil {
 		if err := n.provisionTunnels(ctx, zone); err != nil {
-			return err
-		}
-	}
-
-	if n.VirtualHosts != nil {
-		if err := n.provisionFromCerts(ctx, server, zone); err != nil {
 			return err
 		}
 	}
@@ -250,6 +250,7 @@ func (n *Node) provisionFromCerts(ctx *pulumi.Context, server *hcloud.Server, zo
 			} else {
 				recordName = "@"
 			}
+
 			recordArgs := &cloudflare.RecordArgs{
 				Name:    pulumi.String(recordName),
 				Type:    pulumi.String("A"),

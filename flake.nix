@@ -3,6 +3,7 @@
 
   inputs = {
     attic.url = "github:zhaofengli/attic";
+    colmena.url = "github:zhaofengli/colmena";
     crowdsec = {
       url = "git+https://codeberg.org/kampka/nix-flake-crowdsec.git";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -39,6 +40,7 @@
     in
     {
       formatter.x86_64-linux = pkgs.nixfmt-rfc-style;
+      colmenaHive = inputs.colmena.lib.makeHive self.outputs.colmena;
       colmena = {
         meta = {
           nixpkgs = pkgs;

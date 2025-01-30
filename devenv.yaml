@@ -3,4 +3,4 @@ inputs:
   nixpkgs:
     url: github:cachix/devenv-nixpkgs/rolling
   colmena:
-    url: github:zhaofengli/colmena
+    url: github:zhaofengli/colmena/main

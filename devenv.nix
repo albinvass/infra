@@ -13,6 +13,7 @@
     sops
     jq
     go
+    nix
     (pulumi.withPackages (ps: [ ps.pulumi-language-go ]))
 
     inputs.colmena.packages.${pkgs.system}.colmena
@@ -115,7 +116,7 @@
           set -euo pipefail
           GIT_ROOT="$(git rev-parse --show-toplevel)"
           expression="$1"
-          colmena --impure eval -E "{ ... }@inputs: (import $GIT_ROOT/colmena/expressions.nix inputs).$expression"
+          colmena --experimental-flake-eval --impure eval -E "{ ... }@inputs: (import $GIT_ROOT/colmena/expressions.nix inputs).$expression"
         '';
     };
     get-enabled-node-configs = {

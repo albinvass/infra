@@ -53,7 +53,8 @@
       settings = {
         hostname = "keycloak.albinvass.se";
         http-port = 10020;
-        proxy = "edge";
+        proxy-headers = "forwarded";
+        proxy-trusted-address = "127.0.0.1";
       };
     };
   };

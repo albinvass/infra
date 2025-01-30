@@ -2,7 +2,7 @@
 let
   atticUser = "atticd";
 in {
-  imports = [ inputs.attic.nixosModules.atticd ];
+  #imports = [ inputs.attic.nixosModules.atticd ];
   sops.secrets = {
     "attic/credentialsFile" = {
       # owner = config.services.atticd.user;
@@ -25,7 +25,7 @@ in {
   services.atticd = {
     enable = true;
     user = atticUser;
-    credentialsFile = config.sops.secrets."attic/credentialsFile".path;
+    environmentFile = config.sops.secrets."attic/credentialsFile".path;
     settings = {
       listen = "127.0.0.1:8080";
       database = {};

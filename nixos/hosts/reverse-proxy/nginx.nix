@@ -18,6 +18,9 @@
           enableACME = true;
         };
         serverConfigs = {
+          "immich.albinvass.se" = {};
+          "media.albinvass.se" = {};
+          "media-requests.albinvass.se" = {};
           "storage.albinvass.se" = {
             extraConfig = ''
               client_max_body_size 5000M;

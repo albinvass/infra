@@ -25,6 +25,9 @@
         ingress = {
           "nixpi-ssh.albinvass.se" = "ssh://localhost:22";
         };
+        ingress = {
+          "bazzite-ssh.albinvass.se" = "ssh://192.168.50.131:22";
+        };
       };
     };
   };

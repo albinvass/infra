@@ -70,6 +70,13 @@
           localIP = "192.168.50.131";
           localPort = 2283;
         }
+        {
+          name = "nextcloud.albinvass.se";
+          type = "tcp";
+          remotePort = 8088;
+          localIP = "192.168.50.131";
+          localPort = 8081;
+        }
       ];
     };
   };

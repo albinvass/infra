@@ -23,9 +23,22 @@
               client_max_body_size 5000M;
             '';
           };
+          "joplin.albinvass.se" = {
+            extraConfig = ''
+              client_max_body_size 500M;
+            '';
+          };
           "media.albinvass.se" = {};
           "media-requests.albinvass.se" = {};
           "nextcloud.albinvass.se" = {
+            extraConfig = ''
+              client_max_body_size 5000M;
+            '';
+          };
+          "collabora.albinvass.se" = {
+            locations."/" = {
+              proxyWebsockets = true;
+            };
             extraConfig = ''
               client_max_body_size 5000M;
             '';

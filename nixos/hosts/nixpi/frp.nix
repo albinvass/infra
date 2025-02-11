@@ -77,6 +77,20 @@
           localIP = "192.168.50.131";
           localPort = 8081;
         }
+        {
+          name = "collabora.albinvass.se";
+          type = "tcp";
+          remotePort = 8089;
+          localIP = "192.168.50.131";
+          localPort = 9980;
+        }
+        {
+          name = "joplin.albinvass.se";
+          type = "tcp";
+          remotePort = 8090;
+          localIP = "192.168.50.131";
+          localPort = 22300;
+        }
       ];
     };
   };

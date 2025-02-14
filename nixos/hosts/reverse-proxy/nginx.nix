@@ -11,6 +11,7 @@
   };
   services.nginx = {
     enable = true;
+    recommendedProxySettings = true;
     virtualHosts =
       let
         hostDefaults = {
@@ -62,15 +63,15 @@
               builtins.listToAttrs (
                 map (proxy: {
                   name = "${proxy.name}";
-                  value = hostDefaults // {
+                  value = (lib.recursiveUpdate hostDefaults (lib.recursiveUpdate {
                     locations = {
                       "/" = {
                         proxyPass = "http://127.0.0.1:${builtins.toString proxy.remotePort}";
                       };
                     };
-                  } // (if builtins.hasAttr proxy.name serverConfigs then
+                  } (if builtins.hasAttr proxy.name serverConfigs then
                         serverConfigs.${proxy.name}
-                       else {});
+                       else {})));
                 }) settings.proxies
               )
             else

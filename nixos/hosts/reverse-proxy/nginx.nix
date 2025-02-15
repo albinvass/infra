@@ -19,6 +19,7 @@
           enableACME = true;
         };
         serverConfigs = {
+          "audiobookshelf.albinvass.se" = {};
           "immich.albinvass.se" = {
             extraConfig = ''
               client_max_body_size 5000M;

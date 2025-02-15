@@ -98,6 +98,13 @@
           localIP = "192.168.50.131";
           localPort = 4533;
         }
+        {
+          name = "audiobookshelf.albinvass.se";
+          type = "tcp";
+          remotePort = 8092;
+          localIP = "192.168.50.131";
+          localPort = 13378;
+        }
       ];
     };
   };

@@ -50,14 +50,14 @@
           localPort = 9000;
         }
         {
-          name = "media.albinvass.se";
+          name = "jellyfin.albinvass.se";
           type = "tcp";
           remotePort = 8085;
           localIP = "192.168.50.131";
           localPort = 8096;
         }
         {
-          name = "media-requests.albinvass.se";
+          name = "jellyseer.albinvass.se";
           type = "tcp";
           remotePort = 8086;
           localIP = "192.168.50.131";
@@ -90,6 +90,13 @@
           remotePort = 8090;
           localIP = "192.168.50.131";
           localPort = 22300;
+        }
+        {
+          name = "navidrome.albinvass.se";
+          type = "tcp";
+          remotePort = 8091;
+          localIP = "192.168.50.131";
+          localPort = 4533;
         }
       ];
     };

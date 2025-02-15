@@ -29,8 +29,9 @@
               client_max_body_size 500M;
             '';
           };
-          "media.albinvass.se" = {};
-          "media-requests.albinvass.se" = {};
+          "jellyfin.albinvass.se" = {};
+          "jellyseer.albinvass.se" = {};
+          "navidrome.albinvass.se" = {};
           "nextcloud.albinvass.se" = {
             extraConfig = ''
               client_max_body_size 5000M;

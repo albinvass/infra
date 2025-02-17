@@ -31,7 +31,7 @@
             '';
           };
           "jellyfin.albinvass.se" = {};
-          "jellyseer.albinvass.se" = {};
+          "jellyseerr.albinvass.se" = {};
           "navidrome.albinvass.se" = {};
           "nextcloud.albinvass.se" = {
             extraConfig = ''

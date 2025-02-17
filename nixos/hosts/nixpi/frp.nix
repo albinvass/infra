@@ -57,7 +57,7 @@
           localPort = 8096;
         }
         {
-          name = "jellyseer.albinvass.se";
+          name = "jellyseerr.albinvass.se";
           type = "tcp";
           remotePort = 8086;
           localIP = "192.168.50.131";

@@ -20,6 +20,11 @@
         };
         serverConfigs = {
           "audiobookshelf.albinvass.se" = {};
+          "calibre.albinvass.se" = {
+            extraConfig = ''
+              client_max_body_size 5000M;
+            '';
+          };
           "immich.albinvass.se" = {
             extraConfig = ''
               client_max_body_size 5000M;

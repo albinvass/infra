@@ -105,6 +105,13 @@
           localIP = "192.168.50.131";
           localPort = 13378;
         }
+        {
+          name = "calibre.albinvass.se";
+          type = "tcp";
+          remotePort = 8093;
+          localIP = "192.168.50.131";
+          localPort = 8083;
+        }
       ];
     };
   };

@@ -7,6 +7,7 @@
   imports = [
     ./cloudflared.nix
     ./frp.nix
+    ./adguardhome.nix
     inputs.nixos-hardware.nixosModules.raspberry-pi-4
   ];
 

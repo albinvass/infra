@@ -1,5 +1,4 @@
 {
-  config,
   pkgs,
   inputs,
   ...
@@ -7,7 +6,6 @@
 {
   imports = [
     ./cloudflared.nix
-    ./matrix-synapse.nix
     ./frp.nix
     inputs.nixos-hardware.nixosModules.raspberry-pi-4
   ];

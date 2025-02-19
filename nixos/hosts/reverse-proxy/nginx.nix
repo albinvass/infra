@@ -20,6 +20,9 @@
         };
         serverConfigs = {
           "audiobookshelf.albinvass.se" = {
+            locations."/" = {
+              proxyWebsockets = true;
+            };
             extraConfig = ''
               client_max_body_size 5000M;
             '';

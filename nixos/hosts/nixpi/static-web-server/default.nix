@@ -1,4 +1,4 @@
-{ ... }:
+_:
 {
   environment.etc."/static-web-server/index.html" = {
     text =

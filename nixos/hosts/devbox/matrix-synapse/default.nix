@@ -51,6 +51,11 @@
     paths = [ config.services.matrix-synapse.dataDir ];
     backupPrepareCommand = "systemctl stop matrix-synapse";
     backupCleanupCommand = "systemctl start matrix-synapse";
+    pruneOpts = [
+      "--keep-daily 7"
+      "--keep-weekly 4"
+      "--keep-monthly 3"
+    ];
   };
 
   services.matrix-synapse = {

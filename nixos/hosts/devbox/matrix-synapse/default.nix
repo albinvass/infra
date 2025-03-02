@@ -44,6 +44,7 @@
   };
 
   services.restic.backups.matrix-synapse = {
+    initialize = true;
     passwordFile = config.sops.secrets."matrix-synapse/restic/passwordFile".path;
     repositoryFile = config.sops.secrets."matrix-synapse/restic/repositoryFile".path;
     environmentFile = config.sops.secrets."matrix-synapse/restic/environmentFile".path;

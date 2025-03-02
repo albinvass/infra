@@ -74,7 +74,8 @@
           GIT_ROOT="$(git rev-parse --show-toplevel)"
           cd "$GIT_ROOT"
 
-          #decrypt-ca-certificate
+          trap "rm -rf $GIT_ROOT/certs/ca" EXIT
+          decrypt-ca-certificate
 
           CERTS_ROOT="$GIT_ROOT/certs"
           CA_ROOT="$CERTS_ROOT/ca"
@@ -107,6 +108,8 @@
             -out "$HOST_DIR/host.crt" \
             -days 367 \
             -sha256
+
+          echo "Success! New certificate is located at $HOST_DIR"
         '';
     };
     colmena-expression = {

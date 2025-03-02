@@ -1,6 +1,0 @@
-- project:
-    check: &jobs
-      jobs:
-        - noop
-    gate: *jobs
-    post: *jobs

@@ -5,7 +5,6 @@
     ../../modules/disk-config
     ../../modules/development-tools
     ./cloudflared
-    ./davfs2
     ./matrix-synapse
     ./static-web-server
   ];

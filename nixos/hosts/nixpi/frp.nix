@@ -112,6 +112,20 @@
           localIP = "192.168.50.131";
           localPort = 8083;
         }
+        {
+          name = "matrix.albinvass.se";
+          type = "tcp";
+          remotePort = 8094;
+          localIP = "localhost";
+          localPort = 8008;
+        }
+        {
+          name = "albinvass.se";
+          type = "tcp";
+          remotePort = 8095;
+          localIP = "localhost";
+          localPort = 8787;
+        }
       ];
     };
   };

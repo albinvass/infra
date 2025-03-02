@@ -48,7 +48,6 @@
               };
             in
             {
-              devbox-arm = pkgs-arm;
               nixpi = pkgs-arm;
               reverse-proxy = pkgs-arm;
             };
@@ -64,59 +63,6 @@
             };
           };
         };
-
-        nixos-1 =
-          { name, nodes, ... }:
-          {
-            networking.hostName = name;
-            deployment = {
-              targetHost = "nixos-1.dev.albinvass.se";
-              targetUser = "root";
-              tags = [
-                "enabled"
-                ''
-                  pulumi:{
-                                    "Server": {
-                                      "Enabled": true,
-                                      "ServerType": "cpx21"
-                                    },
-                                    "Volume": {
-                                      "Size": 20
-                                    }
-                                  }''
-              ];
-              keys = {
-                "ssh_host_ed25519_key" = {
-                  destDir = "/etc/ssh";
-                  keyCommand = [
-                    "get-host-key"
-                    name
-                    "ssh_host_ed25519_key"
-                  ];
-                  user = "root";
-                  group = "root";
-                  permissions = "0600";
-                };
-                "ssh_host_ed25519_key.pub" = {
-                  destDir = "/etc/ssh";
-                  keyCommand = [
-                    "get-host-key"
-                    name
-                    "ssh_host_ed25519_key.pub"
-                  ];
-                  user = "root";
-                  group = "root";
-                  permissions = "0644";
-                };
-              };
-            };
-
-            imports = [
-              inputs.disko.nixosModules.disko
-              inputs.sops-nix.nixosModules.sops
-              ./nixos/hosts/devbox
-            ];
-          };
 
         reverse-proxy =
           { name, nodes, ... }:
@@ -216,14 +162,6 @@
             inputs.disko.nixosModules.disko
             ./nixos/modules/base
             ./nixos/hosts/reverse-proxy/disk-config
-          ];
-        };
-        devbox = nixpkgs.lib.nixosSystem {
-          system = "x86_64-linux";
-          modules = [
-            inputs.disko.nixosModules.disko
-            ./nixos/modules/base
-            ./nixos/modules/disk-config
           ];
         };
         nixos-base-arm64 = nixpkgs.lib.nixosSystem {

@@ -8,6 +8,8 @@
     ./cloudflared.nix
     ./frp.nix
     ./adguardhome.nix
+    ./matrix-synapse
+    ./static-web-server
     inputs.nixos-hardware.nixosModules.raspberry-pi-4
   ];
 

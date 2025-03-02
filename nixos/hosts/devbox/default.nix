@@ -6,7 +6,6 @@
     ../../modules/development-tools
     ./minio
     ./cloudflared
-    ./keycloak
     ./davfs2
     ./postgresql
     ./matrix-synapse

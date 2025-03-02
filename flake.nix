@@ -14,10 +14,6 @@
     };
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     nixos-hardware.url = "github:NixOs/nixos-hardware/master";
-    steam-fetcher = {
-      url = "github:aidalgol/nix-steam-fetcher";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
     disko = {
       url = "github:nix-community/disko";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -57,9 +53,6 @@
               reverse-proxy = pkgs-arm;
             };
           nodeSpecialArgs = {
-            steam-servers = {
-              inherit inputs;
-            };
             nixpi = {
               inherit inputs;
             };

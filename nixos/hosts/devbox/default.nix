@@ -7,7 +7,6 @@
     ./minio
     ./cloudflared
     ./davfs2
-    ./postgresql
     ./matrix-synapse
     ./static-web-server
     ./monitoring

@@ -9,7 +9,6 @@
     ./davfs2
     ./matrix-synapse
     ./static-web-server
-    ./monitoring
   ];
 
   sops = {

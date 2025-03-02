@@ -4,7 +4,6 @@
     ../../modules/base
     ../../modules/disk-config
     ../../modules/development-tools
-    ./minio
     ./cloudflared
     ./davfs2
     ./matrix-synapse

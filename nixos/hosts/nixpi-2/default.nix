@@ -6,6 +6,7 @@
 {
   imports = [
     ./frp.nix
+    ./audiobookshelf.nix
     inputs.nixos-hardware.nixosModules.raspberry-pi-4
   ];
 

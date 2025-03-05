@@ -49,10 +49,14 @@
             in
             {
               nixpi = pkgs-arm;
+              nixpi-2 = pkgs-arm;
               reverse-proxy = pkgs-arm;
             };
           nodeSpecialArgs = {
             nixpi = {
+              inherit inputs;
+            };
+            nixpi-2 = {
               inherit inputs;
             };
             nixos-1 = {
@@ -151,6 +155,45 @@
             imports = [
               inputs.sops-nix.nixosModules.sops
               ./nixos/hosts/nixpi
+            ];
+          };
+        nixpi-2 =
+          { name, nodes, ... }:
+          {
+            networking.hostName = name;
+            deployment = {
+              targetHost = "nixpi-2"; #  "${name}-ssh.albinvass.se";
+              targetUser = "root";
+              tags = [ "enabled" ];
+              keys = {
+                "ssh_host_ed25519_key" = {
+                  destDir = "/etc/ssh";
+                  keyCommand = [
+                    "get-host-key"
+                    name
+                    "ssh_host_ed25519_key"
+                  ];
+                  user = "root";
+                  group = "root";
+                  permissions = "0600";
+                };
+                "ssh_host_ed25519_key.pub" = {
+                  destDir = "/etc/ssh";
+                  keyCommand = [
+                    "get-host-key"
+                    name
+                    "ssh_host_ed25519_key.pub"
+                  ];
+                  user = "root";
+                  group = "root";
+                  permissions = "0644";
+                };
+              };
+            };
+
+            imports = [
+              inputs.sops-nix.nixosModules.sops
+              ./nixos/hosts/nixpi-2
             ];
           };
       };

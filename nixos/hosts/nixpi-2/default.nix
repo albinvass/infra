@@ -5,8 +5,15 @@
 }:
 {
   imports = [
+    ./frp.nix
     inputs.nixos-hardware.nixosModules.raspberry-pi-4
   ];
+
+  sops = {
+    age.sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
+    defaultSopsFile = ./secrets.yaml;
+  };
+
   nixpkgs.config.allowUnfree = true;
 
   boot = {

@@ -44,23 +44,10 @@
   environment.systemPackages = with pkgs; [
     vim
     git
-    podman
   ];
 
   services = {
     openssh.enable = true;
-    postgresql = {
-      ensureDatabases = [ "splitfree" ];
-      ensureUsers = [
-        {
-          name = "splitfree";
-          ensureDBOwnership = true;
-          ensureClauses = {
-            login = true;
-          };
-        }
-      ];
-    };
   };
 
   users = {
@@ -98,5 +85,4 @@
   networking.firewall = {
     enable = true;
   };
-  virtualisation.containers.enable = true;
 }

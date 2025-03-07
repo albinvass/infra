@@ -102,8 +102,8 @@
           name = "audiobookshelf.albinvass.se";
           type = "tcp";
           remotePort = 8092;
-          localIP = "192.168.50.131";
-          localPort = 13378;
+          localIP = "nixpi-2";
+          localPort = 8000;
         }
         {
           name = "calibre.albinvass.se";

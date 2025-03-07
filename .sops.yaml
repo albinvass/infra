@@ -1,42 +1,35 @@
 keys:
   - &avass age19k67f8muz2n368y2n0k55wr8z0d6q9vhh22v5re5c692v3x3af9qwsnu6a
-  - &steam-servers age13eg3y49af2kyvm0yxjlvsga2fs50akdja2nqf3l06pvk428gg50sjqfss6
-  - &devbox age1xs54hz7499gcdwqdl8p069s8f2334r9p3pdyhzwqw5ju0lz774fscrj5pq
   - &github-actions age1ra3d5axy6zhqvt5hlqpr0u8lcmf4dkapvh2uwvylqas6xc25zf5qlrnt7c
   - &nixpi age1c575k873cl0pqap0kpd3s8v2tnwthsfj834dzyfvmkfgaf5gl49s7l2z5m
   - &nixpi-2 age1vw3hznzatp8rj39j70x6ts78jqan6p28q7l037pkpn5dqdklwgys0yj2rg
+  - &nixpi-3 age1xststa7kavaxcr320n4g2cya4t637hhnxtdgqrd73c55sakhhgks42r8s6
   - &reverse-proxy age1evknxp28pfhzr503rxfq3lej3pzew6mtn25vaqmadrd2edy0qdps47rjfq
 creation_rules:
-  - path_regex: ^nixos/hosts/devbox/.*
-    key_groups:
-    - age:
-        - *avass
-        - *github-actions
-        - *devbox
-  - path_regex: ^nixos/hosts/steam-servers/.*
-    key_groups:
-    - age:
-        - *avass
-        - *github-actions
-        - *steam-servers
-  - path_regex: ^nixos/hosts/nixpi/.*
-    key_groups:
-    - age:
-        - *avass
-        - *github-actions
-        - *nixpi
   - path_regex: ^nixos/hosts/reverse-proxy/.*
     key_groups:
     - age:
         - *avass
         - *github-actions
         - *reverse-proxy
+  - path_regex: ^nixos/hosts/nixpi/.*
+    key_groups:
+    - age:
+        - *avass
+        - *github-actions
+        - *nixpi
   - path_regex: ^nixos/hosts/nixpi-2/.*
     key_groups:
     - age:
         - *avass
         - *github-actions
         - *nixpi-2
+  - path_regex: ^nixos/hosts/nixpi-3/.*
+    key_groups:
+    - age:
+        - *avass
+        - *github-actions
+        - *nixpi-3
   - key_groups:
     - age:
         - *avass

@@ -8,6 +8,10 @@ providers:
     class: octodns_hetzner.HetznerProvider
     token: env/HETZNER_DNS_TOKEN
 
+processors:
+  acme:
+    class: octodns.processor.acme.AcmeMangingProcessor
+
 zones:
   '*':
     sources:

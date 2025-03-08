@@ -2,7 +2,7 @@ providers:
   config:
     class: octodns.provider.yaml.YamlProvider
     directory: ./octodns
-    default_ttl: 3600
+    default_ttl: 300
     enforce_order: false
   hetzner:
     class: octodns_hetzner.HetznerProvider

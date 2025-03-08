@@ -1,0 +1,62 @@
+'':
+  - type: MX
+    values:
+      - exchange: mail.protonmail.ch.
+        preference: 10
+      - exchange: mailsec.protonmail.ch.
+        preference: 20
+    ttl: 86400
+  - type: TXT
+    values:
+      - v=spf1 include:_spf.protonmail.ch ~all
+      - protonmail-verification=a1375f5c027ccb1921f9c07441ce0124e86f454f
+    ttl: 60
+_dmarc:
+  - type: TXT
+    values:
+      - v=DMARC1\; p=quarantine
+    ttl: 86400
+
+protonmail._domainkey:
+  - type: CNAME
+    value: protonmail.domainkey.dktyalrabd7l5v2iw2ksuzeffuszzxmqas2smxm4ilbjfs7pufvfq.domains.proton.ch.
+    ttl: 86400
+protonmail2._domainkey:
+  - type: CNAME
+    value: protonmail2.domainkey.dktyalrabd7l5v2iw2ksuzeffuszzxmqas2smxm4ilbjfs7pufvfq.domains.proton.ch.
+    ttl: 86400
+protonmail3._domainkey:
+  - type: CNAME
+    value: protonmail3.domainkey.dktyalrabd7l5v2iw2ksuzeffuszzxmqas2smxm4ilbjfs7pufvfq.domains.proton.ch.
+    ttl: 86400
+
+mail:
+  - type: MX
+    values:
+      - exchange: mx1.simplelogin.co.
+        preference: 10
+      - exchange: mx2.simplelogin.co.
+        preference: 20
+    ttl: 86400
+  - type: TXT
+    values:
+      - v=spf1 include:simplelogin.co ~all
+      - sl-verification=xknianfsmvjjwdebkrjmqanyolexzk
+    ttl: 300
+dkim._domainkey.mail:
+  - type: CNAME
+    value: dkim._domainkey.simplelogin.co.
+    ttl: 300
+dkim02._domainkey.mail:
+  - type: CNAME
+    value: dkim02._domainkey.simplelogin.co.
+    ttl: 300
+dkim03._domainkey.mail:
+  - type: CNAME
+    value: dkim03._domainkey.simplelogin.co.
+    ttl: 300
+_dmarc.mail:
+  - type: TXT
+    values:
+      - v=DMARC1\; p=quarantine\; pct=100\; adkim=s\; aspf=s
+    ttl: 300

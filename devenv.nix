@@ -5,8 +5,8 @@
   };
   packages = with pkgs; [
     actionlint
+    (octodns.withProviders (ps: [ octodns-providers.hetzner ]))
     xc
-    cloudflared
     openssh
     statix
     golangci-lint

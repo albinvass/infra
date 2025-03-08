@@ -127,7 +127,7 @@
           {
             networking.hostName = name;
             deployment = {
-              targetHost = "${name}-ssh.albinvass.se";
+              targetHost = "nixpi";
               targetUser = "avass";
               tags = [ "enabled" ];
               keys = {

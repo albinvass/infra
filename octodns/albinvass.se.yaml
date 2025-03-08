@@ -1,0 +1,30 @@
+reverse-proxy:
+  - type: A
+    value: 135.181.206.186
+'':
+  - type: A
+    value: 135.181.206.186
+audiobookshelf:
+  - type: CNAME
+    value: reverse-proxy.albinvass.se.
+calibre:
+  - type: CNAME
+    value: reverse-proxy.albinvass.se.
+immich:
+  - type: CNAME
+    value: reverse-proxy.albinvass.se.
+jellyfin:
+  - type: CNAME
+    value: reverse-proxy.albinvass.se.
+jellyseerr:
+  - type: CNAME
+    value: reverse-proxy.albinvass.se.
+matrix:
+  - type: CNAME
+    value: reverse-proxy.albinvass.se.
+navidrome:
+  - type: CNAME
+    value: reverse-proxy.albinvass.se.
+storage:
+  - type: CNAME
+    value: reverse-proxy.albinvass.se.

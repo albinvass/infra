@@ -5,7 +5,6 @@
 }:
 {
   imports = [
-    ./cloudflared.nix
     ./frp.nix
     ./adguardhome.nix
     ./matrix-synapse

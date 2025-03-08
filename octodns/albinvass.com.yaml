@@ -1,0 +1,81 @@
+reverse-proxy:
+  - type: A
+    value: 135.181.206.186
+'':
+  - type: A
+    value: 135.181.206.186
+  # proton
+  - type: MX
+    values:
+      - exchange: mail.protonmail.ch.
+        preference: 10
+      - exchange: mailsec.protonmail.ch.
+        preference: 20
+  - type: TXT
+    values:
+      - v=spf1 include:_spf.protonmail.ch ~all
+      - protonmail-verification=56ea8aeffc238134512780171a5fdc0422f62290
+audiobookshelf:
+  - type: CNAME
+    value: reverse-proxy.albinvass.se.
+calibre:
+  - type: CNAME
+    value: reverse-proxy.albinvass.se.
+immich:
+  - type: CNAME
+    value: reverse-proxy.albinvass.se.
+jellyfin:
+  - type: CNAME
+    value: reverse-proxy.albinvass.se.
+jellyseerr:
+  - type: CNAME
+    value: reverse-proxy.albinvass.se.
+matrix:
+  - type: CNAME
+    value: reverse-proxy.albinvass.se.
+navidrome:
+  - type: CNAME
+    value: reverse-proxy.albinvass.se.
+storage:
+  - type: CNAME
+    value: reverse-proxy.albinvass.se.
+
+
+# simplelogin
+mail:
+  - type: MX
+    values:
+      - exchange: mx1.simplelogin.co.
+        preference: 10
+      - exchange: mx2.simplelogin.co.
+        preference: 20
+  - type: TXT
+    values:
+      - v=spf1 include:simplelogin.co ~all
+      - sl-verification=eofiarnjeitziwqbcqawvqhrzajyzm
+_dmarc.mail:
+  - type: TXT
+    value: v=DMARC1\; p=quarantine\; pct=100\; adkim=s\; aspf=s
+dkim._domainkey.mail:
+  - type: CNAME
+    value: dkim._domainkey.simplelogin.co.
+dkim02._domainkey.mail:
+  - type: CNAME
+    value: dkim02._domainkey.simplelogin.co.
+dkim03._domainkey.mail:
+  - type: CNAME
+    value: dkim03._domainkey.simplelogin.co.
+
+# proton
+_dmarc:
+  - type: TXT
+    value: v=DMARC1\; p=quarantine
+protonmail2._domainkey:
+  - type: CNAME
+    value: protonmail2.domainkey.dl6pgjsgr35d3ova5vew2jjdawr55rxmm7q54e3vljgisd4ghhdha.domains.proton.ch.
+protonmail3._domainkey:
+  - type: CNAME
+    value: protonmail3.domainkey.dl6pgjsgr35d3ova5vew2jjdawr55rxmm7q54e3vljgisd4ghhdha.domains.proton.ch.
+protonmail._domainkey:
+  - type: CNAME
+    value: protonmail.domainkey.dl6pgjsgr35d3ova5vew2jjdawr55rxmm7q54e3vljgisd4ghhdha.domains.proton.ch.

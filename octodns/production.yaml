@@ -1,0 +1,16 @@
+providers:
+  config:
+    class: octodns.provider.yaml.YamlProvider
+    directory: ./octodns
+    default_ttl: 3600
+    enforce_order: false
+  hetzner:
+    class: octodns_hetzner.HetznerProvider
+    token: env/HETZNER_DNS_TOKEN
+
+zones:
+  '*':
+    sources:
+      - config
+    targets:
+      - hetzner

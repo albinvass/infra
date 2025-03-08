@@ -29,7 +29,6 @@
         source = "journalctl";
         journalctl_filter = [
           "_SYSTEMD_UNIT=sshd.service"
-          "_SYSTEMD_UNIT=nginx.service"
         ];
         labels.type = "syslog";
       };
@@ -41,7 +40,7 @@
       settings = {
         crowdsec_service.acquisition_path = acquisitions_file;
         api.server = {
-          listen_uri = "127.0.0.1:8080";
+          listen_uri = "127.0.0.1:8081";
         };
       };
     };
@@ -49,8 +48,10 @@
   services.crowdsec-firewall-bouncer = {
     enable = true;
     settings = {
+      # NB: This is an api key used for a service that only listens to
+      # connections from 127.0.0.1 (see above config for crowdsec).
       api_key = "ctuZ5rd+ilyCLQOXlViNeNavS+9wHvFs6Dnbmgm17LE";
-      api_url = "http://127.0.0.1:8080";
+      api_url = "http://127.0.0.1:8081";
     };
   };
 }

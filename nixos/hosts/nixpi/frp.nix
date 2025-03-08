@@ -7,117 +7,196 @@
     "frp/tls/trustedCaFile" = { };
   };
 
-  systemd.services.frp.serviceConfig = {
-    LoadCredential = [
-      "certFile:${config.sops.secrets."frp/tls/certFile".path}"
-      "keyFile:${config.sops.secrets."frp/tls/keyFile".path}"
-      "trustedCaFile:${config.sops.secrets."frp/tls/trustedCaFile".path}"
-    ];
+  imports = [
+    ../../modules/frp-client-base
+  ];
+
+  # TODO: generate virtualHosts and frp proxies
+  services.nginx.virtualHosts = {
+    "albinvass.se" = {
+      forceSSL = true;
+      enableACME = true;
+      locations."/" = {
+        proxyPass = "http://localhost:8787";
+      };
+    };
+    "calibre.albinvass.se" = {
+      forceSSL = true;
+      enableACME = true;
+      locations."/" = {
+        proxyPass = "http://192.168.50.131:8083";
+      };
+      extraConfig = ''
+          client_max_body_size 5000M;
+      '';
+    };
+    "immich.albinvass.se" = {
+      forceSSL = true;
+      enableACME = true;
+      locations."/" = {
+        proxyPass = "http://192.168.50.131:2283";
+      };
+      extraConfig = ''
+          client_max_body_size 20000M;
+      '';
+    };
+    "jellyfin.albinvass.se" = {
+      forceSSL = true;
+      enableACME = true;
+      locations."/" = {
+        proxyPass = "http://192.168.50.131:8096";
+      };
+    };
+    "jellyseerr.albinvass.se" = {
+      forceSSL = true;
+      enableACME = true;
+      locations."/" = {
+        proxyPass = "http://192.168.50.131:5055";
+      };
+    };
+    "matrix.albinvass.se" = {
+      forceSSL = true;
+      enableACME = true;
+      locations."/" = {
+        proxyPass = "http://localhost:8008";
+      };
+      extraConfig = ''
+          client_max_body_size 5000M;
+      '';
+    };
+    "navidrome.albinvass.se" = {
+      forceSSL = true;
+      enableACME = true;
+      locations."/" = {
+        proxyPass = "http://192.168.50.131:4533";
+      };
+    };
+    "storage.albinvass.se" = {
+      forceSSL = true;
+      enableACME = true;
+      locations."/" = {
+        proxyPass = "http://storage.:5000";
+        proxyWebsockets = true;
+      };
+      extraConfig = ''
+          client_max_body_size 20000M;
+      '';
+    };
   };
   services.frp = {
-    enable = true;
-    role = "client";
     settings = {
-      serverAddr = "reverse-proxy.albinvass.se";
-      serverPort = 7000;
-      transport = {
-        tls = {
-          certFile = "{{ .Envs.CREDENTIALS_DIRECTORY }}/certFile";
-          keyFile = "{{ .Envs.CREDENTIALS_DIRECTORY }}/keyFile";
-          trustedCaFile = "{{ .Envs.CREDENTIALS_DIRECTORY }}/trustedCaFile";
-        };
-      };
       proxies = [
         {
-          name = "attic.albinvass.se";
-          type = "tcp";
-          remotePort = 8082;
-          localIP = "127.0.0.1";
-          localPort = 8080;
+          name = "HTTP albinvass.se";
+          customDomains = ["albinvass.se"];
+          type = "http";
+          localIP = config.networking.hostName;
+          localPort = config.services.nginx.defaultHTTPListenPort;
         }
         {
-          name = "storage.albinvass.se";
-          type = "tcp";
-          remotePort = 8083;
-          localIP = "storage.";
-          localPort = 5000;
+          name = "HTTPS albinvass.se";
+          customDomains = ["albinvass.se"];
+          type = "https";
+          localIP = config.networking.hostName;
+          localPort = config.services.nginx.defaultSSLListenPort;
         }
         {
-          name = "zuul.albinvass.se";
-          type = "tcp";
-          remotePort = 8084;
-          localIP = "127.0.0.1";
-          localPort = 9000;
+          name = "HTTP calibre.albinvass.se";
+          customDomains = ["calibre.albinvass.se"];
+          type = "http";
+          localIP = config.networking.hostName;
+          localPort = config.services.nginx.defaultHTTPListenPort;
         }
         {
-          name = "jellyfin.albinvass.se";
-          type = "tcp";
-          remotePort = 8085;
-          localIP = "192.168.50.131";
-          localPort = 8096;
+          name = "HTTPS calibre.albinvass.se";
+          customDomains = ["calibre.albinvass.se"];
+          type = "https";
+          localIP = config.networking.hostName;
+          localPort = config.services.nginx.defaultSSLListenPort;
         }
         {
-          name = "jellyseerr.albinvass.se";
-          type = "tcp";
-          remotePort = 8086;
-          localIP = "192.168.50.131";
-          localPort = 5055;
+          name = "HTTP immich.albinvass.se";
+          customDomains = ["immich.albinvass.se"];
+          type = "http";
+          localIP = config.networking.hostName;
+          localPort = config.services.nginx.defaultHTTPListenPort;
         }
         {
-          name = "immich.albinvass.se";
-          type = "tcp";
-          remotePort = 8087;
-          localIP = "192.168.50.131";
-          localPort = 2283;
+          name = "HTTPS immich.albinvass.se";
+          customDomains = ["immich.albinvass.se"];
+          type = "https";
+          localIP = config.networking.hostName;
+          localPort = config.services.nginx.defaultSSLListenPort;
         }
         {
-          name = "nextcloud.albinvass.se";
-          type = "tcp";
-          remotePort = 8088;
-          localIP = "192.168.50.131";
-          localPort = 8081;
+          name = "HTTP jellyfin.albinvass.se";
+          customDomains = ["jellyfin.albinvass.se"];
+          type = "http";
+          localIP = config.networking.hostName;
+          localPort = config.services.nginx.defaultHTTPListenPort;
         }
         {
-          name = "collabora.albinvass.se";
-          type = "tcp";
-          remotePort = 8089;
-          localIP = "192.168.50.131";
-          localPort = 9980;
+          name = "HTTPS jellyfin.albinvass.se";
+          customDomains = ["jellyfin.albinvass.se"];
+          type = "https";
+          localIP = config.networking.hostName;
+          localPort = config.services.nginx.defaultSSLListenPort;
         }
         {
-          name = "joplin.albinvass.se";
-          type = "tcp";
-          remotePort = 8090;
-          localIP = "192.168.50.131";
-          localPort = 22300;
+          name = "HTTP jellyseerr.albinvass.se";
+          customDomains = ["jellyseerr.albinvass.se"];
+          type = "http";
+          localIP = config.networking.hostName;
+          localPort = config.services.nginx.defaultHTTPListenPort;
         }
         {
-          name = "navidrome.albinvass.se";
-          type = "tcp";
-          remotePort = 8091;
-          localIP = "192.168.50.131";
-          localPort = 4533;
+          name = "HTTPS jellyseerr.albinvass.se";
+          customDomains = ["jellyseerr.albinvass.se"];
+          type = "https";
+          localIP = config.networking.hostName;
+          localPort = config.services.nginx.defaultSSLListenPort;
         }
         {
-          name = "calibre.albinvass.se";
-          type = "tcp";
-          remotePort = 8093;
-          localIP = "192.168.50.131";
-          localPort = 8083;
+          name = "HTTP matrix.albinvass.se";
+          customDomains = ["matrix.albinvass.se"];
+          type = "http";
+          localIP = config.networking.hostName;
+          localPort = config.services.nginx.defaultHTTPListenPort;
         }
         {
-          name = "matrix.albinvass.se";
-          type = "tcp";
-          remotePort = 8094;
-          localIP = "localhost";
-          localPort = 8008;
+          name = "HTTPS matrix.albinvass.se";
+          customDomains = ["matrix.albinvass.se"];
+          type = "https";
+          localIP = config.networking.hostName;
+          localPort = config.services.nginx.defaultSSLListenPort;
         }
         {
-          name = "albinvass.se";
-          type = "tcp";
-          remotePort = 8095;
-          localIP = "localhost";
-          localPort = 8787;
+          name = "HTTP navidrome.albinvass.se";
+          customDomains = ["navidrome.albinvass.se"];
+          type = "http";
+          localIP = config.networking.hostName;
+          localPort = config.services.nginx.defaultHTTPListenPort;
+        }
+        {
+          name = "HTTPS navidrome.albinvass.se";
+          customDomains = ["navidrome.albinvass.se"];
+          type = "https";
+          localIP = config.networking.hostName;
+          localPort = config.services.nginx.defaultSSLListenPort;
+        }
+        {
+          name = "HTTP storage.albinvass.se";
+          customDomains = ["storage.albinvass.se"];
+          type = "http";
+          localIP = config.networking.hostName;
+          localPort = config.services.nginx.defaultHTTPListenPort;
+        }
+        {
+          name = "HTTPS storage.albinvass.se";
+          customDomains = ["storage.albinvass.se"];
+          type = "https";
+          localIP = config.networking.hostName;
+          localPort = config.services.nginx.defaultSSLListenPort;
         }
       ];
     };

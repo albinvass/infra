@@ -1,21 +1,24 @@
 { config, ... }:
 let
-  frpPort = 7000;
-  frpHTTPPort = 80;
-  frpHTTPSPort = 443;
+  defaultHTTPListenPort = 80;
+  defaultSSLListenPort = 443;
 in
 {
-  sops.secrets = {
-    "frp/tls/certFile" = { };
-    "frp/tls/keyFile" = { };
-    "frp/tls/trustedCaFile" = { };
+  networking.firewall.allowedTCPPorts = [
+    defaultHTTPListenPort
+    defaultSSLListenPort
+  ];
+
+  security.acme = {
+    acceptTerms = true;
+    defaults.email = "letsencrypt.org@mail.albinvass.com";
+  };
+  services.nginx = {
+    inherit defaultHTTPListenPort defaultSSLListenPort;
+    enable = true;
+    recommendedProxySettings = true;
   };
 
-  networking.firewall.allowedTCPPorts = [
-    frpPort
-    frpHTTPPort
-    frpHTTPSPort
-  ];
   systemd.services.frp.serviceConfig = {
     LoadCredential = [
       "certFile:${config.sops.secrets."frp/tls/certFile".path}"
@@ -25,15 +28,12 @@ in
   };
   services.frp = {
     enable = true;
-    role = "server";
+    role = "client";
     settings = {
-      bindPort = frpPort;
-      proxyBindAddr = "0.0.0.0";
-      vhostHTTPPort = frpHTTPPort;
-      vhostHTTPSPort = frpHTTPSPort;
+      serverAddr = "reverse-proxy.albinvass.se";
+      serverPort = 7000;
       transport = {
         tls = {
-          force = true;
           certFile = "{{ .Envs.CREDENTIALS_DIRECTORY }}/certFile";
           keyFile = "{{ .Envs.CREDENTIALS_DIRECTORY }}/keyFile";
           trustedCaFile = "{{ .Envs.CREDENTIALS_DIRECTORY }}/trustedCaFile";
@@ -42,3 +42,5 @@ in
     };
   };
 }
+
+

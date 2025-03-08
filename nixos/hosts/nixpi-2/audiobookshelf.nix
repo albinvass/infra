@@ -47,17 +47,38 @@
     fsType = "cifs";
     options = let
       automount_opts = "x-systemd.automount,noauto,x-systemd.idle-timeout=60,x-systemd.device-timeout=5s,x-systemd.mount-timeout=5s";
-      user=config.services.audiobookshelf.user;
-      group=config.services.audiobookshelf.group;
-      in [ "${automount_opts},credentials=${config.sops.secrets."cifs".path},uid=${user},gid=${group}" ];
+      inherit (config.services.audiobookshelf) user;
+      inherit (config.services.audiobookshelf) group;
+    in [ "${automount_opts},credentials=${config.sops.secrets."cifs".path},uid=${user},gid=${group}" ];
   };
 
-  services.frp.settings.proxies = [{
-      name = "audiobookshelf.albinvass.se";
-      type = "tcp";
-      remotePort = 2092;
-      localIP = "nixpi-2";
-      localPort = 8000;
+  services.frp.settings.proxies = [
+    {
+      name = "HTTP audiobookshelf.albinvass.se";
+      customDomains = ["audiobookshelf.albinvass.se"];
+      type = "http";
+      localIP = config.networking.hostName;
+      localPort = config.services.nginx.defaultHTTPListenPort;
+    }
+    {
+      name = "HTTPS audiobookshelf.albinvass.se";
+      customDomains = ["audiobookshelf.albinvass.se"];
+      type = "https";
+      localIP = config.networking.hostName;
+      localPort = config.services.nginx.defaultSSLListenPort;
     }
   ];
+  services.nginx.virtualHosts = {
+    "audiobookshelf.albinvass.se" = {
+      forceSSL = true;
+      enableACME = true;
+      locations."/" = {
+        proxyPass = "http://127.0.0.1:8000";
+        proxyWebsockets = true;
+      };
+      extraConfig = ''
+          client_max_body_size 5000M;
+      '';
+    };
+  };
 }

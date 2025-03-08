@@ -51,4 +51,13 @@
       group=config.services.audiobookshelf.group;
       in [ "${automount_opts},credentials=${config.sops.secrets."cifs".path},uid=${user},gid=${group}" ];
   };
+
+  services.frp.settings.proxies = [{
+      name = "audiobookshelf.albinvass.se";
+      type = "tcp";
+      remotePort = 2092;
+      localIP = "nixpi-2";
+      localPort = 8000;
+    }
+  ];
 }

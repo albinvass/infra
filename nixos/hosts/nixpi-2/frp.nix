@@ -27,8 +27,6 @@
           trustedCaFile = "{{ .Envs.CREDENTIALS_DIRECTORY }}/trustedCaFile";
         };
       };
-      proxies = [
-      ];
     };
   };
 }

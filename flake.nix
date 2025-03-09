@@ -48,13 +48,13 @@
               };
             in
             {
-              nixpi = pkgs-arm;
+              nixpi-1 = pkgs-arm;
               nixpi-2 = pkgs-arm;
               nixpi-3 = pkgs-arm;
               reverse-proxy = pkgs-arm;
             };
           nodeSpecialArgs = {
-            nixpi = {
+            nixpi-1 = {
               inherit inputs;
             };
             nixpi-2 = {
@@ -122,12 +122,12 @@
             ];
           };
 
-        nixpi =
+        nixpi-1 =
           { name, nodes, ... }:
           {
             networking.hostName = name;
             deployment = {
-              targetHost = "nixpi";
+              targetHost = "nixpi-1";
               targetUser = "avass";
               tags = [ "enabled" ];
               keys = {
@@ -158,7 +158,7 @@
 
             imports = [
               inputs.sops-nix.nixosModules.sops
-              ./nixos/hosts/nixpi
+              ./nixos/hosts/nixpi-1
             ];
           };
         nixpi-2 =

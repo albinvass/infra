@@ -40,7 +40,7 @@
       settings = {
         crowdsec_service.acquisition_path = acquisitions_file;
         api.server = {
-          listen_uri = "127.0.0.1:8081";
+          listen_uri = "127.0.0.1:8080";
         };
       };
     };
@@ -51,7 +51,7 @@
       # NB: This is an api key used for a service that only listens to
       # connections from 127.0.0.1 (see above config for crowdsec).
       api_key = "ctuZ5rd+ilyCLQOXlViNeNavS+9wHvFs6Dnbmgm17LE";
-      api_url = "http://127.0.0.1:8081";
+      api_url = "http://127.0.0.1:8080";
     };
   };
 }

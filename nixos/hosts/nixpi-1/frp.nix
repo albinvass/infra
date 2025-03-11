@@ -30,6 +30,39 @@
           client_max_body_size 5000M;
       '';
     };
+    "homeassistant.albinvass.se" = {
+      forceSSL = true;
+      enableACME = true;
+      listen = [
+        {
+          addr = "0.0.0.0";
+          ssl = false;
+          port = 80;
+        }
+        {
+          addr = "0.0.0.0";
+          ssl = true;
+          port = 443;
+          proxyProtocol = true;
+        }
+      ];
+      locations."/" = {
+        proxyPass = "http://homeassistant:8123";
+        proxyWebsockets = true;
+        recommendedProxySettings = false;
+        extraConfig = ''
+          proxy_set_header        Host $host;
+          proxy_set_header        X-Real-IP $proxy_protocol_addr;
+          proxy_set_header        X-Forwarded-Proto $scheme;
+          proxy_set_header        X-Forwarded-Host $host;
+          proxy_set_header        X-Forwarded-Server $host;
+          proxy_set_header        X-Forwarded-For $proxy_protocol_addr;
+        '';
+      };
+      extraConfig = ''
+          client_max_body_size 5000M;
+      '';
+    };
     "immich.albinvass.se" = {
       forceSSL = true;
       enableACME = true;
@@ -114,6 +147,22 @@
           type = "https";
           localIP = config.networking.hostName;
           localPort = config.services.nginx.defaultSSLListenPort;
+        }
+        {
+          name = "HTTP homeassistant.albinvass.se";
+          customDomains = ["homeassistant.albinvass.se"];
+          type = "http";
+          localIP = config.networking.hostName;
+          localPort = config.services.nginx.defaultHTTPListenPort;
+          transport.proxyProtocolVersion = "v2";
+        }
+        {
+          name = "HTTPS homeassistant.albinvass.se";
+          customDomains = ["homeassistant.albinvass.se"];
+          type = "https";
+          localIP = config.networking.hostName;
+          localPort = config.services.nginx.defaultSSLListenPort;
+          transport.proxyProtocolVersion = "v2";
         }
         {
           name = "HTTP immich.albinvass.se";

@@ -18,6 +18,14 @@
       enableACME = true;
       locations."/" = {
         proxyPass = "http://localhost:8787";
+        extraConfig = ''
+          proxy_set_header        Host $host;
+          proxy_set_header        X-Real-IP $proxy_protocol_addr;
+          proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
+          proxy_set_header        X-Forwarded-Proto $scheme;
+          proxy_set_header        X-Forwarded-Host $host;
+          proxy_set_header        X-Forwarded-Server $host;
+        '';
       };
     };
     "calibre.albinvass.se" = {
@@ -25,6 +33,14 @@
       enableACME = true;
       locations."/" = {
         proxyPass = "http://192.168.50.131:8083";
+        extraConfig = ''
+          proxy_set_header        Host $host;
+          proxy_set_header        X-Real-IP $proxy_protocol_addr;
+          proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
+          proxy_set_header        X-Forwarded-Proto $scheme;
+          proxy_set_header        X-Forwarded-Host $host;
+          proxy_set_header        X-Forwarded-Server $host;
+        '';
       };
       extraConfig = ''
           client_max_body_size 5000M;
@@ -36,6 +52,14 @@
       locations."/" = {
         proxyWebsockets = true;
         proxyPass = "http://homeassistant:8123";
+        extraConfig = ''
+          proxy_set_header        Host $host;
+          proxy_set_header        X-Real-IP $proxy_protocol_addr;
+          proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
+          proxy_set_header        X-Forwarded-Proto $scheme;
+          proxy_set_header        X-Forwarded-Host $host;
+          proxy_set_header        X-Forwarded-Server $host;
+        '';
       };
       extraConfig = ''
           client_max_body_size 5000M;
@@ -47,6 +71,14 @@
       locations."/" = {
         proxyWebsockets = true;
         proxyPass = "http://192.168.50.131:2283";
+        extraConfig = ''
+          proxy_set_header        Host $host;
+          proxy_set_header        X-Real-IP $proxy_protocol_addr;
+          proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
+          proxy_set_header        X-Forwarded-Proto $scheme;
+          proxy_set_header        X-Forwarded-Host $host;
+          proxy_set_header        X-Forwarded-Server $host;
+        '';
       };
       extraConfig = ''
           client_max_body_size 20000M;
@@ -57,6 +89,14 @@
       enableACME = true;
       locations."/" = {
         proxyPass = "http://192.168.50.131:8096";
+        extraConfig = ''
+          proxy_set_header        Host $host;
+          proxy_set_header        X-Real-IP $proxy_protocol_addr;
+          proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
+          proxy_set_header        X-Forwarded-Proto $scheme;
+          proxy_set_header        X-Forwarded-Host $host;
+          proxy_set_header        X-Forwarded-Server $host;
+        '';
       };
     };
     "jellyseerr.albinvass.se" = {
@@ -64,6 +104,14 @@
       enableACME = true;
       locations."/" = {
         proxyPass = "http://192.168.50.131:5055";
+        extraConfig = ''
+          proxy_set_header        Host $host;
+          proxy_set_header        X-Real-IP $proxy_protocol_addr;
+          proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
+          proxy_set_header        X-Forwarded-Proto $scheme;
+          proxy_set_header        X-Forwarded-Host $host;
+          proxy_set_header        X-Forwarded-Server $host;
+        '';
       };
     };
     "matrix.albinvass.se" = {
@@ -71,17 +119,18 @@
       enableACME = true;
       locations."/" = {
         proxyPass = "http://localhost:8008";
+        extraConfig = ''
+          proxy_set_header        Host $host;
+          proxy_set_header        X-Real-IP $proxy_protocol_addr;
+          proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
+          proxy_set_header        X-Forwarded-Proto $scheme;
+          proxy_set_header        X-Forwarded-Host $host;
+          proxy_set_header        X-Forwarded-Server $host;
+        '';
       };
       extraConfig = ''
           client_max_body_size 5000M;
       '';
-    };
-    "navidrome.albinvass.se" = {
-      forceSSL = true;
-      enableACME = true;
-      locations."/" = {
-        proxyPass = "http://192.168.50.131:4533";
-      };
     };
     "storage.albinvass.se" = {
       forceSSL = true;
@@ -89,6 +138,14 @@
       locations."/" = {
         proxyPass = "http://storage.:5000";
         proxyWebsockets = true;
+        extraConfig = ''
+          proxy_set_header        Host $host;
+          proxy_set_header        X-Real-IP $proxy_protocol_addr;
+          proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
+          proxy_set_header        X-Forwarded-Proto $scheme;
+          proxy_set_header        X-Forwarded-Host $host;
+          proxy_set_header        X-Forwarded-Server $host;
+        '';
       };
       extraConfig = ''
           client_max_body_size 20000M;
@@ -111,6 +168,7 @@
           type = "https";
           localIP = config.networking.hostName;
           localPort = config.services.nginx.defaultSSLListenPort;
+          transport.proxyProtocolVersion = "v2";
         }
         {
           name = "HTTP calibre.albinvass.se";
@@ -125,6 +183,7 @@
           type = "https";
           localIP = config.networking.hostName;
           localPort = config.services.nginx.defaultSSLListenPort;
+          transport.proxyProtocolVersion = "v2";
         }
         {
           name = "HTTP homeassistant.albinvass.se";
@@ -139,6 +198,7 @@
           type = "https";
           localIP = config.networking.hostName;
           localPort = config.services.nginx.defaultSSLListenPort;
+          transport.proxyProtocolVersion = "v2";
         }
         {
           name = "HTTP immich.albinvass.se";
@@ -153,6 +213,7 @@
           type = "https";
           localIP = config.networking.hostName;
           localPort = config.services.nginx.defaultSSLListenPort;
+          transport.proxyProtocolVersion = "v2";
         }
         {
           name = "HTTP jellyfin.albinvass.se";
@@ -167,6 +228,7 @@
           type = "https";
           localIP = config.networking.hostName;
           localPort = config.services.nginx.defaultSSLListenPort;
+          transport.proxyProtocolVersion = "v2";
         }
         {
           name = "HTTP jellyseerr.albinvass.se";
@@ -181,6 +243,7 @@
           type = "https";
           localIP = config.networking.hostName;
           localPort = config.services.nginx.defaultSSLListenPort;
+          transport.proxyProtocolVersion = "v2";
         }
         {
           name = "HTTP matrix.albinvass.se";
@@ -195,20 +258,8 @@
           type = "https";
           localIP = config.networking.hostName;
           localPort = config.services.nginx.defaultSSLListenPort;
-        }
-        {
-          name = "HTTP navidrome.albinvass.se";
-          customDomains = ["navidrome.albinvass.se"];
-          type = "http";
-          localIP = config.networking.hostName;
-          localPort = config.services.nginx.defaultHTTPListenPort;
-        }
-        {
-          name = "HTTPS navidrome.albinvass.se";
-          customDomains = ["navidrome.albinvass.se"];
-          type = "https";
-          localIP = config.networking.hostName;
-          localPort = config.services.nginx.defaultSSLListenPort;
+          transport.proxyProtocolVersion = "v2";
+
         }
         {
           name = "HTTP storage.albinvass.se";
@@ -223,6 +274,7 @@
           type = "https";
           localIP = config.networking.hostName;
           localPort = config.services.nginx.defaultSSLListenPort;
+          transport.proxyProtocolVersion = "v2";
         }
       ];
     };

@@ -66,6 +66,7 @@
       type = "https";
       localIP = config.networking.hostName;
       localPort = config.services.nginx.defaultSSLListenPort;
+      transport.proxyProtocolVersion = "v2";
     }
   ];
   services.nginx.virtualHosts = {
@@ -75,6 +76,14 @@
       locations."/" = {
         proxyPass = "http://127.0.0.1:8000";
         proxyWebsockets = true;
+        extraConfig = ''
+          proxy_set_header        Host $host;
+          proxy_set_header        X-Real-IP $proxy_protocol_addr;
+          proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
+          proxy_set_header        X-Forwarded-Proto $scheme;
+          proxy_set_header        X-Forwarded-Host $host;
+          proxy_set_header        X-Forwarded-Server $host;
+        '';
       };
       extraConfig = ''
           client_max_body_size 5000M;

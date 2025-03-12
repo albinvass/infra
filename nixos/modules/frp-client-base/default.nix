@@ -16,7 +16,18 @@ in
   services.nginx = {
     inherit defaultHTTPListenPort defaultSSLListenPort;
     enable = true;
-    recommendedProxySettings = true;
+    defaultListen = [
+      {
+        addr = "0.0.0.0";
+        ssl = false;
+      }
+      {
+        addr = "0.0.0.0";
+        ssl = true;
+        proxyProtocol = true;
+      }
+    ];
+    recommendedProxySettings = false;
   };
 
   systemd.services.frp.serviceConfig = {

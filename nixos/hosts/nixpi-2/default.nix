@@ -7,10 +7,9 @@
   imports = [
     ./frp.nix
     ./audiobookshelf.nix
+    ../../modules/raspberry-pi-4-poe
     inputs.nixos-hardware.nixosModules.raspberry-pi-4
   ];
-
-  hardware.raspberry-pi."4".poe-plus-hat.enable = true;
 
   sops = {
     age.sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];

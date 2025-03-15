@@ -28,6 +28,13 @@
         };
       };
       proxies = [
+        {
+          name = "SSH nixpi-3";
+          type = "tcp";
+          localIP = config.networking.hostName;
+          localPort = 22;
+          remotePort = 3022;
+        }
       ];
     };
   };

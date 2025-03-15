@@ -15,6 +15,9 @@ in
     frpPort
     frpHTTPPort
     frpHTTPSPort
+    1022
+    2022
+    3022
   ];
   systemd.services.frp.serviceConfig = {
     LoadCredential = [

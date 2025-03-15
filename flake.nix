@@ -39,6 +39,7 @@
       colmenaHive = inputs.colmena.lib.makeHive self.outputs.colmena;
       colmena = {
         meta = {
+          allowApplyAll = false;
           nixpkgs = pkgs;
           nodeNixpkgs =
             let
@@ -127,7 +128,8 @@
           {
             networking.hostName = name;
             deployment = {
-              targetHost = "nixpi-1";
+              targetHost = "reverse-proxy.albinvass.se";
+              targetPort = 1022;
               targetUser = "avass";
               tags = [ "enabled" ];
               keys = {
@@ -166,8 +168,9 @@
           {
             networking.hostName = name;
             deployment = {
-              targetHost = "nixpi-2"; #  "${name}-ssh.albinvass.se";
-              targetUser = "root";
+              targetHost = "reverse-proxy.albinvass.se";
+              targetPort = 2022;
+              targetUser = "avass";
               tags = [ "enabled" ];
               keys = {
                 "ssh_host_ed25519_key" = {
@@ -205,8 +208,9 @@
           {
             networking.hostName = name;
             deployment = {
-              targetHost = "nixpi-3"; #  "${name}-ssh.albinvass.se";
-              targetUser = "root";
+              targetHost = "reverse-proxy.albinvass.se";
+              targetPort = 3022;
+              targetUser = "avass";
               tags = [ "enabled" ];
               keys = {
                 "ssh_host_ed25519_key" = {

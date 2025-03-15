@@ -276,6 +276,13 @@
           localPort = config.services.nginx.defaultSSLListenPort;
           transport.proxyProtocolVersion = "v2";
         }
+        {
+          name = "SSH nixpi-1";
+          type = "tcp";
+          localIP = config.networking.hostName;
+          localPort = 22;
+          remotePort = 1022;
+        }
       ];
     };
   };

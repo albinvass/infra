@@ -65,25 +65,6 @@
           client_max_body_size 5000M;
       '';
     };
-    "immich.albinvass.se" = {
-      forceSSL = true;
-      enableACME = true;
-      locations."/" = {
-        proxyWebsockets = true;
-        proxyPass = "http://192.168.50.131:2283";
-        extraConfig = ''
-          proxy_set_header        Host $host;
-          proxy_set_header        X-Real-IP $proxy_protocol_addr;
-          proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
-          proxy_set_header        X-Forwarded-Proto $scheme;
-          proxy_set_header        X-Forwarded-Host $host;
-          proxy_set_header        X-Forwarded-Server $host;
-        '';
-      };
-      extraConfig = ''
-          client_max_body_size 20000M;
-      '';
-    };
     "jellyfin.albinvass.se" = {
       forceSSL = true;
       enableACME = true;
@@ -195,21 +176,6 @@
         {
           name = "HTTPS homeassistant.albinvass.se";
           customDomains = ["homeassistant.albinvass.se"];
-          type = "https";
-          localIP = config.networking.hostName;
-          localPort = config.services.nginx.defaultSSLListenPort;
-          transport.proxyProtocolVersion = "v2";
-        }
-        {
-          name = "HTTP immich.albinvass.se";
-          customDomains = ["immich.albinvass.se"];
-          type = "http";
-          localIP = config.networking.hostName;
-          localPort = config.services.nginx.defaultHTTPListenPort;
-        }
-        {
-          name = "HTTPS immich.albinvass.se";
-          customDomains = ["immich.albinvass.se"];
           type = "https";
           localIP = config.networking.hostName;
           localPort = config.services.nginx.defaultSSLListenPort;

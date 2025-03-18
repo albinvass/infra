@@ -208,8 +208,8 @@
           {
             networking.hostName = name;
             deployment = {
-              targetHost = "reverse-proxy.albinvass.se";
-              targetPort = 3022;
+              targetHost = "nixpi-3";
+              targetPort = 22;
               targetUser = "avass";
               tags = [ "enabled" ];
               keys = {

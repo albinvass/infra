@@ -15,7 +15,7 @@
     settings = {
       proxies = [
         {
-          name = "SSH nixpi-3";
+          name = "SSH windrunner";
           type = "tcp";
           localIP = config.networking.hostName;
           localPort = 22;

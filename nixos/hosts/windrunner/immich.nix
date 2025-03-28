@@ -41,8 +41,9 @@
       "/var/lib/immich"
       "/opt/immich"
     ];
-    backupPrepareCommand = "cd /opt/immich || exit && docker compose stop";
-    backupCleanupCommand = "cd /opt/immich || exit && docker compose start";
+    exclude = [
+      "\#recycle"
+    ];
     pruneOpts = [
       "--keep-daily 7"
       "--keep-weekly 4"

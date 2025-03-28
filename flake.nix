@@ -51,7 +51,6 @@
             {
               nixpi-1 = pkgs-arm;
               nixpi-2 = pkgs-arm;
-              nixpi-3 = pkgs-arm;
               reverse-proxy = pkgs-arm;
             };
           nodeSpecialArgs = {
@@ -61,10 +60,7 @@
             nixpi-2 = {
               inherit inputs;
             };
-            nixpi-3 = {
-              inherit inputs;
-            };
-            nixos-1 = {
+            windrunner = {
               inherit inputs;
             };
             reverse-proxy = {
@@ -203,12 +199,12 @@
               ./nixos/hosts/nixpi-2
             ];
           };
-        nixpi-3 =
+        windrunner =
           { name, nodes, ... }:
           {
             networking.hostName = name;
             deployment = {
-              targetHost = "nixpi-3";
+              targetHost = "nixos";
               targetPort = 22;
               targetUser = "avass";
               tags = [ "enabled" ];
@@ -240,7 +236,7 @@
 
             imports = [
               inputs.sops-nix.nixosModules.sops
-              ./nixos/hosts/nixpi-3
+              ./nixos/hosts/windrunner
             ];
           };
       };

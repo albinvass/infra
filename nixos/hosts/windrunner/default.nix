@@ -7,8 +7,7 @@
   imports = [
     ./frp.nix
     ./immich.nix
-    ../../modules/raspberry-pi-4-poe
-    inputs.nixos-hardware.nixosModules.raspberry-pi-4
+    ./hardware-configuration.nix
   ];
 
   sops = {
@@ -17,32 +16,6 @@
   };
 
   nixpkgs.config.allowUnfree = true;
-
-  boot = {
-    kernelPackages = pkgs.linuxKernel.packages.linux_rpi4;
-    initrd.availableKernelModules = [
-      "xhci_pci"
-      "usbhid"
-      "usb_storage"
-    ];
-    loader = {
-      grub.enable = false;
-      generic-extlinux-compatible.enable = true;
-    };
-  };
-
-  fileSystems = {
-    "/" = {
-      device = "/dev/disk/by-label/NIXOS_SD";
-      fsType = "ext4";
-      options = [ "noatime" ];
-    };
-    "/data" = {
-      device = "/dev/sda1";
-      fsType = "ext4";
-      options = [ "noatime" ];
-    };
-  };
 
   environment.systemPackages = with pkgs; [
     vim
@@ -71,8 +44,10 @@
   time.timeZone = "Europe/Stockholm";
   console.keyMap = "sv-latin1";
 
-  hardware.enableRedistributableFirmware = true;
-  system.stateVersion = "23.11";
+  boot.loader.systemd-boot.enable = true;
+  boot.loader.efi.canTouchEfiVariables = true;
+
+  system.stateVersion = "24.11";
   security.sudo.extraRules = [
     {
       users = [ "avass" ];

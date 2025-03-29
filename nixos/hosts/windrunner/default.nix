@@ -8,6 +8,7 @@
     ./frp.nix
     ./immich.nix
     ./hardware-configuration.nix
+    ./healthchecks.nix
   ];
 
   sops = {

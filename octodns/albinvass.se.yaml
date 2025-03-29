@@ -10,6 +10,9 @@ audiobookshelf:
 calibre:
   - type: CNAME
     value: reverse-proxy.albinvass.se.
+healthchecks:
+  - type: CNAME
+    value: reverse-proxy.albinvass.se.
 homeassistant:
   - type: CNAME
     value: reverse-proxy.albinvass.se.

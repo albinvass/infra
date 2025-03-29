@@ -34,6 +34,14 @@
 
   services.restic.backups.immich = {
     initialize = true;
+    package =
+      let
+        runitorWrappedRestic = pkgs.writeShellScriptBin "restic"
+          ''
+            #!${pkgs.bash}/bin/bash
+            ${pkgs.runitor}/bin/runitor -- ${pkgs.restic}/bin/restic "$@"
+          '';
+      in runitorWrappedRestic;
     passwordFile = config.sops.secrets."immich/restic/passwordFile".path;
     repositoryFile = config.sops.secrets."immich/restic/repositoryFile".path;
     environmentFile = config.sops.secrets."immich/restic/environmentFile".path;

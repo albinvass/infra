@@ -204,7 +204,7 @@
           {
             networking.hostName = name;
             deployment = {
-              targetHost = "nixos";
+              targetHost = "windrunner";
               targetPort = 22;
               targetUser = "avass";
               tags = [ "enabled" ];

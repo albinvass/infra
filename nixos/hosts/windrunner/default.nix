@@ -7,6 +7,7 @@
   imports = [
     ./frp.nix
     ./immich.nix
+    ./jellyfin.nix
     ./hardware-configuration.nix
     ./healthchecks.nix
   ];

@@ -7,7 +7,6 @@
   imports = [
     ./frp.nix
     ./immich.nix
-    ./jellyfin.nix
     ./hardware-configuration.nix
     ./healthchecks.nix
   ];
@@ -62,8 +61,21 @@
     }
   ];
 
-  networking.firewall = {
-    enable = true;
+  networking = {
+    firewall = {
+      enable = true;
+      allowedTCPPorts = [
+        8989
+        8123
+        7878
+        8080
+        9696
+        9117
+        6767
+        5055
+        8096
+      ];
+    };
   };
 }
 

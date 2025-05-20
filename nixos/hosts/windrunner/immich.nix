@@ -13,7 +13,7 @@
   users.groups."immich" = {};
 
   sops.secrets = {
-    "cifs" = { };
+    "immich/cifs" = { };
 
     "immich/restic/passwordFile" = {
       owner = "root";
@@ -66,7 +66,7 @@
       automount_opts = "x-systemd.automount,noauto,x-systemd.idle-timeout=60,x-systemd.device-timeout=5s,x-systemd.mount-timeout=5s";
       user = "immich";
       group = "immich";
-    in [ "${automount_opts},credentials=${config.sops.secrets."cifs".path},uid=${user},gid=${group}" ];
+    in [ "${automount_opts},credentials=${config.sops.secrets."immich/cifs".path},uid=${user},gid=${group}" ];
   };
 
   services.frp.settings.proxies = [

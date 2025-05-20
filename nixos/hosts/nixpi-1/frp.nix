@@ -69,7 +69,7 @@
       forceSSL = true;
       enableACME = true;
       locations."/" = {
-        proxyPass = "http://192.168.50.131:8096";
+        proxyPass = "http://windrunner:8096";
         extraConfig = ''
           proxy_set_header        Host $host;
           proxy_set_header        X-Real-IP $proxy_protocol_addr;
@@ -84,7 +84,7 @@
       forceSSL = true;
       enableACME = true;
       locations."/" = {
-        proxyPass = "http://192.168.50.131:5055";
+        proxyPass = "http://windrunner:5055";
         extraConfig = ''
           proxy_set_header        Host $host;
           proxy_set_header        X-Real-IP $proxy_protocol_addr;

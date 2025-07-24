@@ -7,6 +7,7 @@
   imports = [
     ./frp.nix
     ./immich.nix
+    ./seafile.nix
     ./hardware-configuration.nix
     ./healthchecks.nix
   ];
@@ -21,11 +22,14 @@
   environment.systemPackages = with pkgs; [
     vim
     git
+    docker
   ];
 
   services = {
     openssh.enable = true;
   };
+
+  virtualisation.docker.enable = true;
 
   users = {
     mutableUsers = false;

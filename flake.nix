@@ -75,7 +75,7 @@
             networking.hostName = name;
             deployment = {
               targetHost = "reverse-proxy.albinvass.se";
-              targetUser = "root";
+              targetUser = "avass";
               tags = [
                 "enabled"
                 ''
@@ -204,8 +204,8 @@
           {
             networking.hostName = name;
             deployment = {
-              targetHost = "windrunner";
-              targetPort = 22;
+              targetHost = "reverse-proxy.albinvass.se";
+              targetPort = 3022;
               targetUser = "avass";
               tags = [ "enabled" ];
               keys = {

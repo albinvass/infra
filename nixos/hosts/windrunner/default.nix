@@ -6,6 +6,7 @@
 {
   imports = [
     ./frp.nix
+    ./grist.nix
     ./immich.nix
     ./seafile.nix
     ./hardware-configuration.nix

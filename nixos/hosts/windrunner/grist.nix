@@ -14,6 +14,12 @@ in
   sops.secrets = {
     "grist/cifs" = { };
 
+    "grist/environmentFile" = {
+      owner = "root";
+      group = "root";
+      mode = "0600";
+    };
+
     "grist/restic/passwordFile" = {
       owner = "root";
       group = "root";
@@ -42,10 +48,11 @@ in
         "/var/lib/grist:/persist"
       ];
       environment = {
-        GRIST_SESSION_SECRET = "123abc";
-        GRIST_DEFAULT_EMAIL = "noreply@albinvass.com";
         GRIST_SANDBOX_FLAVOR= "gvisor";
       };
+      environmentFiles = [
+        config.sops.secrets."grist/environmentFile".path
+      ];
     };
   };
 

@@ -44,6 +44,7 @@ in
       environment = {
         GRIST_SESSION_SECRET = "123abc";
         GRIST_DEFAULT_EMAIL = "noreply@albinvass.com";
+        GRIST_SANDBOX_FLAVOR= "gvisor";
       };
     };
   };

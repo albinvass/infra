@@ -4,6 +4,9 @@ reverse-proxy:
 '':
   - type: A
     value: 135.181.206.186
+authentik:
+  - type: CNAME
+    value: reverse-proxy.albinvass.se.
 audiobookshelf:
   - type: CNAME
     value: reverse-proxy.albinvass.se.

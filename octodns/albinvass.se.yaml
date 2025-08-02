@@ -4,6 +4,9 @@ reverse-proxy:
 '':
   - type: A
     value: 46.62.135.250
+affine:
+  - type: CNAME
+    value: reverse-proxy.albinvass.se.
 authentik:
   - type: CNAME
     value: reverse-proxy.albinvass.se.

@@ -5,6 +5,7 @@
 }:
 {
   imports = [
+    ./affine.nix
     ./authentik.nix
     ./frp.nix
     ./grist.nix

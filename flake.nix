@@ -51,7 +51,6 @@
             {
               nixpi-1 = pkgs-arm;
               nixpi-2 = pkgs-arm;
-              reverse-proxy = pkgs-arm;
             };
           nodeSpecialArgs = {
             nixpi-1 = {
@@ -243,7 +242,7 @@
 
       nixosConfigurations = {
         reverse-proxy = nixpkgs.lib.nixosSystem {
-          system = "aarch64-linux";
+          system = "x86_64-linux";
           modules = [
             inputs.disko.nixosModules.disko
             ./nixos/modules/base

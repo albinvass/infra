@@ -1,9 +1,9 @@
 reverse-proxy:
   - type: A
-    value: 135.181.206.186
+    value: 46.62.135.250
 '':
   - type: A
-    value: 135.181.206.186
+    value: 46.62.135.250
 authentik:
   - type: CNAME
     value: reverse-proxy.albinvass.se.

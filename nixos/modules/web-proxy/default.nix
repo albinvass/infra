@@ -13,6 +13,7 @@ let
     proxy_set_header        X-Forwarded-Proto $scheme;
     proxy_set_header        X-Forwarded-Host $host;
     proxy_set_header        X-Forwarded-Server $host;
+    proxy_set_header        X-Forwarded-Port $server_port;
   '';
 
   # Generate nginx virtual host configuration

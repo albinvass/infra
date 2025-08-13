@@ -32,6 +32,18 @@ in
       }
     ];
     recommendedProxySettings = false;
+    # Configure proper client IP handling
+    commonHttpConfig = ''
+      # Trust proxy protocol for real client IP
+      real_ip_header proxy_protocol;
+      set_real_ip_from 127.0.0.1;
+      set_real_ip_from ::1;
+
+      # Log format to include real client IP
+      log_format main '$proxy_protocol_addr - $remote_user [$time_local] '
+                      '"$request" $status $body_bytes_sent '
+                      '"$http_referer" "$http_user_agent"';
+    '';
   };
 
   systemd.services.frp.serviceConfig = {

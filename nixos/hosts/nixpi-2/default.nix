@@ -8,6 +8,7 @@
     ./frp.nix
     ./audiobookshelf.nix
     ../../modules/raspberry-pi-4-poe
+    ../../modules/frp-client-base
     inputs.nixos-hardware.nixosModules.raspberry-pi-4
   ];
 

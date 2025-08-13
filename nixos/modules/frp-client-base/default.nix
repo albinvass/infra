@@ -4,6 +4,10 @@ let
   defaultSSLListenPort = 443;
 in
 {
+  imports = [
+    ../web-proxy
+  ];
+
   networking.firewall.allowedTCPPorts = [
     defaultHTTPListenPort
     defaultSSLListenPort

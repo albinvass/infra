@@ -7,7 +7,6 @@
   imports = [
     ./frp.nix
     ./adguardhome.nix
-    ./matrix-synapse
     ./static-web-server
     ../../modules/raspberry-pi-4-poe
     inputs.nixos-hardware.nixosModules.raspberry-pi-4

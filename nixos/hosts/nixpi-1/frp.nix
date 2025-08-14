@@ -63,15 +63,6 @@
       clientMaxBodySize = null;
     };
 
-    "matrix.albinvass.se" = {
-      backend = {
-        host = "localhost";
-        port = 8008;
-      };
-      ssl = true;
-      websockets = false;
-      clientMaxBodySize = "5000M";
-    };
 
     "storage.albinvass.se" = {
       backend = {

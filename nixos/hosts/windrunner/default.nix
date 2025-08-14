@@ -10,6 +10,7 @@
     ./frp.nix
     ./grist.nix
     ./immich.nix
+    ./matrix-synapse
     ./seafile.nix
     ./hardware-configuration.nix
     ./healthchecks.nix

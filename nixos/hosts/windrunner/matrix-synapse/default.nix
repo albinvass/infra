@@ -93,4 +93,14 @@
     };
     extraConfigFiles = [ config.sops.secrets."matrix-synapse/extraConfSecrets.yaml".path ];
   };
+
+  services.webProxy.services."matrix.albinvass.se" = {
+    backend = {
+      host = "localhost";
+      port = 8008;
+    };
+    ssl = true;
+    websockets = false;
+    clientMaxBodySize = "5000M";
+  };
 }

@@ -43,25 +43,6 @@
       clientMaxBodySize = "5000M";
     };
 
-    "jellyfin.albinvass.se" = {
-      backend = {
-        host = "windrunner";
-        port = 8096;
-      };
-      ssl = true;
-      websockets = false;
-      clientMaxBodySize = "5000M";
-    };
-
-    "jellyseerr.albinvass.se" = {
-      backend = {
-        host = "windrunner";
-        port = 5055;
-      };
-      ssl = true;
-      websockets = false;
-      clientMaxBodySize = null;
-    };
 
 
     "storage.albinvass.se" = {

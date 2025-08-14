@@ -11,6 +11,28 @@
     ../../modules/frp-client-base
   ];
 
+  services.webProxy.services = {
+    "jellyfin.albinvass.se" = {
+      backend = {
+        host = "localhost";
+        port = 8096;
+      };
+      ssl = true;
+      websockets = false;
+      clientMaxBodySize = "5000M";
+    };
+
+    "jellyseerr.albinvass.se" = {
+      backend = {
+        host = "localhost";
+        port = 5055;
+      };
+      ssl = true;
+      websockets = false;
+      clientMaxBodySize = null;
+    };
+  };
+
   services.frp = {
     settings = {
       proxies = [

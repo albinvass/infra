@@ -28,7 +28,7 @@
     in [ "${automount_opts},credentials=${config.sops.secrets."cifs".path},uid=${user},gid=${group}" ];
   };
 
-  services.webProxy.services = {
+  albinvass.webProxy.services = {
     "audiobookshelf.albinvass.se" = {
       backend = {
         host = "127.0.0.1";

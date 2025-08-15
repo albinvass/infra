@@ -60,7 +60,7 @@ in
     in [ "${automount_opts},credentials=${config.sops.secrets."grist/cifs".path},uid=${user},gid=${group},nobrl" ];
   };
 
-  services.webProxy.services = {
+  albinvass.webProxy.services = {
     "grist.albinvass.se" = {
       backend = {
         host = "127.0.0.1";

@@ -71,7 +71,7 @@
     extraConfigFiles = [ config.sops.secrets."matrix-synapse/extraConfSecrets.yaml".path ];
   };
 
-  services.webProxy.services."matrix.albinvass.se" = {
+  albinvass.webProxy.services."matrix.albinvass.se" = {
     backend = {
       host = "localhost";
       port = 8008;

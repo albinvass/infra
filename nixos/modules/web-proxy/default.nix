@@ -3,7 +3,7 @@
 with lib;
 
 let
-  cfg = config.services.webProxy;
+  cfg = config.albinvass.webProxy;
 
   # Standard proxy headers for all services
   standardProxyHeaders = ''
@@ -52,7 +52,7 @@ let
 
 in
 {
-  options.services.webProxy = {
+  options.albinvass.webProxy = {
     services = mkOption {
       type = types.attrsOf (types.submodule {
         options = {

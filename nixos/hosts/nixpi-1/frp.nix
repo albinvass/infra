@@ -12,7 +12,7 @@
   ];
 
   # Configure all proxy services in one place
-  services.webProxy.services = {
+  albinvass.webProxy.services = {
     "albinvass.se" = {
       backend = {
         host = "localhost";

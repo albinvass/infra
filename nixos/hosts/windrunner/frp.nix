@@ -11,7 +11,7 @@
     ../../modules/frp-client-base
   ];
 
-  services.webProxy.services = {
+  albinvass.webProxy.services = {
     "jellyfin.albinvass.se" = {
       backend = {
         host = "localhost";

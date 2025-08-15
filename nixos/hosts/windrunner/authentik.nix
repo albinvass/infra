@@ -19,7 +19,7 @@
     '';
   };
 
-  services.webProxy.services = {
+  albinvass.webProxy.services = {
     "authentik.albinvass.se" = {
       backend = {
         host = "127.0.0.1";

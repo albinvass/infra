@@ -41,24 +41,7 @@
         meta = {
           allowApplyAll = false;
           nixpkgs = pkgs;
-          nodeNixpkgs =
-            let
-              pkgs-arm = import nixpkgs {
-                system = "aarch64-linux";
-                config.allowUnfree = true;
-              };
-            in
-            {
-              nixpi-1 = pkgs-arm;
-              nixpi-2 = pkgs-arm;
-            };
           nodeSpecialArgs = {
-            nixpi-1 = {
-              inherit inputs;
-            };
-            nixpi-2 = {
-              inherit inputs;
-            };
             windrunner = {
               inherit inputs;
             };
@@ -118,86 +101,6 @@
             ];
           };
 
-        nixpi-1 =
-          { name, nodes, ... }:
-          {
-            networking.hostName = name;
-            deployment = {
-              targetHost = "192.168.50.252";
-              targetPort = 22;
-              targetUser = "avass";
-              tags = [ "enabled" ];
-              keys = {
-                "ssh_host_ed25519_key" = {
-                  destDir = "/etc/ssh";
-                  keyCommand = [
-                    "get-host-key"
-                    name
-                    "ssh_host_ed25519_key"
-                  ];
-                  user = "root";
-                  group = "root";
-                  permissions = "0600";
-                };
-                "ssh_host_ed25519_key.pub" = {
-                  destDir = "/etc/ssh";
-                  keyCommand = [
-                    "get-host-key"
-                    name
-                    "ssh_host_ed25519_key.pub"
-                  ];
-                  user = "root";
-                  group = "root";
-                  permissions = "0644";
-                };
-              };
-            };
-
-            imports = [
-              inputs.sops-nix.nixosModules.sops
-              ./nixos/hosts/nixpi-1
-            ];
-          };
-        nixpi-2 =
-          { name, nodes, ... }:
-          {
-            networking.hostName = name;
-            deployment = {
-              targetHost = "192.168.50.162";
-              targetPort = 22;
-              targetUser = "avass";
-              tags = [ "enabled" ];
-              keys = {
-                "ssh_host_ed25519_key" = {
-                  destDir = "/etc/ssh";
-                  keyCommand = [
-                    "get-host-key"
-                    name
-                    "ssh_host_ed25519_key"
-                  ];
-                  user = "root";
-                  group = "root";
-                  permissions = "0600";
-                };
-                "ssh_host_ed25519_key.pub" = {
-                  destDir = "/etc/ssh";
-                  keyCommand = [
-                    "get-host-key"
-                    name
-                    "ssh_host_ed25519_key.pub"
-                  ];
-                  user = "root";
-                  group = "root";
-                  permissions = "0644";
-                };
-              };
-            };
-
-            imports = [
-              inputs.sops-nix.nixosModules.sops
-              ./nixos/hosts/nixpi-2
-            ];
-          };
         windrunner =
           { name, nodes, ... }:
           {

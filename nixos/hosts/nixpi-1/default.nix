@@ -6,7 +6,6 @@
 {
   imports = [
     ./frp.nix
-    ./static-web-server
     ../../modules/raspberry-pi-4-poe
     inputs.nixos-hardware.nixosModules.raspberry-pi-4
   ];

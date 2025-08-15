@@ -163,8 +163,8 @@
           {
             networking.hostName = name;
             deployment = {
-              targetHost = "reverse-proxy.albinvass.se";
-              targetPort = 2022;
+              targetHost = "192.168.50.162";
+              targetPort = 22;
               targetUser = "avass";
               tags = [ "enabled" ];
               keys = {

@@ -8,6 +8,7 @@
     ../../modules/restic-backup
     ./adguardhome.nix
     ./affine.nix
+    ./audiobookshelf.nix
     ./authentik.nix
     ./frp.nix
     ./grist.nix

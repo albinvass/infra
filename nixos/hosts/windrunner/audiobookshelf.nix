@@ -1,6 +1,6 @@
 { config, ... }: {
   sops.secrets = {
-    "cifs" = { };
+    "audiobookshelf/cifs" = { };
   };
 
   albinvass.resticBackup.services.audiobookshelf = {
@@ -14,6 +14,7 @@
     enable = true;
     openFirewall = true;
     host = "0.0.0.0";
+    port = 8001;
   };
   systemd.services.audiobookshelf.serviceConfig = {
     RequiresMountsFor="/var/lib/audiobookshelf/data";
@@ -25,14 +26,14 @@
       automount_opts = "x-systemd.automount,noauto,x-systemd.idle-timeout=60,x-systemd.device-timeout=5s,x-systemd.mount-timeout=5s";
       inherit (config.services.audiobookshelf) user;
       inherit (config.services.audiobookshelf) group;
-    in [ "${automount_opts},credentials=${config.sops.secrets."cifs".path},uid=${user},gid=${group}" ];
+    in [ "${automount_opts},credentials=${config.sops.secrets."audiobookshelf/cifs".path},uid=${user},gid=${group}" ];
   };
 
   albinvass.webProxy.services = {
     "audiobookshelf.albinvass.se" = {
       backend = {
         host = "127.0.0.1";
-        port = 8000;
+        port = 8001;
       };
       ssl = true;
       websockets = true;

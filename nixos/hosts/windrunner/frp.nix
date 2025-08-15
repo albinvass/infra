@@ -31,6 +31,36 @@
       websockets = false;
       clientMaxBodySize = null;
     };
+
+    "albinvass.se" = {
+      backend = {
+        host = "nixpi-1";
+        port = 8787;
+      };
+      ssl = true;
+      websockets = false;
+      clientMaxBodySize = "5000M";
+    };
+
+    "homeassistant.albinvass.se" = {
+      backend = {
+        host = "homeassistant";
+        port = 8123;
+      };
+      ssl = true;
+      websockets = true;
+      clientMaxBodySize = "5000M";
+    };
+
+    "storage.albinvass.se" = {
+      backend = {
+        host = "storage";
+        port = 5000;
+      };
+      ssl = true;
+      websockets = true;
+      clientMaxBodySize = "20000M";
+    };
   };
 
   services.frp = {

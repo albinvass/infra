@@ -14,7 +14,6 @@
     ./grist.nix
     ./immich.nix
     ./matrix-synapse
-    ./seafile.nix
     ./static-web-server
     ./hardware-configuration.nix
     ./healthchecks.nix

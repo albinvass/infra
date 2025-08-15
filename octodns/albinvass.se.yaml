@@ -34,9 +34,6 @@ jellyseerr:
 matrix:
   - type: CNAME
     value: reverse-proxy.albinvass.se.
-seafile:
-  - type: CNAME
-    value: reverse-proxy.albinvass.se.
 storage:
   - type: CNAME
     value: reverse-proxy.albinvass.se.

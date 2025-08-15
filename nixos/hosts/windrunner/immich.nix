@@ -1,4 +1,4 @@
-{ config, pkgs, ...}:
+{ config, pkgs, ... }:
 {
   users.users."immich" = {
     name = "immich";
@@ -6,7 +6,7 @@
     isSystemUser = true;
   };
 
-  users.groups."immich" = {};
+  users.groups."immich" = { };
 
   sops.secrets = {
     "immich/cifs" = { };
@@ -25,11 +25,15 @@
   fileSystems."/var/lib/immich" = {
     device = "//storage./home";
     fsType = "cifs";
-    options = let
-      automount_opts = "x-systemd.automount,noauto,x-systemd.idle-timeout=60,x-systemd.device-timeout=5s,x-systemd.mount-timeout=5s";
-      user = "immich";
-      group = "immich";
-    in [ "${automount_opts},credentials=${config.sops.secrets."immich/cifs".path},uid=${user},gid=${group}" ];
+    options =
+      let
+        automount_opts = "x-systemd.automount,noauto,x-systemd.idle-timeout=60,x-systemd.device-timeout=5s,x-systemd.mount-timeout=5s";
+        user = "immich";
+        group = "immich";
+      in
+      [
+        "${automount_opts},credentials=${config.sops.secrets."immich/cifs".path},uid=${user},gid=${group}"
+      ];
   };
 
   albinvass.webProxy.services = {

@@ -38,5 +38,7 @@ rec {
   ) nodeConfigs;
   enabledNodeConfigs = builtins.filter (node: node.enabled) nodeConfigs;
   enabledNodes = map (node: node.name) enabledNodeConfigs;
-  virtualHosts = builtins.map (node: nodes.${node.name}.config.services.nginx.virtualHosts) nodeConfigs;
+  virtualHosts = builtins.map (
+    node: nodes.${node.name}.config.services.nginx.virtualHosts
+  ) nodeConfigs;
 }

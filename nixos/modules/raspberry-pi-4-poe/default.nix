@@ -5,10 +5,12 @@
     deviceTree = {
       enable = true;
       filter = "bcm2711-rpi-4*.dtb";
-      overlays = [{
-        name = "rpi-poe";
-        dtsFile = ./rpi-poe.dts;
-      }];
+      overlays = [
+        {
+          name = "rpi-poe";
+          dtsFile = ./rpi-poe.dts;
+        }
+      ];
     };
   };
 }

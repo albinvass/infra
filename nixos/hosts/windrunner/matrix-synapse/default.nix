@@ -19,7 +19,7 @@
     isSystemUser = true;
     group = "matrix-synapse";
   };
-  users.groups.matrix-synapse = {};
+  users.groups.matrix-synapse = { };
 
   environment.etc."/static-web-server/.well-known/matrix/server" = {
     mode = "0755";

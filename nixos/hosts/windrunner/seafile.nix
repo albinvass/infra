@@ -1,4 +1,4 @@
-{ config, pkgs, ...}:
+{ config, pkgs, ... }:
 {
   users.users."seafile" = {
     name = "seafile";
@@ -28,24 +28,28 @@
   fileSystems."/var/lib/seafile" = {
     device = "//storage./home";
     fsType = "cifs";
-    options = let
-      automount_opts = "x-systemd.automount,noauto,x-systemd.idle-timeout=60,x-systemd.device-timeout=5s,x-systemd.mount-timeout=5s";
-      user = "seafile";
-      group = "seafile";
-    in [ "${automount_opts},credentials=${config.sops.secrets."seafile/cifs".path},uid=${user},gid=${group}" ];
+    options =
+      let
+        automount_opts = "x-systemd.automount,noauto,x-systemd.idle-timeout=60,x-systemd.device-timeout=5s,x-systemd.mount-timeout=5s";
+        user = "seafile";
+        group = "seafile";
+      in
+      [
+        "${automount_opts},credentials=${config.sops.secrets."seafile/cifs".path},uid=${user},gid=${group}"
+      ];
   };
 
   services.frp.settings.proxies = [
     {
       name = "HTTP seafile.albinvass.se";
-      customDomains = ["seafile.albinvass.se"];
+      customDomains = [ "seafile.albinvass.se" ];
       type = "http";
       localIP = config.networking.hostName;
       localPort = config.services.nginx.defaultHTTPListenPort;
     }
     {
       name = "HTTPS seafile.albinvass.se";
-      customDomains = ["seafile.albinvass.se"];
+      customDomains = [ "seafile.albinvass.se" ];
       type = "https";
       localIP = config.networking.hostName;
       localPort = config.services.nginx.defaultSSLListenPort;
@@ -69,9 +73,8 @@
         '';
       };
       extraConfig = ''
-          client_max_body_size 20000M;
+        client_max_body_size 20000M;
       '';
     };
   };
 }
-

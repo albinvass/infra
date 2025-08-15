@@ -1,4 +1,9 @@
-{ config, pkgs, lib, ...}:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 let
   gristPort = "8484";
 in
@@ -9,7 +14,7 @@ in
     isSystemUser = true;
   };
 
-  users.groups."grist" = {};
+  users.groups."grist" = { };
 
   sops.secrets = {
     "grist/cifs" = { };
@@ -33,7 +38,7 @@ in
         "/var/lib/grist:/persist"
       ];
       environment = {
-        GRIST_SANDBOX_FLAVOR= "gvisor";
+        GRIST_SANDBOX_FLAVOR = "gvisor";
       };
       environmentFiles = [
         config.sops.secrets."grist/environmentFile".path
@@ -53,11 +58,17 @@ in
   fileSystems."/var/lib/grist" = {
     device = "//storage./home";
     fsType = "cifs";
-    options = let
-      automount_opts = "x-systemd.automount,noauto,x-systemd.idle-timeout=60,x-systemd.device-timeout=5s,x-systemd.mount-timeout=5s";
-      user = "grist";
-      group = "grist";
-    in [ "${automount_opts},credentials=${config.sops.secrets."grist/cifs".path},uid=${user},gid=${group},nobrl" ];
+    options =
+      let
+        automount_opts = "x-systemd.automount,noauto,x-systemd.idle-timeout=60,x-systemd.device-timeout=5s,x-systemd.mount-timeout=5s";
+        user = "grist";
+        group = "grist";
+      in
+      [
+        "${automount_opts},credentials=${
+          config.sops.secrets."grist/cifs".path
+        },uid=${user},gid=${group},nobrl"
+      ];
   };
 
   albinvass.webProxy.services = {

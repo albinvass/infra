@@ -1,4 +1,5 @@
-{ config, ... }: {
+{ config, ... }:
+{
   sops.secrets = {
     "audiobookshelf/cifs" = { };
   };
@@ -17,16 +18,22 @@
     port = 8001;
   };
   systemd.services.audiobookshelf.serviceConfig = {
-    RequiresMountsFor="/var/lib/audiobookshelf/data";
+    RequiresMountsFor = "/var/lib/audiobookshelf/data";
   };
   fileSystems."/var/lib/audiobookshelf/data" = {
     device = "//storage./home/audiobooks";
     fsType = "cifs";
-    options = let
-      automount_opts = "x-systemd.automount,noauto,x-systemd.idle-timeout=60,x-systemd.device-timeout=5s,x-systemd.mount-timeout=5s";
-      inherit (config.services.audiobookshelf) user;
-      inherit (config.services.audiobookshelf) group;
-    in [ "${automount_opts},credentials=${config.sops.secrets."audiobookshelf/cifs".path},uid=${user},gid=${group}" ];
+    options =
+      let
+        automount_opts = "x-systemd.automount,noauto,x-systemd.idle-timeout=60,x-systemd.device-timeout=5s,x-systemd.mount-timeout=5s";
+        inherit (config.services.audiobookshelf) user;
+        inherit (config.services.audiobookshelf) group;
+      in
+      [
+        "${automount_opts},credentials=${
+          config.sops.secrets."audiobookshelf/cifs".path
+        },uid=${user},gid=${group}"
+      ];
   };
 
   albinvass.webProxy.services = {

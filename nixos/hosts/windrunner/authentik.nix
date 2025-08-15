@@ -1,4 +1,4 @@
-{ config, pkgs, ...}:
+{ config, pkgs, ... }:
 {
   users.users."authentik" = {
     name = "authentik";
@@ -6,7 +6,7 @@
     isSystemUser = true;
   };
 
-  users.groups."authentik" = {};
+  users.groups."authentik" = { };
 
   albinvass.resticBackup.services.authentik = {
     paths = [
@@ -31,4 +31,3 @@
     };
   };
 }
-

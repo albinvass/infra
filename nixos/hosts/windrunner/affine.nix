@@ -1,4 +1,4 @@
-{ config, pkgs, ...}:
+{ config, pkgs, ... }:
 {
   users.users."affine" = {
     name = "affine";
@@ -6,7 +6,7 @@
     isSystemUser = true;
   };
 
-  users.groups."affine" = {};
+  users.groups."affine" = { };
 
   sops.secrets = {
     "affine/cifs" = { };
@@ -25,24 +25,30 @@
   fileSystems."/var/lib/affine" = {
     device = "//storage./home";
     fsType = "cifs";
-    options = let
-      automount_opts = "x-systemd.automount,noauto,x-systemd.idle-timeout=60,x-systemd.device-timeout=5s,x-systemd.mount-timeout=5s";
-      user = "affine";
-      group = "affine";
-    in [ "${automount_opts},credentials=${config.sops.secrets."affine/cifs".path},uid=${user},gid=${group},nobrl" ];
+    options =
+      let
+        automount_opts = "x-systemd.automount,noauto,x-systemd.idle-timeout=60,x-systemd.device-timeout=5s,x-systemd.mount-timeout=5s";
+        user = "affine";
+        group = "affine";
+      in
+      [
+        "${automount_opts},credentials=${
+          config.sops.secrets."affine/cifs".path
+        },uid=${user},gid=${group},nobrl"
+      ];
   };
 
   services.frp.settings.proxies = [
     {
       name = "HTTP affine.albinvass.se";
-      customDomains = ["affine.albinvass.se"];
+      customDomains = [ "affine.albinvass.se" ];
       type = "http";
       localIP = config.networking.hostName;
       localPort = config.services.nginx.defaultHTTPListenPort;
     }
     {
       name = "HTTPS affine.albinvass.se";
-      customDomains = ["affine.albinvass.se"];
+      customDomains = [ "affine.albinvass.se" ];
       type = "https";
       localIP = config.networking.hostName;
       localPort = config.services.nginx.defaultSSLListenPort;
@@ -66,7 +72,7 @@
         '';
       };
       extraConfig = ''
-          client_max_body_size 20000M;
+        client_max_body_size 20000M;
       '';
     };
   };

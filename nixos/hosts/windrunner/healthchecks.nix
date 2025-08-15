@@ -34,14 +34,14 @@
   services.frp.settings.proxies = [
     {
       name = "HTTP healthchecks.albinvass.se";
-      customDomains = ["healthchecks.albinvass.se"];
+      customDomains = [ "healthchecks.albinvass.se" ];
       type = "http";
       localIP = config.networking.hostName;
       localPort = config.services.nginx.defaultHTTPListenPort;
     }
     {
       name = "HTTPS healthchecks.albinvass.se";
-      customDomains = ["healthchecks.albinvass.se"];
+      customDomains = [ "healthchecks.albinvass.se" ];
       type = "https";
       localIP = config.networking.hostName;
       localPort = config.services.nginx.defaultSSLListenPort;

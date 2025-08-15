@@ -13,9 +13,6 @@ authentik:
 audiobookshelf:
   - type: CNAME
     value: reverse-proxy.albinvass.se.
-calibre:
-  - type: CNAME
-    value: reverse-proxy.albinvass.se.
 grist:
   - type: CNAME
     value: reverse-proxy.albinvass.se.
@@ -35,9 +32,6 @@ jellyseerr:
   - type: CNAME
     value: reverse-proxy.albinvass.se.
 matrix:
-  - type: CNAME
-    value: reverse-proxy.albinvass.se.
-navidrome:
   - type: CNAME
     value: reverse-proxy.albinvass.se.
 seafile:

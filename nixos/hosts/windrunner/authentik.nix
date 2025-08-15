@@ -54,42 +54,15 @@
     ];
   };
 
-  services.frp.settings.proxies = [
-    {
-      name = "HTTP authentik.albinvass.se";
-      customDomains = ["authentik.albinvass.se"];
-      type = "http";
-      localIP = config.networking.hostName;
-      localPort = config.services.nginx.defaultHTTPListenPort;
-    }
-    {
-      name = "HTTPS authentik.albinvass.se";
-      customDomains = ["authentik.albinvass.se"];
-      type = "https";
-      localIP = config.networking.hostName;
-      localPort = config.services.nginx.defaultSSLListenPort;
-      transport.proxyProtocolVersion = "v2";
-    }
-  ];
-  services.nginx.virtualHosts = {
+  services.webProxy.services = {
     "authentik.albinvass.se" = {
-      forceSSL = true;
-      enableACME = true;
-      locations."/" = {
-        proxyPass = "http://127.0.0.1:14080";
-        proxyWebsockets = true;
-        extraConfig = ''
-          proxy_set_header        Host $host;
-          proxy_set_header        X-Real-IP $proxy_protocol_addr;
-          proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
-          proxy_set_header        X-Forwarded-Proto $scheme;
-          proxy_set_header        X-Forwarded-Host $host;
-          proxy_set_header        X-Forwarded-Server $host;
-        '';
+      backend = {
+        host = "127.0.0.1";
+        port = 14080;
       };
-      extraConfig = ''
-          client_max_body_size 20000M;
-      '';
+      ssl = true;
+      websockets = true;
+      clientMaxBodySize = "20000M";
     };
   };
 }

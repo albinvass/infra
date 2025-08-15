@@ -6,6 +6,7 @@
 {
   imports = [
     ../../modules/restic-backup
+    ./adguardhome.nix
     ./affine.nix
     ./authentik.nix
     ./frp.nix

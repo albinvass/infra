@@ -5,6 +5,7 @@
 }:
 {
   imports = [
+    ../../modules/restic-backup
     ./frp.nix
     ./audiobookshelf.nix
     ../../modules/raspberry-pi-4-poe

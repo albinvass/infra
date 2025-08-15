@@ -20,21 +20,6 @@ in
       mode = "0600";
     };
 
-    "grist/restic/passwordFile" = {
-      owner = "root";
-      group = "root";
-      mode = "0600";
-    };
-    "grist/restic/repositoryFile" = {
-      owner = "root";
-      group = "root";
-      mode = "0600";
-    };
-    "grist/restic/environmentFile" = {
-      owner = "root";
-      group = "root";
-      mode = "0600";
-    };
   };
 
   virtualisation.oci-containers.containers = {
@@ -56,29 +41,12 @@ in
     };
   };
 
-  services.restic.backups.grist = {
-    initialize = true;
-    package =
-      let
-        runitorWrappedRestic = pkgs.writeShellScriptBin "restic"
-          ''
-            #!${pkgs.bash}/bin/bash
-            ${pkgs.runitor}/bin/runitor -- ${pkgs.restic}/bin/restic "$@"
-          '';
-      in runitorWrappedRestic;
-    passwordFile = config.sops.secrets."grist/restic/passwordFile".path;
-    repositoryFile = config.sops.secrets."grist/restic/repositoryFile".path;
-    environmentFile = config.sops.secrets."grist/restic/environmentFile".path;
+  albinvass.resticBackup.services.grist = {
     paths = [
       "/var/lib/grist"
     ];
     exclude = [
       "\#recycle"
-    ];
-    pruneOpts = [
-      "--keep-daily 7"
-      "--keep-weekly 4"
-      "--keep-monthly 3"
     ];
   };
 

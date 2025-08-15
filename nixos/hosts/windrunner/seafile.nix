@@ -13,48 +13,15 @@
 
   sops.secrets = {
     "seafile/cifs" = { };
-
-    "seafile/restic/passwordFile" = {
-      owner = "root";
-      group = "root";
-      mode = "0600";
-    };
-    "seafile/restic/repositoryFile" = {
-      owner = "root";
-      group = "root";
-      mode = "0600";
-    };
-    "seafile/restic/environmentFile" = {
-      owner = "root";
-      group = "root";
-      mode = "0600";
-    };
   };
 
-  services.restic.backups.seafile = {
-    initialize = true;
-    package =
-      let
-        runitorWrappedRestic = pkgs.writeShellScriptBin "restic"
-          ''
-            #!${pkgs.bash}/bin/bash
-            ${pkgs.runitor}/bin/runitor -- ${pkgs.restic}/bin/restic "$@"
-          '';
-      in runitorWrappedRestic;
-    passwordFile = config.sops.secrets."seafile/restic/passwordFile".path;
-    repositoryFile = config.sops.secrets."seafile/restic/repositoryFile".path;
-    environmentFile = config.sops.secrets."seafile/restic/environmentFile".path;
+  albinvass.resticBackup.services.seafile = {
     paths = [
       "/var/lib/seafile"
       "/opt/seafile"
     ];
     exclude = [
       "\#recycle"
-    ];
-    pruneOpts = [
-      "--keep-daily 7"
-      "--keep-weekly 4"
-      "--keep-monthly 3"
     ];
   };
 

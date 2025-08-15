@@ -5,6 +5,7 @@
 }:
 {
   imports = [
+    ../../modules/restic-backup
     ./affine.nix
     ./authentik.nix
     ./frp.nix

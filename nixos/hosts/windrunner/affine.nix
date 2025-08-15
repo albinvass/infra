@@ -10,48 +10,15 @@
 
   sops.secrets = {
     "affine/cifs" = { };
-
-    "affine/restic/passwordFile" = {
-      owner = "root";
-      group = "root";
-      mode = "0600";
-    };
-    "affine/restic/repositoryFile" = {
-      owner = "root";
-      group = "root";
-      mode = "0600";
-    };
-    "affine/restic/environmentFile" = {
-      owner = "root";
-      group = "root";
-      mode = "0600";
-    };
   };
 
-  services.restic.backups.affine = {
-    initialize = true;
-    package =
-      let
-        runitorWrappedRestic = pkgs.writeShellScriptBin "restic"
-          ''
-            #!${pkgs.bash}/bin/bash
-            ${pkgs.runitor}/bin/runitor -- ${pkgs.restic}/bin/restic "$@"
-          '';
-      in runitorWrappedRestic;
-    passwordFile = config.sops.secrets."affine/restic/passwordFile".path;
-    repositoryFile = config.sops.secrets."affine/restic/repositoryFile".path;
-    environmentFile = config.sops.secrets."affine/restic/environmentFile".path;
+  albinvass.resticBackup.services.affine = {
     paths = [
       "/var/lib/affine"
       "/opt/affine"
     ];
     exclude = [
       "\#recycle"
-    ];
-    pruneOpts = [
-      "--keep-daily 7"
-      "--keep-weekly 4"
-      "--keep-monthly 3"
     ];
   };
 

@@ -10,48 +10,15 @@
 
   sops.secrets = {
     "immich/cifs" = { };
-
-    "immich/restic/passwordFile" = {
-      owner = "root";
-      group = "root";
-      mode = "0600";
-    };
-    "immich/restic/repositoryFile" = {
-      owner = "root";
-      group = "root";
-      mode = "0600";
-    };
-    "immich/restic/environmentFile" = {
-      owner = "root";
-      group = "root";
-      mode = "0600";
-    };
   };
 
-  services.restic.backups.immich = {
-    initialize = true;
-    package =
-      let
-        runitorWrappedRestic = pkgs.writeShellScriptBin "restic"
-          ''
-            #!${pkgs.bash}/bin/bash
-            ${pkgs.runitor}/bin/runitor -- ${pkgs.restic}/bin/restic "$@"
-          '';
-      in runitorWrappedRestic;
-    passwordFile = config.sops.secrets."immich/restic/passwordFile".path;
-    repositoryFile = config.sops.secrets."immich/restic/repositoryFile".path;
-    environmentFile = config.sops.secrets."immich/restic/environmentFile".path;
+  albinvass.resticBackup.services.immich = {
     paths = [
       "/var/lib/immich"
       "/opt/immich"
     ];
     exclude = [
       "\#recycle"
-    ];
-    pruneOpts = [
-      "--keep-daily 7"
-      "--keep-weekly 4"
-      "--keep-monthly 3"
     ];
   };
 

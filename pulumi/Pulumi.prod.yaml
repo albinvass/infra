@@ -1,5 +1,0 @@
-config:
-  infra:tunnel-devbox-secret:
-    secure: AAABAAcv7hzDuB3LY4EgOXGS1wpbakC7AM7s4s2oQ3jhGVH7kTkmCS6Zn8i0fshjL8KiNzTtbX7Rf/8KaenJ8EPbz+fLNzdUBLWkQQ==
-  infra:tunnel-nixpi-secret:
-    secure: AAABAAcv7hzDuB3LY4EgOXGS1wpbakC7AM7s4s2oQ3jhGVH7kTkmCS6Zn8i0fshjL8KiNzTtbX7Rf/8KaenJ8EPbz+fLNzdUBLWkQQ==

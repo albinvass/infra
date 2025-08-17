@@ -58,16 +58,6 @@
             deployment = {
               targetHost = "reverse-proxy.albinvass.se";
               targetUser = "avass";
-              tags = [
-                "enabled"
-                ''
-                  pulumi:{
-                                    "Server": {
-                                      "Enabled": true,
-                                      "ServerType": "cax11"
-                                    }
-                                  }''
-              ];
               keys = {
                 "ssh_host_ed25519_key" = {
                   destDir = "/etc/ssh";
@@ -109,7 +99,6 @@
               targetHost = "192.168.50.99";
               targetPort = 22;
               targetUser = "avass";
-              tags = [ "enabled" ];
               keys = {
                 "ssh_host_ed25519_key" = {
                   destDir = "/etc/ssh";

@@ -34,7 +34,7 @@
 
     "albinvass.se" = {
       backend = {
-        host = "nixpi-1";
+        host = "localhost";
         port = 8787;
       };
       ssl = true;

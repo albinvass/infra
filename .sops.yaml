@@ -1,8 +1,6 @@
 keys:
   - &avass age19k67f8muz2n368y2n0k55wr8z0d6q9vhh22v5re5c692v3x3af9qwsnu6a
   - &github-actions age1ra3d5axy6zhqvt5hlqpr0u8lcmf4dkapvh2uwvylqas6xc25zf5qlrnt7c
-  - &nixpi-1 age1c575k873cl0pqap0kpd3s8v2tnwthsfj834dzyfvmkfgaf5gl49s7l2z5m
-  - &nixpi-2 age1vw3hznzatp8rj39j70x6ts78jqan6p28q7l037pkpn5dqdklwgys0yj2rg
   - &windrunner age1l3y3v6trsaqep5cx5lw8jcfv5s2t7kn7q9rppfwy0vs8tmfwsu9s59pm2y
   - &reverse-proxy age1evknxp28pfhzr503rxfq3lej3pzew6mtn25vaqmadrd2edy0qdps47rjfq
 creation_rules:
@@ -12,18 +10,6 @@ creation_rules:
         - *avass
         - *github-actions
         - *reverse-proxy
-  - path_regex: ^nixos/hosts/nixpi-1/.*
-    key_groups:
-    - age:
-        - *avass
-        - *github-actions
-        - *nixpi-1
-  - path_regex: ^nixos/hosts/nixpi-2/.*
-    key_groups:
-    - age:
-        - *avass
-        - *github-actions
-        - *nixpi-2
   - path_regex: ^nixos/hosts/windrunner/.*
     key_groups:
     - age:

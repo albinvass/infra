@@ -1,0 +1,21 @@
+20250912._domainkey:
+  - type: TXT
+    values:
+      - v=DKIM1\; t=s\; p=MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAsCne5SrbiyTQG3xM54pwFap4j53LO82SeK03z8YkcV8Gyj0jLxk5W8E2734k+NUDqftXlrc9Gmi9o0tXBxjIZpNwqa0KGsxz6P33sECFBS1N+SlyOkiKnlWs0PTOugN4i626ODJbk+YXs4UDh9UhD7+IMT2vHxCPU/cSgh+QAu2BOpOeQTzMWW7Dwp02iDKPSbRdIfOxYV1pMFndSoN0SC/f+PwLQSuJpcF7zQ9zGe0k6YjbbsOaZ5/qInKBxb6Bto+oweGQr/Njdb1xv3GvwMxyrEuIO+4Sr66XAOG4NIy4jHByYOFvgvualWxXdnYmuAnV1lZJzcO0EujlNyrxlwIDAQAB
+
+autoconfig:
+  - type: CNAME
+    value: infomaniak.com.
+
+autodiscover:
+  - type: CNAME
+    value: infomaniak.com.
+
+'':
+  - type: MX
+    values:
+      - exchange: mta-gw.infomaniak.ch.
+        preference: 5
+  - type: TXT
+    values:
+      - v=spf1 include:spf.infomaniak.ch -all

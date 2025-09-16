@@ -177,7 +177,6 @@
           eval "$(sops --output-type dotenv --extract '["env"]' -d "$GIT_ROOT/secrets.yaml")"
           set +o allexport
 
-          SSH_CONFIG_FILE="$GIT_ROOT/ssh/config"
           export SSH_CONFIG_FILE
           trap 'ssh-agent -k' EXIT
           eval "$(ssh-agent | sed '/^echo.*/d')"

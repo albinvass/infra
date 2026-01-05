@@ -4,6 +4,9 @@ reverse-proxy:
 '':
   - type: A
     value: 46.62.135.250
+actual:
+  - type: CNAME
+    value: reverse-proxy.albinvass.se.
 affine:
   - type: CNAME
     value: reverse-proxy.albinvass.se.

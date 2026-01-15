@@ -54,7 +54,7 @@
 
     "storage.albinvass.se" = {
       backend = {
-        host = "storage";
+        host = "192.168.50.48";
         port = 5000;
       };
       ssl = true;

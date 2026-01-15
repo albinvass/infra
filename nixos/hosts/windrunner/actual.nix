@@ -52,7 +52,7 @@ in
   };
 
   fileSystems."/var/lib/actual" = {
-    device = "//storage./home";
+    device = "//192.168.50.48/home";
     fsType = "cifs";
     options =
       let

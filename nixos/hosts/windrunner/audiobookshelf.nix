@@ -21,7 +21,7 @@
     RequiresMountsFor = "/var/lib/audiobookshelf/data";
   };
   fileSystems."/var/lib/audiobookshelf/data" = {
-    device = "//storage./home/audiobooks";
+    device = "//192.168.50.48/home/audiobooks";
     fsType = "cifs";
     options =
       let

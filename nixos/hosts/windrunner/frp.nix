@@ -44,7 +44,7 @@
 
     "homeassistant.albinvass.se" = {
       backend = {
-        host = "homeassistant";
+        host = "192.168.50.228";
         port = 8123;
       };
       ssl = true;

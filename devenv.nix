@@ -165,7 +165,7 @@
         '';
     };
 
-    deploy-colmena = {
+    deploy-hosts = {
       description = "Deploy colmena conifguration.";
       exec = # bash
         ''
@@ -186,7 +186,7 @@
         '';
     };
 
-    save-colmena-generation = {
+    save-generation = {
       description = "Save the current NixOS system generation path for a node to a file.";
       exec = # bash
         ''
@@ -212,7 +212,7 @@
         '';
     };
 
-    build-colmena = {
+    build-hosts = {
       description = "Build colmena configuration on target without activating.";
       exec = # bash
         ''
@@ -233,7 +233,7 @@
         '';
     };
 
-    schedule-rollback-canary = {
+    schedule-rollback = {
       description = "Schedule a rollback canary timer on a node before activation.";
       exec = # bash
         ''
@@ -261,7 +261,7 @@
         '';
     };
 
-    activate-colmena = {
+    activate-hosts = {
       description = "Activate a previously built colmena configuration on target.";
       exec = # bash
         ''
@@ -282,7 +282,7 @@
         '';
     };
 
-    cancel-rollback-canary = {
+    cancel-rollback = {
       description = "Cancel the rollback canary timer on a node after a successful deployment.";
       exec = # bash
         ''
@@ -306,7 +306,7 @@
         '';
     };
 
-    rollback-colmena = {
+    rollback-hosts = {
       description = "Rollback a node to its previously saved NixOS generation.";
       exec = # bash
         ''

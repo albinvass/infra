@@ -80,36 +80,36 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Save current generation of ${{ matrix.host }}
-      run: devenv shell save-colmena-generation -- ${{ matrix.host }} /tmp/current-gen-${{ matrix.host }}
+      run: devenv shell save-generation -- ${{ matrix.host }} /tmp/current-gen-${{ matrix.host }}
       env:
         SOPS_AGE_KEY: ${{ secrets.SOPS_AGE_KEY }}
 
     - name: Build ${{ matrix.host }}
       id: build
-      run: devenv shell build-colmena -- --on ${{ matrix.host }}
+      run: devenv shell build-hosts -- --on ${{ matrix.host }}
       env:
         SOPS_AGE_KEY: ${{ secrets.SOPS_AGE_KEY }}
 
-    - name: Schedule rollback canary for ${{ matrix.host }}
-      id: schedule-canary
-      run: devenv shell schedule-rollback-canary -- ${{ matrix.host }} /tmp/current-gen-${{ matrix.host }}
+    - name: Schedule rollback for ${{ matrix.host }}
+      id: schedule-rollback
+      run: devenv shell schedule-rollback -- ${{ matrix.host }} /tmp/current-gen-${{ matrix.host }}
       env:
         SOPS_AGE_KEY: ${{ secrets.SOPS_AGE_KEY }}
 
     - name: Activate ${{ matrix.host }}
       id: activate
-      run: devenv shell activate-colmena -- --on ${{ matrix.host }}
+      run: devenv shell activate-hosts -- --on ${{ matrix.host }}
       env:
         SOPS_AGE_KEY: ${{ secrets.SOPS_AGE_KEY }}
 
-    - name: Cancel rollback canary for ${{ matrix.host }}
+    - name: Cancel rollback for ${{ matrix.host }}
       if: steps.activate.conclusion == 'success'
-      run: devenv shell cancel-rollback-canary -- ${{ matrix.host }}
+      run: devenv shell cancel-rollback -- ${{ matrix.host }}
       env:
         SOPS_AGE_KEY: ${{ secrets.SOPS_AGE_KEY }}
 
     - name: Rollback ${{ matrix.host }}
       if: failure() && steps.activate.conclusion == 'failure'
-      run: devenv shell rollback-colmena -- ${{ matrix.host }} /tmp/current-gen-${{ matrix.host }}
+      run: devenv shell rollback-hosts -- ${{ matrix.host }} /tmp/current-gen-${{ matrix.host }}
       env:
         SOPS_AGE_KEY: ${{ secrets.SOPS_AGE_KEY }}

@@ -90,6 +90,12 @@ jobs:
       env:
         SOPS_AGE_KEY: ${{ secrets.SOPS_AGE_KEY }}
 
+    - name: Cancel rollback canary for ${{ matrix.host }}
+      if: steps.deploy.conclusion == 'success'
+      run: devenv shell cancel-rollback-canary -- ${{ matrix.host }}
+      env:
+        SOPS_AGE_KEY: ${{ secrets.SOPS_AGE_KEY }}
+
     - name: Rollback ${{ matrix.host }}
       if: failure() && steps.deploy.conclusion == 'failure'
       run: devenv shell rollback-colmena -- ${{ matrix.host }} /tmp/current-gen-${{ matrix.host }}

@@ -209,13 +209,76 @@
             | grep -oP '/nix/store/[^\s]+' | head -1)
           echo "$gen" > "$output_file"
           echo "Saved generation: $gen"
+        '';
+    };
 
+    build-colmena = {
+      description = "Build colmena configuration on target without activating.";
+      exec = # bash
+        ''
+          #!/usr/bin/env bash
+          set -euo pipefail
+          GIT_ROOT="$(git rev-parse --show-toplevel)"
+
+          set -o allexport
+          eval "$(sops --output-type dotenv --extract '["env"]' -d "$GIT_ROOT/secrets.yaml")"
+          set +o allexport
+
+          export SSH_CONFIG_FILE
+          trap 'ssh-agent -k' EXIT
+          eval "$(ssh-agent | sed '/^echo.*/d')"
+          ssh-add <(sops --extract '["hetzner"]["ssh"]["id_ed25519"]' -d "$GIT_ROOT/secrets.yaml")
+
+          colmena apply --build-on-target --goal dry-activate "$@"
+        '';
+    };
+
+    schedule-rollback-canary = {
+      description = "Schedule a rollback canary timer on a node before activation.";
+      exec = # bash
+        ''
+          #!/usr/bin/env bash
+          set -euo pipefail
+          GIT_ROOT="$(git rev-parse --show-toplevel)"
+          node="$1"
+          gen_file="$2"
+
+          set -o allexport
+          eval "$(sops --output-type dotenv --extract '["env"]' -d "$GIT_ROOT/secrets.yaml")"
+          set +o allexport
+
+          trap 'ssh-agent -k' EXIT
+          eval "$(ssh-agent | sed '/^echo.*/d')"
+          ssh-add <(sops --extract '["hetzner"]["ssh"]["id_ed25519"]' -d "$GIT_ROOT/secrets.yaml")
+
+          gen=$(cat "$gen_file")
           echo "Scheduling rollback canary timer on $node (fires in 15 minutes if not cancelled)..."
           colmena exec --on "$node" -- sudo systemd-run \
             --unit=nixos-rollback-canary \
             --on-active=15min \
             -- sh -c "nix-env -p /nix/var/nix/profiles/system --set '$gen' && '$gen/bin/switch-to-configuration' switch"
           echo "Rollback canary timer scheduled."
+        '';
+    };
+
+    activate-colmena = {
+      description = "Activate a previously built colmena configuration on target.";
+      exec = # bash
+        ''
+          #!/usr/bin/env bash
+          set -euo pipefail
+          GIT_ROOT="$(git rev-parse --show-toplevel)"
+
+          set -o allexport
+          eval "$(sops --output-type dotenv --extract '["env"]' -d "$GIT_ROOT/secrets.yaml")"
+          set +o allexport
+
+          export SSH_CONFIG_FILE
+          trap 'ssh-agent -k' EXIT
+          eval "$(ssh-agent | sed '/^echo.*/d')"
+          ssh-add <(sops --extract '["hetzner"]["ssh"]["id_ed25519"]' -d "$GIT_ROOT/secrets.yaml")
+
+          colmena apply --build-on-target --goal switch "$@"
         '';
     };
 

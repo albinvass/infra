@@ -186,6 +186,62 @@
         '';
     };
 
+    save-colmena-generation = {
+      description = "Save the current NixOS system generation path for a node to a file.";
+      exec = # bash
+        ''
+          #!/usr/bin/env bash
+          set -euo pipefail
+          GIT_ROOT="$(git rev-parse --show-toplevel)"
+          node="$1"
+          output_file="$2"
+
+          set -o allexport
+          eval "$(sops --output-type dotenv --extract '["env"]' -d "$GIT_ROOT/secrets.yaml")"
+          set +o allexport
+
+          trap 'ssh-agent -k' EXIT
+          eval "$(ssh-agent | sed '/^echo.*/d')"
+          ssh-add <(sops --extract '["hetzner"]["ssh"]["id_ed25519"]' -d "$GIT_ROOT/secrets.yaml")
+
+          echo "Saving current generation of $node..."
+          gen=$(colmena exec --on "$node" -- readlink /run/current-system 2>/dev/null \
+            | grep -oP '/nix/store/[^\s]+' | head -1)
+          echo "$gen" > "$output_file"
+          echo "Saved generation: $gen"
+        '';
+    };
+
+    rollback-colmena = {
+      description = "Rollback a node to its previously saved NixOS generation.";
+      exec = # bash
+        ''
+          #!/usr/bin/env bash
+          set -euo pipefail
+          GIT_ROOT="$(git rev-parse --show-toplevel)"
+          node="$1"
+          gen_file="$2"
+
+          set -o allexport
+          eval "$(sops --output-type dotenv --extract '["env"]' -d "$GIT_ROOT/secrets.yaml")"
+          set +o allexport
+
+          trap 'ssh-agent -k' EXIT
+          eval "$(ssh-agent | sed '/^echo.*/d')"
+          ssh-add <(sops --extract '["hetzner"]["ssh"]["id_ed25519"]' -d "$GIT_ROOT/secrets.yaml")
+
+          if [[ -s "$gen_file" ]]; then
+            gen=$(cat "$gen_file")
+            echo "Rolling back $node to saved generation: $gen"
+            colmena exec --on "$node" -- sudo nix-env -p /nix/var/nix/profiles/system --set "$gen"
+            colmena exec --on "$node" -- sudo "$gen/bin/switch-to-configuration" switch
+          else
+            echo "No saved generation found for $node, falling back to nixos-rebuild --rollback"
+            colmena exec --on "$node" -- sudo nixos-rebuild --rollback switch
+          fi
+        '';
+    };
+
     nixos-init = {
       description = "";
       exec = # bash

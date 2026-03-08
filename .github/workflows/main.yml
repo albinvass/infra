@@ -79,7 +79,19 @@ jobs:
     - name: Check out repository code
       uses: actions/checkout@v4
 
+    - name: Save current generation of ${{ matrix.host }}
+      run: devenv shell save-colmena-generation -- ${{ matrix.host }} /tmp/current-gen-${{ matrix.host }}
+      env:
+        SOPS_AGE_KEY: ${{ secrets.SOPS_AGE_KEY }}
+
     - name: Deploy ${{ matrix.host }}
+      id: deploy
       run: devenv shell deploy-colmena -- apply --build-on-target --on ${{ matrix.host }}
+      env:
+        SOPS_AGE_KEY: ${{ secrets.SOPS_AGE_KEY }}
+
+    - name: Rollback ${{ matrix.host }}
+      if: failure() && steps.deploy.conclusion == 'failure'
+      run: devenv shell rollback-colmena -- ${{ matrix.host }} /tmp/current-gen-${{ matrix.host }}
       env:
         SOPS_AGE_KEY: ${{ secrets.SOPS_AGE_KEY }}

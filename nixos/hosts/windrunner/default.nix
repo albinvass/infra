@@ -15,6 +15,7 @@
     ./frp.nix
     ./immich.nix
     ./matrix-synapse
+    ./soft-serve.nix
     ./static-web-server
     ./hardware-configuration.nix
     ./healthchecks.nix

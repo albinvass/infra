@@ -3,7 +3,6 @@
   imports = [
     ../../modules/base
     ./disk-config
-    ./crowdsec.nix
     ./frp.nix
   ];
 

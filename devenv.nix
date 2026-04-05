@@ -229,7 +229,7 @@
           eval "$(ssh-agent | sed '/^echo.*/d')"
           ssh-add <(sops --extract '["hetzner"]["ssh"]["id_ed25519"]' -d "$GIT_ROOT/secrets.yaml")
 
-          colmena apply --build-on-target --goal dry-activate "$@"
+          colmena build --build-on-target "$@"
         '';
     };
 
@@ -278,7 +278,7 @@
           eval "$(ssh-agent | sed '/^echo.*/d')"
           ssh-add <(sops --extract '["hetzner"]["ssh"]["id_ed25519"]' -d "$GIT_ROOT/secrets.yaml")
 
-          colmena apply --build-on-target --goal switch "$@"
+          colmena switch --build-on-target "$@"
         '';
     };
 

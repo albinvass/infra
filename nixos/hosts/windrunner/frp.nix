@@ -22,7 +22,18 @@
       clientMaxBodySize = "5000M";
     };
 
+    # Deprecated
     "jellyseerr.albinvass.se" = {
+      backend = {
+        host = "localhost";
+        port = 5055;
+      };
+      ssl = true;
+      websockets = false;
+      clientMaxBodySize = null;
+    };
+
+    "seerr.albinvass.se" = {
       backend = {
         host = "localhost";
         port = 5055;

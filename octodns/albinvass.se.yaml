@@ -34,6 +34,9 @@ jellyfin:
 jellyseerr:
   - type: CNAME
     value: reverse-proxy.albinvass.se.
+seerr:
+  - type: CNAME
+    value: reverse-proxy.albinvass.se.
 matrix:
   - type: CNAME
     value: reverse-proxy.albinvass.se.

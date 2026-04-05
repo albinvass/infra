@@ -7,6 +7,7 @@ providers:
   hetzner:
     class: octodns_hetzner.HetznerProvider
     token: env/HETZNER_DNS_TOKEN
+    backend: hcloud
 
 processors:
   acme:

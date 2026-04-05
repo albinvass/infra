@@ -165,7 +165,7 @@
         '';
     };
 
-    deploy-colmena = {
+    deploy-hosts = {
       description = "Deploy colmena conifguration.";
       exec = # bash
         ''
@@ -183,6 +183,163 @@
           ssh-add <(sops --extract '["hetzner"]["ssh"]["id_ed25519"]' -d "$GIT_ROOT/secrets.yaml")
 
           colmena "$@"
+        '';
+    };
+
+    save-generation = {
+      description = "Save the current NixOS system generation path for a node to a file.";
+      exec = # bash
+        ''
+          #!/usr/bin/env bash
+          set -euo pipefail
+          GIT_ROOT="$(git rev-parse --show-toplevel)"
+          node="$1"
+          output_file="$2"
+
+          set -o allexport
+          eval "$(sops --output-type dotenv --extract '["env"]' -d "$GIT_ROOT/secrets.yaml")"
+          set +o allexport
+
+          trap 'ssh-agent -k' EXIT
+          eval "$(ssh-agent | sed '/^echo.*/d')"
+          ssh-add <(sops --extract '["hetzner"]["ssh"]["id_ed25519"]' -d "$GIT_ROOT/secrets.yaml")
+
+          echo "Saving current generation of $node..."
+          gen=$(colmena exec --on "$node" -- readlink /run/current-system 2>/dev/null \
+            | grep -oP '/nix/store/[^\s]+' | head -1)
+          echo "$gen" > "$output_file"
+          echo "Saved generation: $gen"
+        '';
+    };
+
+    build-hosts = {
+      description = "Build colmena configuration on target without activating.";
+      exec = # bash
+        ''
+          #!/usr/bin/env bash
+          set -euo pipefail
+          GIT_ROOT="$(git rev-parse --show-toplevel)"
+
+          set -o allexport
+          eval "$(sops --output-type dotenv --extract '["env"]' -d "$GIT_ROOT/secrets.yaml")"
+          set +o allexport
+
+          export SSH_CONFIG_FILE
+          trap 'ssh-agent -k' EXIT
+          eval "$(ssh-agent | sed '/^echo.*/d')"
+          ssh-add <(sops --extract '["hetzner"]["ssh"]["id_ed25519"]' -d "$GIT_ROOT/secrets.yaml")
+
+          colmena apply --build-on-target --goal dry-activate "$@"
+        '';
+    };
+
+    schedule-rollback = {
+      description = "Schedule a rollback canary timer on a node before activation.";
+      exec = # bash
+        ''
+          #!/usr/bin/env bash
+          set -euo pipefail
+          GIT_ROOT="$(git rev-parse --show-toplevel)"
+          node="$1"
+          gen_file="$2"
+
+          set -o allexport
+          eval "$(sops --output-type dotenv --extract '["env"]' -d "$GIT_ROOT/secrets.yaml")"
+          set +o allexport
+
+          trap 'ssh-agent -k' EXIT
+          eval "$(ssh-agent | sed '/^echo.*/d')"
+          ssh-add <(sops --extract '["hetzner"]["ssh"]["id_ed25519"]' -d "$GIT_ROOT/secrets.yaml")
+
+          gen=$(cat "$gen_file")
+          echo "Scheduling rollback canary timer on $node (fires in 15 minutes if not cancelled)..."
+          colmena exec --on "$node" -- sudo systemd-run \
+            --unit=nixos-rollback-canary \
+            --on-active=15min \
+            -- sh -c "nix-env -p /nix/var/nix/profiles/system --set '$gen' && '$gen/bin/switch-to-configuration' switch"
+          echo "Rollback canary timer scheduled."
+        '';
+    };
+
+    activate-hosts = {
+      description = "Activate a previously built colmena configuration on target.";
+      exec = # bash
+        ''
+          #!/usr/bin/env bash
+          set -euo pipefail
+          GIT_ROOT="$(git rev-parse --show-toplevel)"
+
+          set -o allexport
+          eval "$(sops --output-type dotenv --extract '["env"]' -d "$GIT_ROOT/secrets.yaml")"
+          set +o allexport
+
+          export SSH_CONFIG_FILE
+          trap 'ssh-agent -k' EXIT
+          eval "$(ssh-agent | sed '/^echo.*/d')"
+          ssh-add <(sops --extract '["hetzner"]["ssh"]["id_ed25519"]' -d "$GIT_ROOT/secrets.yaml")
+
+          colmena apply --build-on-target --goal switch "$@"
+        '';
+    };
+
+    cancel-rollback = {
+      description = "Cancel the rollback canary timer on a node after a successful deployment.";
+      exec = # bash
+        ''
+          #!/usr/bin/env bash
+          set -euo pipefail
+          GIT_ROOT="$(git rev-parse --show-toplevel)"
+          node="$1"
+
+          set -o allexport
+          eval "$(sops --output-type dotenv --extract '["env"]' -d "$GIT_ROOT/secrets.yaml")"
+          set +o allexport
+
+          trap 'ssh-agent -k' EXIT
+          eval "$(ssh-agent | sed '/^echo.*/d')"
+          ssh-add <(sops --extract '["hetzner"]["ssh"]["id_ed25519"]' -d "$GIT_ROOT/secrets.yaml")
+
+          echo "Cancelling rollback canary timer on $node..."
+          colmena exec --on "$node" -- sudo systemctl stop nixos-rollback-canary.timer 2>/dev/null || true
+          colmena exec --on "$node" -- sudo systemctl stop nixos-rollback-canary.service 2>/dev/null || true
+          echo "Rollback canary timer cancelled."
+        '';
+    };
+
+    rollback-hosts = {
+      description = "Rollback a node to its previously saved NixOS generation.";
+      exec = # bash
+        ''
+          #!/usr/bin/env bash
+          set -euo pipefail
+          GIT_ROOT="$(git rev-parse --show-toplevel)"
+          node="$1"
+          gen_file="$2"
+
+          set -o allexport
+          eval "$(sops --output-type dotenv --extract '["env"]' -d "$GIT_ROOT/secrets.yaml")"
+          set +o allexport
+
+          trap 'ssh-agent -k' EXIT
+          eval "$(ssh-agent | sed '/^echo.*/d')"
+          ssh-add <(sops --extract '["hetzner"]["ssh"]["id_ed25519"]' -d "$GIT_ROOT/secrets.yaml")
+
+          if ! colmena exec --on "$node" -- true 2>/dev/null; then
+            echo "WARNING: SSH connection to $node failed — the SSH configuration may have been broken by the deployment."
+            echo "The rollback canary timer scheduled before deployment will automatically restore the previous generation within 15 minutes."
+            echo "No further action is required."
+            exit 0
+          fi
+
+          if [[ -s "$gen_file" ]]; then
+            gen=$(cat "$gen_file")
+            echo "Rolling back $node to saved generation: $gen"
+            colmena exec --on "$node" -- sudo nix-env -p /nix/var/nix/profiles/system --set "$gen"
+            colmena exec --on "$node" -- sudo "$gen/bin/switch-to-configuration" switch
+          else
+            echo "No saved generation found for $node, falling back to nixos-rebuild --rollback"
+            colmena exec --on "$node" -- sudo nixos-rebuild --rollback switch
+          fi
         '';
     };
 

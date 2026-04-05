@@ -79,7 +79,37 @@ jobs:
     - name: Check out repository code
       uses: actions/checkout@v4
 
-    - name: Deploy ${{ matrix.host }}
-      run: devenv shell deploy-colmena -- apply --build-on-target --on ${{ matrix.host }}
+    - name: Save current generation of ${{ matrix.host }}
+      run: devenv shell save-generation -- ${{ matrix.host }} /tmp/current-gen-${{ matrix.host }}
+      env:
+        SOPS_AGE_KEY: ${{ secrets.SOPS_AGE_KEY }}
+
+    - name: Build ${{ matrix.host }}
+      id: build
+      run: devenv shell build-hosts -- --on ${{ matrix.host }}
+      env:
+        SOPS_AGE_KEY: ${{ secrets.SOPS_AGE_KEY }}
+
+    - name: Schedule rollback for ${{ matrix.host }}
+      id: schedule-rollback
+      run: devenv shell schedule-rollback -- ${{ matrix.host }} /tmp/current-gen-${{ matrix.host }}
+      env:
+        SOPS_AGE_KEY: ${{ secrets.SOPS_AGE_KEY }}
+
+    - name: Activate ${{ matrix.host }}
+      id: activate
+      run: devenv shell activate-hosts -- --on ${{ matrix.host }}
+      env:
+        SOPS_AGE_KEY: ${{ secrets.SOPS_AGE_KEY }}
+
+    - name: Cancel rollback for ${{ matrix.host }}
+      if: steps.activate.conclusion == 'success'
+      run: devenv shell cancel-rollback -- ${{ matrix.host }}
+      env:
+        SOPS_AGE_KEY: ${{ secrets.SOPS_AGE_KEY }}
+
+    - name: Rollback ${{ matrix.host }}
+      if: failure() && steps.activate.conclusion == 'failure'
+      run: devenv shell rollback-hosts -- ${{ matrix.host }} /tmp/current-gen-${{ matrix.host }}
       env:
         SOPS_AGE_KEY: ${{ secrets.SOPS_AGE_KEY }}

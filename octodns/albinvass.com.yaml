@@ -21,6 +21,9 @@ audiobookshelf:
 calibre:
   - type: CNAME
     value: reverse-proxy.albinvass.se.
+git:
+  - type: CNAME
+    value: reverse-proxy.albinvass.se.
 immich:
   - type: CNAME
     value: reverse-proxy.albinvass.se.

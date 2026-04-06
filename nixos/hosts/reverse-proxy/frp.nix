@@ -18,6 +18,7 @@ in
     1022
     2022
     3022
+    23231
   ];
   systemd.services.frp.serviceConfig = {
     LoadCredential = [

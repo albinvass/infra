@@ -1,4 +1,4 @@
-{ ... }:
+{ config, ... }:
 {
 
   virtualisation.oci-containers.containers = {
@@ -31,5 +31,30 @@
     backupPrepareCommand = "systemctl stop podman-soft-serve";
     backupCleanupCommand = "systemctl start podman-soft-serve";
     useRunitor = false;
+  };
+
+  albinvass.webProxy.services = {
+    "git.albinvass.se" = {
+      backend = {
+        host = "127.0.0.1";
+        port = 23232;
+      };
+      ssl = true;
+      websockets = true;
+      clientMaxBodySize = "20000M";
+    };
+  };
+  services.frp = {
+    settings = {
+      proxies = [
+        {
+          name = "SSH git";
+          type = "tcp";
+          localIP = config.networking.hostName;
+          localPort = 23231;
+          remotePort = 23231;
+        }
+      ];
+    };
   };
 }

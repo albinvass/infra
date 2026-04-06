@@ -4,12 +4,6 @@ reverse-proxy:
 '':
   - type: A
     value: 46.62.135.250
-actual:
-  - type: CNAME
-    value: reverse-proxy.albinvass.se.
-affine:
-  - type: CNAME
-    value: reverse-proxy.albinvass.se.
 authentik:
   - type: CNAME
     value: reverse-proxy.albinvass.se.
@@ -17,9 +11,6 @@ audiobookshelf:
   - type: CNAME
     value: reverse-proxy.albinvass.se.
 git:
-  - type: CNAME
-    value: reverse-proxy.albinvass.se.
-grist:
   - type: CNAME
     value: reverse-proxy.albinvass.se.
 healthchecks:

@@ -6,12 +6,9 @@
 {
   imports = [
     ../../modules/restic-backup
-    ./actual.nix
     ./adguardhome.nix
-    ./affine.nix
     ./audiobookshelf.nix
     ./authentik.nix
-    ./grist.nix
     ./frp.nix
     ./immich.nix
     ./matrix-synapse

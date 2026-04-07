@@ -12,6 +12,7 @@
     ./frp.nix
     ./immich.nix
     ./matrix-synapse
+    ./openclaw.nix
     ./soft-serve.nix
     ./static-web-server
     ./hardware-configuration.nix
@@ -72,6 +73,7 @@
   ];
 
   networking = {
+    useNetworkd = true;
     firewall = {
       enable = true;
       allowedTCPPorts = [

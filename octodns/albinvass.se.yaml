@@ -37,3 +37,6 @@ matrix:
 storage:
   - type: CNAME
     value: reverse-proxy.albinvass.se.
+valheim:
+  - type: A
+    value: 217.208.120.94

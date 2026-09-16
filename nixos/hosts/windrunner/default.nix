@@ -12,8 +12,8 @@
     ./frp.nix
     ./immich.nix
     ./matrix-synapse
-    ./openclaw.nix
     ./soft-serve.nix
+    ./valheim.nix
     ./static-web-server
     ./hardware-configuration.nix
     ./healthchecks.nix

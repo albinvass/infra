@@ -21,10 +21,12 @@ in
 
   virtualisation.oci-containers.containers = {
     "valheim" = {
-      # :latest as of 2026-09-14. Pinning the image does not freeze the game
-      # server itself — the container updates Valheim in place via SteamCMD on
-      # UPDATE_INTERVAL, so this digest only needs bumping for image changes.
-      image = "ghcr.io/lloesche/valheim-server@sha256:dc1323b0e6a27cd9b25506551e4b85123472056c5978958d0b32c341d860d207";
+      # 1.3.0 (:latest as of 2026-09-18). ghcr.io/lloesche/valheim-server is
+      # now a legacy mirror of this repo. Pinning the image does not freeze the
+      # game server itself — the container updates Valheim in place via
+      # SteamCMD on UPDATE_INTERVAL, so this digest only needs bumping for
+      # image changes.
+      image = "ghcr.io/community-valheim-tools/valheim-server@sha256:c43502d3b28c8d341f5362f365deb4802018bda9fc49f98c7631b099f597eb49";
       ports = [
         "${toString gamePort}:${toString gamePort}/udp"
         "${toString queryPort}:${toString queryPort}/udp"
